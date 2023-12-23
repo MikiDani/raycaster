@@ -10,7 +10,7 @@ const context = canvas.getContext('2d')
 
 const TRICK = 30;
 const FOV = toRadians(60);
-const CELL_SIZE = 64;
+const CELL_SIZE = 1;
 const PLAYER_SIZE = 10;
 const COLORS = {
     rays: '#ffa600',
@@ -192,7 +192,7 @@ function renderScreen(rays) {
     })
 }
 
-function renderMinimap(posX = 0 , posY = 0, scale = 0.8, rays) {
+function renderMinimap(posX = 0 , posY = 0, scale, rays) {
 
     const cellSize =  scale * CELL_SIZE;
 
@@ -247,7 +247,7 @@ function renderMinimap(posX = 0 , posY = 0, scale = 0.8, rays) {
     context.stroke()
 
     context.fillStyle = 'white';
-    context.fillRect(SCREEN_WIDTH - (scale * 300) - 10, 10, scale * 300, scale * 300)
+    context.fillRect(SCREEN_WIDTH - 300 - 10, 10, 300, 300)
 
     const lineheight = 20;
     const playerDataText = `
@@ -267,7 +267,7 @@ function renderMinimap(posX = 0 , posY = 0, scale = 0.8, rays) {
     context.font = "16px serif";
 
     for (var i = 0; i<lines.length; i++)
-        context.fillText(lines[i], SCREEN_WIDTH - (scale * 300) - 40, 30 + (i*lineheight));
+        context.fillText(lines[i], SCREEN_WIDTH - 300 - 40, 30 + (i*lineheight));
 
 }
 
@@ -278,7 +278,7 @@ function gameLoop() {
     movePlayer()
     const rays = getRays()
     renderScreen(rays)
-    renderMinimap(0,0, 0.5, rays)
+    renderMinimap(0,0, 30, rays)
     //console.log(upper)
     upper++
 }
@@ -290,10 +290,18 @@ function toRadians(deg) {
 }
 
 document.addEventListener('keydown', (e) => {
-    if(e.key == "w" || e.keyCode == 38) player.speed = 2;
-    if(e.key == "s" || e.keyCode == 40) player.speed = -2;
-    if(e.key == "a" || e.keyCode == 37) player.angle += -toRadians(3)
-    if(e.key == "d" || e.keyCode == 39) player.angle += toRadians(3)
+    // if(e.keyCode == 38) player.speed = 1;
+    // if(e.keyCode == 40) player.speed = -1;
+    // if(e.keyCode == 37) player.angle += -toRadians(3)
+    // if(e.keyCode == 39) player.angle += toRadians(3)
+
+    if(e.keyCode == 87) player.y--; //w
+    if(e.keyCode == 83) player.y++; //s
+    if(e.keyCode == 65) player.x--; //a
+    if(e.keyCode == 68) player.x++; //d
+
+    if(e.keyCode == 81) player.angle += -toRadians(3) //q
+    if(e.keyCode == 69) player.angle += toRadians(3) //e
 });
 
 document.addEventListener('keyup', (e) => {
@@ -305,9 +313,9 @@ document.addEventListener('mousemove', (e) => {
     player.angle += toRadians(e.movementX)
 });
 
-addEventListener("mousedown", (event) => {
-    player.speed = 2;
-});
+// addEventListener("mousedown", (event) => {
+//     player.speed = 1;
+// });
 
 addEventListener("mouseup", (event) => {
     player.speed = 0;
