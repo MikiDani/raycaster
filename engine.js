@@ -142,14 +142,16 @@ function castRay(angle) {
     const vCollision = getVCollision(angle)
     const hCollision = getHCollision(angle)
 
-    //return vCollision
+    //return hCollision
 
     return (hCollision.distance >= vCollision.distance) ? vCollision : hCollision;
 }
 
 function getRays() {
     const initialAngle = player.angle - (FOV/2)
+
     const angleStep = FOV / numberOfRays
+
     return Array.from({length: numberOfRays}, (_, i) => {
         const angle = initialAngle + i * angleStep;
         const ray = castRay(angle)
@@ -157,16 +159,17 @@ function getRays() {
     })
 }
 
-function fixFhishEye(distance, angle, playerAngle) {
+function fixFishEye(distance, angle, playerAngle) {
     const diff = angle - playerAngle;
-    return distance * Math.cos(diff)
+    //return distance * Math.cos(diff)
+    return distance
 }
 
 function renderScreen(rays) {
     rays.forEach((ray, i) => {
         //const distance = ray.distance;
-        const distance = fixFhishEye(ray.distance, ray.angle, player.angle);
-        const wallHeight = ((CELL_SIZE * 2) / distance) * 400;
+        const distance = fixFishEye(ray.distance, ray.angle, player.angle);
+        const wallHeight = (CELL_SIZE / distance) * 400;
 
         // Wall
         context.fillStyle = (ray.vertical) ? COLORS.wallDark : COLORS.wall;
@@ -196,7 +199,7 @@ function renderMinimap(posX = 0 , posY = 0, scale, rays) {
 
     const cellSize =  scale * CELL_SIZE;
 
-    // WALLSw
+    // WALLS
     map.forEach((row, y) => {
         row.forEach((cell, x) => {
             if(cell) {
@@ -256,8 +259,13 @@ function renderMinimap(posX = 0 , posY = 0, scale, rays) {
         y: ${player.y.toFixed(3)} |
         angle: ${player.angle.toFixed(3)} |
         angle: ${toRadians(player.angle)} |
-        speed: ${player.speed}`;
+        speed: ${player.speed} |
+        RAYS: |
+        ${rays.length}
+        `;
 
+        //console.log(rays)
+    
         
     const lines = playerDataText.split('|');
 
@@ -300,8 +308,8 @@ document.addEventListener('keydown', (e) => {
     if(e.keyCode == 65) player.x--; //a
     if(e.keyCode == 68) player.x++; //d
 
-    if(e.keyCode == 81) player.angle += -toRadians(3) //q
-    if(e.keyCode == 69) player.angle += toRadians(3) //e
+    if(e.keyCode == 81) player.angle += -toRadians(45) //q
+    if(e.keyCode == 69) player.angle += toRadians(45) //e
 });
 
 document.addEventListener('keyup', (e) => {
@@ -309,9 +317,9 @@ document.addEventListener('keyup', (e) => {
         player.speed = 0;
 });
 
-document.addEventListener('mousemove', (e) => {
-    player.angle += toRadians(e.movementX)
-});
+// document.addEventListener('mousemove', (e) => {
+//     player.angle += toRadians(e.movementX)
+// });
 
 // addEventListener("mousedown", (event) => {
 //     player.speed = 1;
