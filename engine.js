@@ -33,12 +33,12 @@ const map = [
 
 const player = {
     x: CELL_SIZE * 1.5,
-    y: CELL_SIZE * 1.5,
+    y: CELL_SIZE * 2,
     angle: 0,
     speed: 0,
 }
 
-const numberOfRays = SCREEN_WIDTH
+const numberOfRays = SCREEN_WIDTH/20
 //const numberOfRays = 120;
 const gridSize = Math.floor(SCREEN_WIDTH / numberOfRays);
 
@@ -137,8 +137,10 @@ function getHCollision(angle) {
         vertical: false,
     }
 }
-
 function castRay(angle) {
+    //cast: vet
+    //collision: ütközés
+
     const vCollision = getVCollision(angle)
     const hCollision = getHCollision(angle)
 
@@ -196,7 +198,7 @@ function renderMinimap(posX = 0 , posY = 0, scale = 0.8, rays) {
 
     const cellSize =  scale * CELL_SIZE;
 
-    // WALLSw
+    // WALLS
     map.forEach((row, y) => {
         row.forEach((cell, x) => {
             if(cell) {
@@ -207,6 +209,10 @@ function renderMinimap(posX = 0 , posY = 0, scale = 0.8, rays) {
                     cellSize,
                     cellSize
                 );
+                context.fillStyle = 'black';
+                context.font = scale * 20 + "px serif";
+
+                context.fillText(`${x}/${y}| ${cell}`, posX + (x * cellSize) + (cellSize / 8), posY + (y * cellSize) + (cellSize / 1.5));
             }
         });
     });
@@ -278,7 +284,7 @@ function gameLoop() {
     movePlayer()
     const rays = getRays()
     renderScreen(rays)
-    renderMinimap(0,0, 0.5, rays)
+    renderMinimap(0, 0, 0.5, rays)
     //console.log(upper)
     upper++
 }
@@ -302,7 +308,7 @@ document.addEventListener('keyup', (e) => {
 });
 
 document.addEventListener('mousemove', (e) => {
-    player.angle += toRadians(e.movementX)
+    // player.angle += toRadians(e.movementX)
 });
 
 addEventListener("mousedown", (event) => {
