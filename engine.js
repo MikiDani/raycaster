@@ -11,7 +11,7 @@ const context = canvas.getContext('2d')
 const TRICK = 30;
 const FOV = toRadians(60);
 const CELL_SIZE = 64;
-const PLAYER_SIZE = 10;
+const PLAYER_SIZE = 5;
 const COLORS = {
     rays: '#ffa600',
     wall: '#00e03f',
@@ -38,7 +38,7 @@ const player = {
     speed: 0,
 }
 
-const numberOfRays = SCREEN_WIDTH/20
+const numberOfRays = SCREEN_WIDTH / 10
 //const numberOfRays = 120;
 const gridSize = Math.floor(SCREEN_WIDTH / numberOfRays);
 
@@ -207,7 +207,7 @@ function renderMinimap(posX = 0 , posY = 0, scale = 0.8, rays) {
                     posX + (x * cellSize),
                     posY + (y * cellSize),
                     cellSize,
-                    cellSize
+                    cellSize,
                 );
                 context.fillStyle = 'black';
                 context.font = scale * 20 + "px serif";
@@ -215,6 +215,20 @@ function renderMinimap(posX = 0 , posY = 0, scale = 0.8, rays) {
                 context.fillText(`${x}/${y}| ${cell}`, posX + (x * cellSize) + (cellSize / 8), posY + (y * cellSize) + (cellSize / 1.5));
             }
         });
+    });
+    
+    // FOV RAYS
+    context.strokeStyle = COLORS.rays;
+
+    rays.forEach(ray => {
+        context.beginPath()
+        context.moveTo((player.x * scale) + posX, (player.y * scale) + posY)
+        context.lineTo(
+            posX + ((player.x + (Math.cos(ray.angle) * ray.distance)) * scale),
+            posY + ((player.y + (Math.sin(ray.angle) * ray.distance)) * scale),
+        )
+        context.closePath()
+        context.stroke()
     });
 
     // PLAYER
@@ -226,28 +240,15 @@ function renderMinimap(posX = 0 , posY = 0, scale = 0.8, rays) {
         PLAYER_SIZE,
     )
 
-    //RAY
-    const rayLength = PLAYER_SIZE * 5;
-    
-    context.strokeStyle = COLORS.rays;
-
-    rays.forEach(ray => {
-        context.beginPath()
-        context.moveTo((player.x * scale) + posX, (player.y * scale) + posY)
-        context.lineTo(
-            (player.x + (Math.cos(ray.angle) * ray.distance)) * scale,
-            (player.y + (Math.sin(ray.angle) * ray.distance)) * scale,
-        )
-        context.closePath()
-        context.stroke()
-    });
+    //PLAYER RAY
+    const rayLength = PLAYER_SIZE * 11;
 
     context.strokeStyle = 'blue'
     context.beginPath()
-    context.moveTo(player.x * (scale + posX), player.y * (scale + posY))
+    context.moveTo(posX + (player.x * scale), posY + (player.y * scale))
     context.lineTo(
-        (player.x + (Math.cos(player.angle) * rayLength)) * scale,
-        (player.y + (Math.sin(player.angle) * rayLength)) * scale,
+        posX + ((player.x + (Math.cos(player.angle) * rayLength)) * scale),
+        posY + ((player.y + (Math.sin(player.angle) * rayLength)) * scale),
     )
     context.closePath()
     context.stroke()
@@ -283,13 +284,18 @@ function gameLoop() {
     clearScreen()
     movePlayer()
     const rays = getRays()
+
+    console.log(rays);
+
     renderScreen(rays)
-    renderMinimap(0, 0, 0.5, rays)
+    renderMinimap(145, 45, 0.5, rays)
     //console.log(upper)
+
+    clearInterval(game)
     upper++
 }
 
-setInterval(gameLoop, TRICK)
+var game = setInterval(gameLoop, TRICK)
 
 function toRadians(deg) {
     return ((deg * Math.PI) / 180);
@@ -298,8 +304,8 @@ function toRadians(deg) {
 document.addEventListener('keydown', (e) => {
     if(e.key == "w" || e.keyCode == 38) player.speed = 2;
     if(e.key == "s" || e.keyCode == 40) player.speed = -2;
-    if(e.key == "a" || e.keyCode == 37) player.angle += -toRadians(3)
-    if(e.key == "d" || e.keyCode == 39) player.angle += toRadians(3)
+    if(e.key == "a" || e.keyCode == 37) player.angle += -toRadians(15)
+    if(e.key == "d" || e.keyCode == 39) player.angle += toRadians(15)
 });
 
 document.addEventListener('keyup', (e) => {
