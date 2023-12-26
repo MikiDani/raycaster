@@ -8,17 +8,25 @@ document.body.appendChild(canvas)
 
 const context = canvas.getContext('2d')
 
-const TRICK = 30;
-const FOV = toRadians(60);
-const CELL_SIZE = 64;
-const PLAYER_SIZE = 5;
+const TRICK = 60;
+const FOV = toRadians(90);
+const CELL_SIZE = 1;
+const PLAYER_SIZE = 6;
 const COLORS = {
-    rays: '#ffa600',
+    raysRight: 'black',
+    raysLeft: 'red',
+    raysTop: 'yellow',
+    raysBottom: 'white',
+    error: 'rgb(0, 0, 0, 0)',
     wall: '#00e03f',
     wallDark: '#179d3d',
     floor: '#ccc',
     ceiling: '#39bbff',
 }
+
+const MINIMAP_X = 0
+const MINIMAP_Y = 0
+const MINIMAP_SCALE = 64
 
 const map = [
     [1, 1, 1, 1, 1, 1, 1],
@@ -33,14 +41,18 @@ const map = [
 
 const player = {
     x: CELL_SIZE * 1.5,
-    y: CELL_SIZE * 2,
+    y: CELL_SIZE * 1.5,
     angle: 0,
     speed: 0,
 }
 
-const numberOfRays = SCREEN_WIDTH / 10
-//const numberOfRays = 120;
+//const numberOfRays = SCREEN_WIDTH
+const numberOfRays = SCREEN_WIDTH;
 const gridSize = Math.floor(SCREEN_WIDTH / numberOfRays);
+
+function toRadians(deg) {
+    return ((deg * Math.PI) / 180);
+}
 
 function clearScreen() {
     context.fillStyle = 'red'
@@ -61,14 +73,18 @@ function distance(x1, y1, x2, y2) {
 }
 
 function getVCollision(angle) {
-    const right = Math.abs(Math.floor((angle-Math.PI/2) / Math.PI) % 2 )
+    
+    const right = Math.abs(Math.floor((angle-Math.PI/2) / Math.PI) % 2)
 
     const firstX = (right)
     ? Math.floor(player.x / CELL_SIZE) * CELL_SIZE + CELL_SIZE
     : Math.floor(player.x / CELL_SIZE) * CELL_SIZE;
-
+    
     const firstY = player.y + (firstX - player.x) * Math.tan(angle)
-
+    
+    // console.log (firstX);
+    // console.log (firstY);
+    
     const xA = right ? CELL_SIZE : -CELL_SIZE
     const yA = xA * Math.tan(angle)
 
@@ -96,6 +112,7 @@ function getVCollision(angle) {
         angle,
         distance: distance(player.x, player.y, nextX, nextY),
         vertical: true,
+        way: right,
     }
 }
 
@@ -135,6 +152,7 @@ function getHCollision(angle) {
         angle,
         distance: distance(player.x, player.y, nextX, nextY),
         vertical: false,
+        way2: up,
     }
 }
 function castRay(angle) {
@@ -143,6 +161,11 @@ function castRay(angle) {
 
     const vCollision = getVCollision(angle)
     const hCollision = getHCollision(angle)
+
+    // console.log('vCollision: ')
+    // console.log(vCollision)
+    // console.log('hCollision: ')
+    // console.log(hCollision)
 
     //return vCollision
 
@@ -194,7 +217,7 @@ function renderScreen(rays) {
     })
 }
 
-function renderMinimap(posX = 0 , posY = 0, scale = 0.8, rays) {
+function renderMinimap(posX, posY, scale, rays) {
 
     const cellSize =  scale * CELL_SIZE;
 
@@ -210,7 +233,7 @@ function renderMinimap(posX = 0 , posY = 0, scale = 0.8, rays) {
                     cellSize,
                 );
                 context.fillStyle = 'black';
-                context.font = scale * 20 + "px serif";
+                context.font = 15 + "px serif";
 
                 context.fillText(`${x}/${y}| ${cell}`, posX + (x * cellSize) + (cellSize / 8), posY + (y * cellSize) + (cellSize / 1.5));
             }
@@ -218,9 +241,21 @@ function renderMinimap(posX = 0 , posY = 0, scale = 0.8, rays) {
     });
     
     // FOV RAYS
-    context.strokeStyle = COLORS.rays;
-
+   
     rays.forEach(ray => {
+
+        if (ray.way == '1') {
+            context.strokeStyle = COLORS.raysRight
+        } else if (ray.way == '0') {
+            context.strokeStyle = COLORS.raysLeft
+        } else if (ray.way2 == '1') {
+            context.strokeStyle = COLORS.raysTop
+        } else if (ray.way2 == '0') {
+            context.strokeStyle = COLORS.raysBottom
+        } else {
+            context.strokeStyle = COLORS.error
+        }
+
         context.beginPath()
         context.moveTo((player.x * scale) + posX, (player.y * scale) + posY)
         context.lineTo(
@@ -241,7 +276,7 @@ function renderMinimap(posX = 0 , posY = 0, scale = 0.8, rays) {
     )
 
     //PLAYER RAY
-    const rayLength = PLAYER_SIZE * 11;
+    const rayLength = PLAYER_SIZE * 1;
 
     context.strokeStyle = 'blue'
     context.beginPath()
@@ -254,7 +289,7 @@ function renderMinimap(posX = 0 , posY = 0, scale = 0.8, rays) {
     context.stroke()
 
     context.fillStyle = 'white';
-    context.fillRect(SCREEN_WIDTH - (scale * 300) - 10, 10, scale * 300, scale * 300)
+    context.fillRect(SCREEN_WIDTH - 300 - 10, 10, 300, 300)
 
     const lineheight = 20;
     const playerDataText = `
@@ -274,36 +309,37 @@ function renderMinimap(posX = 0 , posY = 0, scale = 0.8, rays) {
     context.font = "16px serif";
 
     for (var i = 0; i<lines.length; i++)
-        context.fillText(lines[i], SCREEN_WIDTH - (scale * 300) - 40, 30 + (i*lineheight));
+        context.fillText(lines[i], SCREEN_WIDTH - 300 - 40, 30 + (i * lineheight));
 
 }
 
 var upper = 0;
+var onlyOne = false;
 
 function gameLoop() {
     clearScreen()
     movePlayer()
     const rays = getRays()
 
-    console.log(rays);
+    if(onlyOne) {
+        console.log(rays);
+        onlyOne = false;
+    }
 
     renderScreen(rays)
-    renderMinimap(145, 45, 0.5, rays)
-    //console.log(upper)
-
-    clearInterval(game)
-    upper++
+    renderMinimap(MINIMAP_X, MINIMAP_Y, MINIMAP_SCALE, rays)
+    
+    //console.log(upper)w
+    //upper++
+    //if (upper==3) clearInterval(game)
+    //clearInterval(game)
 }
 
 var game = setInterval(gameLoop, TRICK)
 
-function toRadians(deg) {
-    return ((deg * Math.PI) / 180);
-}
-
 document.addEventListener('keydown', (e) => {
-    if(e.key == "w" || e.keyCode == 38) player.speed = 2;
-    if(e.key == "s" || e.keyCode == 40) player.speed = -2;
+    if(e.key == "w" || e.keyCode == 38) player.speed = 0.5;
+    if(e.key == "s" || e.keyCode == 40) player.speed = -0.5;
     if(e.key == "a" || e.keyCode == 37) player.angle += -toRadians(15)
     if(e.key == "d" || e.keyCode == 39) player.angle += toRadians(15)
 });
@@ -311,6 +347,8 @@ document.addEventListener('keydown', (e) => {
 document.addEventListener('keyup', (e) => {
     if(e.key == "w" || e.key == "s" || e.keyCode == 38 || e.keyCode == 40)
         player.speed = 0;
+
+        if(e.keyCode == 77) clearInterval(game)
 });
 
 document.addEventListener('mousemove', (e) => {
@@ -318,7 +356,7 @@ document.addEventListener('mousemove', (e) => {
 });
 
 addEventListener("mousedown", (event) => {
-    player.speed = 2;
+    player.speed = 1;
 });
 
 addEventListener("mouseup", (event) => {
