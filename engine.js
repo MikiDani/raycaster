@@ -54,6 +54,10 @@ function toRadians(deg) {
     return ((deg * Math.PI) / 180);
 }
 
+function toAngle(rad) {
+    return (rad * 180 / Math.PI);
+}
+
 function clearScreen() {
     context.fillStyle = 'red'
     context.fillRect(0,0, SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -117,7 +121,7 @@ function getVCollision(angle) {
 }
 
 function getHCollision(angle) {
-    const up = Math.abs(Math.floor(angle / Math.PI) % 2 )
+    const up = Math.abs(Math.floor(angle / Math.PI) % 2)
 
     const firstY = (up)
     ? Math.floor(player.y / CELL_SIZE) * CELL_SIZE
@@ -296,8 +300,11 @@ function renderMinimap(posX, posY, scale, rays) {
         Player Data:|
         x: ${player.x.toFixed(3)} |
         y: ${player.y.toFixed(3)} |
-        angle: ${player.angle.toFixed(3)} |
-        angle: ${toRadians(player.angle)} |
+        angle: ${player.angle.toFixed(3)} Rad |
+        angle: ${toAngle(player.angle).toFixed(1)} ° |
+        RIGHT?: ${Math.abs(Math.floor((player.angle-Math.PI/2) / Math.PI) % 2)} |
+        UP?: ${Math.abs(Math.floor(player.angle / Math.PI) % 2)} |
+
         speed: ${player.speed}`;
 
         
@@ -317,6 +324,7 @@ var upper = 0;
 var onlyOne = false;
 
 function gameLoop() {
+    player.angle = player.angle % (2 * Math.PI);    // csak 360 °
     clearScreen()
     movePlayer()
     const rays = getRays()
@@ -338,10 +346,10 @@ function gameLoop() {
 var game = setInterval(gameLoop, TRICK)
 
 document.addEventListener('keydown', (e) => {
-    if(e.key == "w" || e.keyCode == 38) player.speed = 0.5;
-    if(e.key == "s" || e.keyCode == 40) player.speed = -0.5;
-    if(e.key == "a" || e.keyCode == 37) player.angle += -toRadians(15)
-    if(e.key == "d" || e.keyCode == 39) player.angle += toRadians(15)
+    if(e.key == "w" || e.keyCode == 38) player.speed = 0.2;
+    if(e.key == "s" || e.keyCode == 40) player.speed = -0.2;
+    if(e.key == "a" || e.keyCode == 37) player.angle += -toRadians(7.5)
+    if(e.key == "d" || e.keyCode == 39) player.angle += toRadians(7.5)
 });
 
 document.addEventListener('keyup', (e) => {
@@ -355,9 +363,9 @@ document.addEventListener('mousemove', (e) => {
     // player.angle += toRadians(e.movementX)
 });
 
-addEventListener("mousedown", (event) => {
-    player.speed = 1;
-});
+// addEventListener("mousedown", (event) => {
+//     player.speed = 0.2;
+// });
 
 addEventListener("mouseup", (event) => {
     player.speed = 0;
