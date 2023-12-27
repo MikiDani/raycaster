@@ -40,9 +40,9 @@ const map = [
 ];
 
 const player = {
-    x: CELL_SIZE * 1.5,
-    y: CELL_SIZE * 1.5,
-    angle: 0,
+    x: CELL_SIZE * 5.2,
+    y: CELL_SIZE * 4.5,
+    angle: 3.927,
     speed: 0,
 }
 
