@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEXTURE</title>
+</head>
+<body>
+    <style>
+        html {
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+    </style>
+    <h4>Texture</h4>
+    <canvas></canvas>
+</body>
+</html>
+<script>
+    const SCREEN_WIDTH = window.innerWidth;
+    const SCREEN_HEIGHT = window.innerHeight;
+
+    const canvas = document.createElement("canvas")
+    canvas.setAttribute('width', SCREEN_WIDTH)
+    canvas.setAttribute('HEIGHT', SCREEN_HEIGHT)
+    document.body.appendChild(canvas)
+
+    const context = canvas.getContext('2d')
+
+    let colorsData = {
+    red: '#f44336',
+    pink: '#e91e63',
+    purple: '#9c27b0',
+    'deep-purple': '#673ab7',
+    indigo: '#3f51b5',
+    blue: '#2196f3',
+    'light-blue': '#03a9f4',
+    cyan: '#00bcd4',
+    teal: '#009688',
+    green: '#4caf50',
+    'light-green': '#8bc34a',
+    lime: '#cddc39',
+    yellow: '#ffeb3b',
+    amber: '#ffc107',
+    orange: '#ff9800',
+    'deep-orange': '#ff5722',
+    brown: '#795548',
+    grey: '#9e9e9e',
+    'blue-grey': '#607d8b',
+    white: '#ffffff',
+    black: '#000000'
+};
+
+let colors = [];
+Object.keys(colorsData).forEach((key, index) => {
+    colors[index + 1] = {
+        name: key,
+        hexa: colorsData[key]
+    };
+});
+
+let array = [];
+for (let i = 0; i < 32; i++) {
+    array[i] = [];
+    for (let j = 0; j < 32; j++) {
+        // Véletlenszerű szín kiválasztása a colors tömbből
+        let randomColorIndex = Math.floor(Math.random() * colors.length) + 1;
+        array[i][j] = colors[randomColorIndex];
+    }
+}
+
+// Kiírás a konzolra az eredményről
+console.log(array);
+
+</script>

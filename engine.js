@@ -10,7 +10,7 @@ const context = canvas.getContext('2d')
 
 const TRICK = 30;
 const FOV = toRadians(60);
-const CELL_SIZE = 10;
+const CELL_SIZE = 12;
 const WALL_DISTANCE = (CELL_SIZE / 100) * 20
 
 
@@ -25,7 +25,7 @@ const COLORS = {
 
 const MINIMAP_X = 0
 const MINIMAP_Y = 0
-const MINIMAP_SCALE = 4
+const MINIMAP_SCALE = 3
 
 const map = [
 	[1, 1, 1, 1, 1, 1, 1],
@@ -36,6 +36,21 @@ const map = [
 	[1, 0, 1, 0, 1, 0, 1],
 	[1, 0, 1, 0, 1, 0, 1],
 	[1, 1, 1, 1, 1, 1, 1],
+];
+
+const texture = [
+	[1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 2],
+	[1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+	[1, 0, 3, 0, 0, 0, 0, 0, 1, 2, 0, 2],
+	[1, 0, 0, 3, 0, 0, 0, 0, 3, 4, 0, 2],
+	[1, 4, 0, 0, 3, 0, 0, 0, 0, 0, 0, 2],
+	[1, 0, 4, 0, 0, 3, 0, 0, 0, 0, 0, 2],
+	[1, 0, 0, 4, 0, 0, 3, 0, 0, 0, 0, 2],
+	[1, 0, 0, 0, 4, 0, 0, 3, 0, 0, 0, 2],
+	[1, 0, 0, 0, 0, 4, 0, 0, 3, 0, 0, 2],
+	[1, 0, 0, 0, 0, 0, 4, 0, 0, 3, 0, 2],
+	[1, 0, 0, 0, 0, 0, 0, 4, 0, 0, 3, 2],
+	[1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 2],
 ];
 
 const player = {
@@ -346,13 +361,13 @@ document.addEventListener('keyup', (e) => {
 		if(e.keyCode == 77) clearInterval(game)
 });
 
-document.addEventListener('mousemove', (e) => {
-	player.angle += toRadians(e.movementX)
-});
+// document.addEventListener('mousemove', (e) => {
+// 	player.angle += toRadians(e.movementX)
+// });
 
-addEventListener("mousedown", () => {
-    player.speed = 1;
-});
+// addEventListener("mousedown", () => {
+//     player.speed = 1;
+// });
 
 addEventListener("mouseup", () => {
 	player.speed = 0;
