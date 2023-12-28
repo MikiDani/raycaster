@@ -56,13 +56,14 @@ const texture = [
 const player = {
 	x: CELL_SIZE * 1.5,
 	y: CELL_SIZE * 1.5,
-	angle: 4.712,
+	angle: 6.283,
 	speed: 0,
 }
 
-//const numberOfRays = Math.floor(SCREEN_WIDTH) !!!
-const numberOfRays = 1
-const gridSize = Math.floor(SCREEN_WIDTH / numberOfRays);
+const numberOfRays = Math.floor(SCREEN_WIDTH/6)
+const gridSize = Math.floor(SCREEN_WIDTH / numberOfRays)
+
+console.log('gridSize: ' + gridSize + ' px')
 
 var infoText1;
 var infoText2;
@@ -205,18 +206,14 @@ function castRay(angle) {
 	const vCrash = getVCrash(angle)
 	const hCrash = getHCrash(angle)
 
-	//console.log(player.speed)
-
-	if(player.speed>0) (hCrash.distance >= vCrash.distance) ? console.log('vCrash: ' + vCrash.start) : console.log('hCrash: ' + hCrash.start);
+	//if(player.speed>0) (hCrash.distance >= vCrash.distance) ? console.log('vCrash: ' + vCrash.start) : console.log('hCrash: ' + hCrash.start);
 
 	return (hCrash.distance >= vCrash.distance) ? vCrash : hCrash;
 }
 
 function getRays() {
-	// const initialAngle = player.angle - (FOV/2)
-	// const angleStep = FOV / numberOfRays
-	const initialAngle = player.angle
-	const angleStep = 1
+	const initialAngle = player.angle - (FOV/2)
+	const angleStep = FOV / numberOfRays
 	return Array.from({length: numberOfRays}, (_, i) => {
 		const angle = initialAngle + i * angleStep;
 		const ray = castRay(angle)
@@ -229,15 +226,34 @@ function fixFhishEye(distance, angle, playerAngle) {
 	return distance * Math.cos(diff)
 }
 
+function colorPicker(num) {
+	let returnValue;
+	switch(num) {
+		case 0 : returnValue = '#000000'; break;
+		case 1 : returnValue = '#ffffff'; break;
+		case 2 : returnValue = '#ff0000'; break;
+		case 3 : returnValue = '#00ff00'; break;
+		case 4 : returnValue = '#0000ff'; break;
+	}
+	return returnValue;
+}
+
 function renderScreen(rays) {
 	rays.forEach((ray, i) => {
 		//const distance = ray.distance;
 		const distance = fixFhishEye(ray.distance, ray.angle, player.angle);
 		const wallHeight = ((CELL_SIZE * 2) / distance) * 300;
 
+		const BRICK_SIZE = wallHeight / CELL_SIZE
+
 		// Wall
-		context.fillStyle = (ray.vertical) ? COLORS.wallDark : COLORS.wall;
-		context.fillRect(i * gridSize, (SCREEN_HEIGHT / 2) - (wallHeight / 2), gridSize, wallHeight);
+		//context.fillStyle = (ray.vertical) ? COLORS.wallDark : COLORS.wall;
+
+		for(let n=0;n<CELL_SIZE; n++) {
+			//console.log(texture[n][ray.start])
+			context.fillStyle = colorPicker(texture[n][ray.start]);
+			context.fillRect(i * gridSize, (SCREEN_HEIGHT / 2) - (wallHeight / 2) + (n * BRICK_SIZE) , gridSize, BRICK_SIZE);
+		}
 
 		// Floor
 		context.fillStyle = COLORS.floor;
