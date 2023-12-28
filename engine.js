@@ -1,20 +1,44 @@
+// -------------------------------------------------------
+// 						CONSTRUCTOR
+// -------------------------------------------------------
 const SCREEN_WIDTH = window.innerWidth;
 const SCREEN_HEIGHT = window.innerHeight;
+
+const numberOfRays = Math.floor(SCREEN_WIDTH / 4)
+const gridSize = Math.floor(SCREEN_WIDTH / numberOfRays)
+
+const TRICK = 30;
+const FOV = toRadians(60);
+const CELL_SIZE = 64;
+const WALL_DISTANCE = (CELL_SIZE / 100) * 30
+
+const MINIMAP_SCALE = 0.5
+const MINIMAP_X = 5
+const MINIMAP_Y = 5
+const PLAYER_SIZE = 6;
+
+const player = {
+	x: CELL_SIZE * 1.5,
+	y: CELL_SIZE * 1.5,
+	angle: 6.283,
+	speed: 0,
+}
+
+var inX; var inY;
+
+var texture;
+var infoSwitch = true;
+var mapSwitch = true;
+var game;
 
 const canvas = document.createElement("canvas")
 canvas.setAttribute('width', SCREEN_WIDTH)
 canvas.setAttribute('HEIGHT', SCREEN_HEIGHT)
 document.body.appendChild(canvas)
-
 const context = canvas.getContext('2d')
 
-const TRICK = 30;
-const FOV = toRadians(60);
-const CELL_SIZE = 32;
-const WALL_DISTANCE = (CELL_SIZE / 100) * 20
+// -------------------------------------------------------
 
-
-const PLAYER_SIZE = 6;
 const COLORS = {
 	ray: 'yellow',
 	wall: '#00e03f',
@@ -22,10 +46,6 @@ const COLORS = {
 	floor: '#ccc',
 	ceiling: '#39bbff',
 }
-
-const MINIMAP_X = 0
-const MINIMAP_Y = 0
-const MINIMAP_SCALE = 1
 
 const map = [
 	[1, 1, 1, 1, 1, 1, 1],
@@ -38,55 +58,50 @@ const map = [
 	[1, 1, 1, 1, 1, 1, 1],
 ];
 
-const texture = [
-	[1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0],
-	[1, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 0],
-	[1, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 0],
-	[1, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 0],
-	[1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 0],
-	[1, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 0],
-	[1, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 0],
-	[1, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 0],
-	[1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 0],
-	[1, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 0],
-	[1, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 0],
-	[1, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 0],
-	[1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 0],
-	[1, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 0],
-	[1, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 0],
-	[1, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 0],
-	[1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 0],
-	[1, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 0],
-	[1, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 0],
-	[1, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 0],
-	[1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 0],
-	[1, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 0],
-	[1, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 0],
-	[1, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 0],
-	[1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 0],
-	[1, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 0],
-	[1, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 0],
-	[1, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 0],
-	[1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 0],
-	[1, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 0],
-	[1, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 0],
-	[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0],
-];
-
-const player = {
-	x: CELL_SIZE * 1.5,
-	y: CELL_SIZE * 1.5,
-	angle: 6.283,
-	speed: 0,
+function toHex(num) {
+	return (num < 16 ? '0' : '') + num.toString(16).toUpperCase();
 }
 
-const numberOfRays = Math.floor(SCREEN_WIDTH/3)
-const gridSize = Math.floor(SCREEN_WIDTH / numberOfRays)
+async function loadTexture() {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
 
-console.log('gridSize: ' + gridSize + ' px')
+        img.src = "img/textures/dani.png";
 
-var infoText1;
-var infoText2;
+        img.onload = function() {
+            const imgWidth = this.width;
+            const imgHeight = this.height;
+            const imgCanvas = document.createElement("canvas");
+            imgCanvas.style.display = 'none';
+            imgCanvas.setAttribute('width', imgWidth);
+            imgCanvas.setAttribute('height', imgHeight);
+            document.body.appendChild(imgCanvas);
+            const imgContext = imgCanvas.getContext('2d');
+
+            imgContext.drawImage(img, 0, 0, imgWidth, imgHeight);
+
+            const pixel = imgContext.getImageData(0, 0, imgWidth, imgHeight).data;
+
+            var texture = new Array(imgHeight);
+            for (let n = 0; n < imgHeight; n++) texture[n] = new Array(imgWidth);
+
+            var count = 0;
+
+            for (let h = 0; h < imgHeight; h++) {
+                for (let w = 0; w < imgWidth; w++) {
+                    let hexColor = '#' + toHex(pixel[count]) + toHex(pixel[count + 1]) + toHex(pixel[count + 2]) + toHex(pixel[count + 3]);
+                    texture[h][w] = hexColor;
+                    count = count + 4;
+                }
+            }
+            resolve(texture);
+        };
+
+        img.onerror = function(error) {
+            reject(error);
+        };
+    });
+}
 
 function toRadians(deg) {
 	return ((deg * Math.PI) / 180);
@@ -112,8 +127,8 @@ function movePlayer() {
 
 		let actX = Math.floor(player.x / CELL_SIZE)
 		let actY = Math.floor(player.y / CELL_SIZE)
-		let inX =  Math.floor(player.x - (actX * CELL_SIZE))
-		let inY =  Math.floor(player.y - (actY * CELL_SIZE))
+		inX =  Math.floor(player.x - (actX * CELL_SIZE))
+		inY =  Math.floor(player.y - (actY * CELL_SIZE))		
 			
 		let moveX = true
 		let moveY = true
@@ -246,16 +261,30 @@ function fixFhishEye(distance, angle, playerAngle) {
 	return distance * Math.cos(diff)
 }
 
-function colorPicker(num) {
-	let returnValue;
-	switch(num) {
-		case 0 : returnValue = '#000000'; break;
-		case 1 : returnValue = '#ffffff'; break;
-		case 2 : returnValue = '#ff0000'; break;
-		case 3 : returnValue = '#00ff00'; break;
-		case 4 : returnValue = '#0000ff'; break;
-	}
-	return returnValue;
+function cutOutX(x) {
+	x = (x > SCREEN_WIDTH) ? SCREEN_WIDTH : x;
+	x = (x < 0) ? 0 : x;
+	return x;
+}
+
+function cutOutY(y) {
+	y = (y > SCREEN_HEIGHT) ? SCREEN_HEIGHT : y;
+	y = (y < 0) ? 0 : y;
+	return y;
+}
+
+function colorDarkening(color, size) {
+    var r = parseInt(color.substring(1, 3), 16);
+    var g = parseInt(color.substring(3, 5), 16);
+    var b = parseInt(color.substring(5, 7), 16);
+
+    r = Math.floor(r * (1 - size));
+    g = Math.floor(g * (1 - size));
+    b = Math.floor(b * (1 - size));
+
+    var newColor = "#" + ("0" + r.toString(16)).slice(-2) + ("0" + g.toString(16)).slice(-2) + ("0" + b.toString(16)).slice(-2);
+
+    return newColor;
 }
 
 function renderScreen(rays) {
@@ -267,12 +296,14 @@ function renderScreen(rays) {
 		const BRICK_SIZE = wallHeight / CELL_SIZE
 
 		// Wall
-		//context.fillStyle = (ray.vertical) ? COLORS.wallDark : COLORS.wall;
-
 		for(let n=0;n<CELL_SIZE; n++) {
-			//console.log(texture[n][ray.start])
-			context.fillStyle = colorPicker(texture[n][ray.start]);
-			context.fillRect(i * gridSize, (SCREEN_HEIGHT / 2)-(wallHeight / 2) + (n * BRICK_SIZE) , gridSize, BRICK_SIZE);
+			context.fillStyle = (ray.vertical) ? colorDarkening(texture[n][ray.start],0.5) : texture[n][ray.start];
+			context.fillRect(
+				cutOutX(i * gridSize),
+				cutOutY(Math.floor(((SCREEN_HEIGHT / 2) - (wallHeight / 2)) + (Math.ceil(n * BRICK_SIZE)))),
+				gridSize,
+				cutOutY(Math.ceil(BRICK_SIZE))
+			);
 		}
 
 		// Floor
@@ -296,7 +327,6 @@ function renderScreen(rays) {
 }
 
 function renderMinimap(rays) {
-
 	const cellSize =  MINIMAP_SCALE * CELL_SIZE;
 
 	// WALLS
@@ -350,23 +380,27 @@ function renderMinimap(rays) {
 	)
 	context.closePath()
 	context.stroke()
+}
 
+function infoPanel() {
 	context.fillStyle = 'white';
-	context.fillRect(SCREEN_WIDTH - 230 - 10, 10, 200, 250)
-
+	context.fillRect(SCREEN_WIDTH - 230 - 10, 10, 200, 300)
 	const lineheight = 20;
 	const playerDataText = `
-		Player Data:|
+		Player Data:  |
+		------------- |
 		x: ${player.x.toFixed(3)} |
 		y: ${player.y.toFixed(3)} |
+		inX: ${inX} |
+		inY: ${inY} |
 		angle: ${player.angle.toFixed(3)} Rad |
 		angle: ${toAngle(player.angle).toFixed(1)} ° |
 		speed: ${player.speed} |
 		RIGHT?: ${Math.abs(Math.floor((player.angle-Math.PI/2) / Math.PI) % 2)} |
 		UP?: ${Math.abs(Math.floor(player.angle / Math.PI) % 2)} |
+		------------- |
 		RAYS: ${numberOfRays} |
-		INFO1: ${infoText1} |
-		INFO2: ${infoText2} |
+		gridSize: ${gridSize} |
 		`;
 	const lines = playerDataText.split('|');
 
@@ -377,24 +411,19 @@ function renderMinimap(rays) {
 }
 
 function gameLoop() {
-	
 	clearScreen()
 	movePlayer()
-
 	const rays = getRays()
-
 	renderScreen(rays)
-
-	renderMinimap(rays)
+	if (mapSwitch) renderMinimap(rays)
+	if (infoSwitch) infoPanel()
 	
 	//clearInterval(game)
 }
 
-var game = setInterval(gameLoop, TRICK)
-
 document.addEventListener('keydown', (e) => {
-	if(e.key == "w" || e.keyCode == 38) player.speed = 1;
-	if(e.key == "s" || e.keyCode == 40) player.speed = -1;
+	if(e.key == "w" || e.keyCode == 38) player.speed = 3;
+	if(e.key == "s" || e.keyCode == 40) player.speed = -3;
 	if(e.key == "a" || e.keyCode == 37) player.angle += -toRadians(3)		// 7.5
 	if(e.key == "d" || e.keyCode == 39) player.angle += toRadians(3)		// 7.5
 });
@@ -403,17 +432,36 @@ document.addEventListener('keyup', (e) => {
 	if(e.key == "w" || e.key == "s" || e.keyCode == 38 || e.keyCode == 40)
 		player.speed = 0;
 
-		if(e.keyCode == 77) clearInterval(game)
+		if(e.keyCode == 27) clearInterval(game);							// ESC
+		if(e.keyCode == 77) mapSwitch = (mapSwitch) ? false : true;			// M
+		if(e.keyCode == 73) infoSwitch = (infoSwitch) ? false : true;		// I
+
+		console.log(mapSwitch, infoSwitch)
 });
 
 // document.addEventListener('mousemove', (e) => {
 // 	player.angle += toRadians(e.movementX)
 // });
 
-// addEventListener("mousedown", () => {
-//     player.speed = 1;
-// });
+addEventListener("mousedown", () => {
+    player.speed = 1;
+});
 
 addEventListener("mouseup", () => {
 	player.speed = 0;
 });
+
+// ---------- START ----------
+
+async function startGame() {
+	try {
+		texture = await loadTexture();
+		game = setInterval(gameLoop, TRICK)
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+window.onload = () => {
+	startGame();
+}

@@ -6,70 +6,54 @@
     <title>TEXTURE</title>
 </head>
 <body>
-    <style>
-        html {
-            box-sizing: border-box;
-            overflow: hidden;
-        }
-    </style>
-    <h4>Texture</h4>
-    <canvas></canvas>
 </body>
 </html>
 <script>
     const SCREEN_WIDTH = window.innerWidth;
     const SCREEN_HEIGHT = window.innerHeight;
 
-    const canvas = document.createElement("canvas")
-    canvas.setAttribute('width', SCREEN_WIDTH)
-    canvas.setAttribute('HEIGHT', SCREEN_HEIGHT)
-    document.body.appendChild(canvas)
-
-    const context = canvas.getContext('2d')
-
-    let colorsData = {
-    red: '#f44336',
-    pink: '#e91e63',
-    purple: '#9c27b0',
-    'deep-purple': '#673ab7',
-    indigo: '#3f51b5',
-    blue: '#2196f3',
-    'light-blue': '#03a9f4',
-    cyan: '#00bcd4',
-    teal: '#009688',
-    green: '#4caf50',
-    'light-green': '#8bc34a',
-    lime: '#cddc39',
-    yellow: '#ffeb3b',
-    amber: '#ffc107',
-    orange: '#ff9800',
-    'deep-orange': '#ff5722',
-    brown: '#795548',
-    grey: '#9e9e9e',
-    'blue-grey': '#607d8b',
-    white: '#ffffff',
-    black: '#000000'
-};
-
-let colors = [];
-Object.keys(colorsData).forEach((key, index) => {
-    colors[index + 1] = {
-        name: key,
-        hexa: colorsData[key]
-    };
-});
-
-let array = [];
-for (let i = 0; i < 32; i++) {
-    array[i] = [];
-    for (let j = 0; j < 32; j++) {
-        // Véletlenszerű szín kiválasztása a colors tömbből
-        let randomColorIndex = Math.floor(Math.random() * colors.length) + 1;
-        array[i][j] = colors[randomColorIndex];
+    function toHex(num) {
+        return (num < 16 ? '0' : '') + num.toString(16).toUpperCase();
     }
-}
 
-// Kiírás a konzolra az eredményről
-console.log(array);
+    // --- Image
+    const img = new Image();
+    img.src = "img/textures/dani.png";
+
+    console.log(img)
+    
+    img.onload = function() {
+        const imgWidth = this.width
+        const imgHeight = this.height
+        const imgCanvas = document.createElement("canvas")
+        imgCanvas.setAttribute('width', imgWidth)
+        imgCanvas.setAttribute('height', imgHeight)
+        document.body.appendChild(imgCanvas)
+        const imgContext = imgCanvas.getContext('2d')
+
+        imgContext.drawImage(img, 0, 0, imgWidth, imgHeight);
+
+        const pixel = imgContext.getImageData(0, 0, imgWidth, imgHeight).data
+
+        const texture = new Array(imgHeight)
+        for(let n=0; n<imgHeight; n++) texture[n] = new Array(imgWidth)
+
+        var count = 0
+
+        for(let h=0; h < imgHeight; h++) {
+            for(let w=0; w < imgWidth; w++) {
+                let hexColor = '#' + toHex(pixel[count]) + toHex(pixel[count+1]) + toHex(pixel[count+2]) + toHex(pixel[count+3]);
+                texture[h][w] = hexColor
+                count = count + 4
+            }
+        }
+
+        console.log(texture);
+
+        // console.log(pixel[0]);
+        // console.log(pixel[1]);
+        // console.log(pixel[2]);
+        // console.log(pixel[3]);
+    };
 
 </script>
