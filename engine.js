@@ -66,7 +66,9 @@ async function loadTexture() {
     return new Promise((resolve, reject) => {
         const img = new Image();
 
-        img.src = "img/textures/dani.png";
+        img.src = "img/textures/brick1.png";
+
+		//brick1, brick2, bookshelf, walkstone, dani, wall1, wall2, wall3
 
         img.onload = function() {
             const imgWidth = this.width;
@@ -86,7 +88,6 @@ async function loadTexture() {
             for (let n = 0; n < imgHeight; n++) texture[n] = new Array(imgWidth);
 
             var count = 0;
-
             for (let h = 0; h < imgHeight; h++) {
                 for (let w = 0; w < imgWidth; w++) {
                     let hexColor = '#' + toHex(pixel[count]) + toHex(pixel[count + 1]) + toHex(pixel[count + 2]) + toHex(pixel[count + 3]);
@@ -117,14 +118,12 @@ function toAngle(rad) {
 }
 
 function clearScreen() {
-	context.fillStyle = 'red'
+	context.fillStyle = 'black'
 	context.fillRect(0,0, SCREEN_WIDTH, SCREEN_HEIGHT)
 }
 
 function movePlayer() {
-
 	if (player.speed != 0) {
-
 		let actX = Math.floor(player.x / CELL_SIZE)
 		let actY = Math.floor(player.y / CELL_SIZE)
 		inX =  Math.floor(player.x - (actX * CELL_SIZE))
@@ -163,7 +162,6 @@ function distance(x1, y1, x2, y2) {
 }
 
 function getVCrash(angle) {
-	
 	const right = Math.abs(Math.floor((angle-Math.PI/2) / Math.PI) % 2)
 
 	const firstX = (right)
@@ -172,7 +170,7 @@ function getVCrash(angle) {
 	
 	const firstY = player.y + (firstX - player.x) * Math.tan(angle)
 	
-	const xA = right ? CELL_SIZE : -CELL_SIZE
+	const xA = right ? CELL_SIZE : -CELL_SIZE;
 	const yA = xA * Math.tan(angle)
 
 	let wall;
@@ -208,7 +206,7 @@ function getHCrash(angle) {
 	: Math.floor(player.y / CELL_SIZE) * CELL_SIZE + CELL_SIZE;
 
 	const firstX = player.x + (firstY - player.y) / Math.tan(angle)
-	const yA = up ? -CELL_SIZE : CELL_SIZE
+	const yA = up ? -CELL_SIZE : CELL_SIZE;
 	const xA = yA / Math.tan(angle)
 
 	let wall;
@@ -221,7 +219,7 @@ function getHCrash(angle) {
 		const cellY = (up) ? Math.floor(nextY / CELL_SIZE) - 1 : Math.floor(nextY / CELL_SIZE);
 
 		if(outOfMapBounds(cellX, cellY)) break;
-		
+
 		wall = map[cellY][cellX]
 		actCellX = cellX
 
@@ -237,12 +235,8 @@ function getHCrash(angle) {
 }
 
 function castRay(angle) {
-
 	const vCrash = getVCrash(angle)
 	const hCrash = getHCrash(angle)
-
-	//if(player.speed>0) (hCrash.distance >= vCrash.distance) ? console.log('vCrash: ' + vCrash.start) : console.log('hCrash: ' + hCrash.start);
-
 	return (hCrash.distance >= vCrash.distance) ? vCrash : hCrash;
 }
 
@@ -274,15 +268,15 @@ function cutOutY(y) {
 }
 
 function colorDarkening(color, size) {
-    var r = parseInt(color.substring(1, 3), 16);
-    var g = parseInt(color.substring(3, 5), 16);
-    var b = parseInt(color.substring(5, 7), 16);
+    var r = parseInt(color.substring(1, 3), 16)
+    var g = parseInt(color.substring(3, 5), 16)
+    var b = parseInt(color.substring(5, 7), 16)
 
-    r = Math.floor(r * (1 - size));
-    g = Math.floor(g * (1 - size));
-    b = Math.floor(b * (1 - size));
+    r = Math.floor(r * (1 - size))
+    g = Math.floor(g * (1 - size))
+    b = Math.floor(b * (1 - size))
 
-    var newColor = "#" + ("0" + r.toString(16)).slice(-2) + ("0" + g.toString(16)).slice(-2) + ("0" + b.toString(16)).slice(-2);
+    var newColor = "#" + ("0" + r.toString(16)).slice(-2) + ("0" + g.toString(16)).slice(-2) + ("0" + b.toString(16)).slice(-2)
 
     return newColor;
 }
@@ -290,14 +284,14 @@ function colorDarkening(color, size) {
 function renderScreen(rays) {
 	rays.forEach((ray, i) => {
 		//const distance = ray.distance;
-		const distance = fixFhishEye(ray.distance, ray.angle, player.angle);
-		const wallHeight = ((CELL_SIZE) / distance) * 1450;
+		const distance = fixFhishEye(ray.distance, ray.angle, player.angle)
+		const wallHeight = ((CELL_SIZE) / distance) * 1450
 
 		const BRICK_SIZE = wallHeight / CELL_SIZE
 
 		// Wall
 		for(let n=0;n<CELL_SIZE; n++) {
-			context.fillStyle = (ray.vertical) ? colorDarkening(texture[n][ray.start],0.5) : texture[n][ray.start];
+			context.fillStyle = (ray.vertical) ? colorDarkening(texture[n][ray.start],0.5) : texture[n][ray.start]
 			context.fillRect(
 				cutOutX(i * gridSize),
 				cutOutY(Math.floor(((SCREEN_HEIGHT / 2) - (wallHeight / 2)) + (Math.ceil(n * BRICK_SIZE)))),
@@ -307,7 +301,7 @@ function renderScreen(rays) {
 		}
 
 		// Floor
-		context.fillStyle = COLORS.floor;
+		context.fillStyle = texture[32][32];
 		context.fillRect(
 			i * gridSize,
 			(SCREEN_HEIGHT / 2) + (wallHeight / 2),
@@ -316,6 +310,7 @@ function renderScreen(rays) {
 		);
 		
 		// Ceiling
+		// context.fillStyle = COLORS.ceiling;
 		context.fillStyle = COLORS.ceiling;
 		context.fillRect(
 			i * gridSize,
