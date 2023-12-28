@@ -39,28 +39,29 @@ const map = [
 ];
 
 const texture = [
-	[1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 2],
-	[1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+	[1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4],
+	[2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
 	[1, 0, 3, 0, 0, 0, 0, 0, 1, 2, 0, 2],
-	[1, 0, 0, 3, 0, 0, 0, 0, 3, 4, 0, 2],
-	[1, 4, 0, 0, 3, 0, 0, 0, 0, 0, 0, 2],
-	[1, 0, 4, 0, 0, 3, 0, 0, 0, 0, 0, 2],
-	[1, 0, 0, 4, 0, 0, 3, 0, 0, 0, 0, 2],
-	[1, 0, 0, 0, 4, 0, 0, 3, 0, 0, 0, 2],
-	[1, 0, 0, 0, 0, 4, 0, 0, 3, 0, 0, 2],
-	[1, 0, 0, 0, 0, 0, 4, 0, 0, 3, 0, 2],
+	[3, 0, 0, 3, 0, 0, 0, 0, 3, 4, 0, 1],
+	[1, 4, 0, 0, 3, 0, 0, 0, 0, 0, 0, 3],
+	[4, 0, 4, 0, 0, 3, 0, 0, 0, 0, 0, 1],
+	[1, 0, 0, 4, 0, 0, 3, 0, 0, 0, 0, 4],
+	[3, 0, 0, 0, 4, 0, 0, 3, 0, 0, 0, 1],
+	[1, 0, 0, 0, 0, 4, 0, 0, 3, 0, 0, 3],
+	[2, 0, 0, 0, 0, 0, 4, 0, 0, 3, 0, 1],
 	[1, 0, 0, 0, 0, 0, 0, 4, 0, 0, 3, 2],
-	[1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 2],
+	[4, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 1],
 ];
 
 const player = {
 	x: CELL_SIZE * 1.5,
 	y: CELL_SIZE * 1.5,
-	angle: 7.854,
+	angle: 4.712,
 	speed: 0,
 }
 
-const numberOfRays = Math.floor(SCREEN_WIDTH / 2)
+//const numberOfRays = Math.floor(SCREEN_WIDTH) !!!
+const numberOfRays = 1
 const gridSize = Math.floor(SCREEN_WIDTH / numberOfRays);
 
 var infoText1;
@@ -141,6 +142,7 @@ function getVCrash(angle) {
 	let wall;
 	let nextX = firstX;
 	let nextY = firstY;
+	let actCellY;
 
 	while(!wall) {
 		const cellX = (right) ? Math.floor(nextX / CELL_SIZE) : Math.floor(nextX / CELL_SIZE) - 1;
@@ -149,16 +151,16 @@ function getVCrash(angle) {
 		if(outOfMapBounds(cellX, cellY)) break;
 
 		wall = map[cellY][cellX]
-		if(!wall) {
-			nextX += xA
-			nextY += yA
-		}
+		actCellY = cellY
+
+		if(!wall) { nextX += xA; nextY += yA }
 	}
 
 	return { 
 		angle,
 		distance: distance(player.x, player.y, nextX, nextY),
 		vertical: true,
+		start: Math.floor(((nextY / CELL_SIZE) - actCellY) * CELL_SIZE),
 	}
 }
 
@@ -176,6 +178,7 @@ function getHCrash(angle) {
 	let wall;
 	let nextX = firstX;
 	let nextY = firstY;
+	let actCellX;
 
 	while(!wall) {
 		const cellX = Math.floor(nextX / CELL_SIZE)
@@ -184,16 +187,16 @@ function getHCrash(angle) {
 		if(outOfMapBounds(cellX, cellY)) break;
 		
 		wall = map[cellY][cellX]
-		if(!wall) {
-			nextX += xA
-			nextY += yA
-		}
+		actCellX = cellX
+
+		if(!wall) { nextX += xA; nextY += yA; }
 	}
 
 	return { 
 		angle,
 		distance: distance(player.x, player.y, nextX, nextY),
 		vertical: false,
+		start: Math.floor(((nextX / CELL_SIZE) - actCellX) * CELL_SIZE),
 	}
 }
 
@@ -202,12 +205,18 @@ function castRay(angle) {
 	const vCrash = getVCrash(angle)
 	const hCrash = getHCrash(angle)
 
+	//console.log(player.speed)
+
+	if(player.speed>0) (hCrash.distance >= vCrash.distance) ? console.log('vCrash: ' + vCrash.start) : console.log('hCrash: ' + hCrash.start);
+
 	return (hCrash.distance >= vCrash.distance) ? vCrash : hCrash;
 }
 
 function getRays() {
-	const initialAngle = player.angle - (FOV/2)
-	const angleStep = FOV / numberOfRays
+	// const initialAngle = player.angle - (FOV/2)
+	// const angleStep = FOV / numberOfRays
+	const initialAngle = player.angle
+	const angleStep = 1
 	return Array.from({length: numberOfRays}, (_, i) => {
 		const angle = initialAngle + i * angleStep;
 		const ray = castRay(angle)
