@@ -66,7 +66,7 @@ async function loadTexture() {
     return new Promise((resolve, reject) => {
         const img = new Image();
 
-        img.src = "img/textures/brick6.png";
+        img.src = "img/textures/bricks.png";
 
 		//brick1, brick2, bookshelf, walkstone, dani, wall1, wall2, wall3
 
