@@ -9,10 +9,10 @@ const gridSize = Math.floor(SCREEN_WIDTH / numberOfRays)
 
 const TRICK = 30;
 const FOV = toRadians(60);
-const CELL_SIZE = 64;
+const CELL_SIZE = 128;
 const WALL_DISTANCE = (CELL_SIZE / 100) * 30
 
-const MINIMAP_SCALE = 0.5
+const MINIMAP_SCALE = 0.25
 const MINIMAP_X = 5
 const MINIMAP_Y = 5
 const PLAYER_SIZE = 6;
@@ -26,10 +26,12 @@ const player = {
 
 var inX; var inY;
 
-var texture;
-var infoSwitch = true;
-var mapSwitch = true;
-var game;
+var texture
+var infoSwitch = true
+var mapSwitch = true
+var game
+var playerRay
+var ShadowDistance
 
 const canvas = document.createElement("canvas")
 canvas.setAttribute('width', SCREEN_WIDTH)
@@ -41,21 +43,19 @@ const context = canvas.getContext('2d')
 
 const COLORS = {
 	ray: 'yellow',
-	wall: '#00e03f',
-	wallDark: '#179d3d',
 	floor: '#ccc',
 	ceiling: '#39bbff',
 }
 
 const map = [
-	[1, 1, 1, 1, 1, 1, 1],
-	[1, 0, 0, 0, 0, 0, 1],
-	[1, 0, 1, 1, 0, 1, 1],
-	[1, 0, 0, 0, 0, 0, 1],
-	[1, 0, 1, 0, 0, 0, 1],
-	[1, 0, 1, 0, 1, 0, 1],
-	[1, 0, 1, 0, 1, 0, 1],
-	[1, 1, 1, 1, 1, 1, 1],
+	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+	[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+	[1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+	[1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+	[1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+	[1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+	[1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+	[1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
 ];
 
 function toHex(num) {
@@ -66,7 +66,7 @@ async function loadTexture() {
     return new Promise((resolve, reject) => {
         const img = new Image();
 
-        img.src = "img/textures/brick1.png";
+        img.src = "img/textures/brick6.png";
 
 		//brick1, brick2, bookshelf, walkstone, dani, wall1, wall2, wall3
 
@@ -190,7 +190,7 @@ function getVCrash(angle) {
 		if(!wall) { nextX += xA; nextY += yA }
 	}
 
-	return { 
+	return {
 		angle,
 		distance: distance(player.x, player.y, nextX, nextY),
 		vertical: true,
@@ -281,6 +281,13 @@ function colorDarkening(color, size) {
     return newColor;
 }
 
+function calcShadowDistance(distance) {
+	let shadowDistance = (distance / 100) * 0.1;
+	shadowDistance = (shadowDistance > 1) ? 1 : shadowDistance;
+	shadowDistance = shadowDistance.toFixed(1);
+	return shadowDistance
+}
+
 function renderScreen(rays) {
 	rays.forEach((ray, i) => {
 		//const distance = ray.distance;
@@ -291,7 +298,20 @@ function renderScreen(rays) {
 
 		// Wall
 		for(let n=0;n<CELL_SIZE; n++) {
-			context.fillStyle = (ray.vertical) ? colorDarkening(texture[n][ray.start],0.5) : texture[n][ray.start]
+			context.fillStyle = (ray.vertical) ? colorDarkening(texture[n][ray.start], 0.5) : texture[n][ray.start]
+
+			let shadowDistance = calcShadowDistance(distance)
+			//context.fillStyle = colorDarkening(context.fillStyle, shadowDistance)
+
+			context.fillRect(
+				cutOutX(i * gridSize),
+				cutOutY(Math.floor(((SCREEN_HEIGHT / 2) - (wallHeight / 2)) + (Math.ceil(n * BRICK_SIZE)))),
+				gridSize,
+				cutOutY(Math.ceil(BRICK_SIZE))
+			);
+
+			// Shadow
+			context.fillStyle = `rgba(0, 0, 0, ${shadowDistance})`;
 			context.fillRect(
 				cutOutX(i * gridSize),
 				cutOutY(Math.floor(((SCREEN_HEIGHT / 2) - (wallHeight / 2)) + (Math.ceil(n * BRICK_SIZE)))),
@@ -379,7 +399,7 @@ function renderMinimap(rays) {
 
 function infoPanel() {
 	context.fillStyle = 'white';
-	context.fillRect(SCREEN_WIDTH - 230 - 10, 10, 200, 300)
+	context.fillRect(SCREEN_WIDTH - 230 - 10, 10, 200, 350)
 	const lineheight = 20;
 	const playerDataText = `
 		Player Data:  |
@@ -390,6 +410,8 @@ function infoPanel() {
 		inY: ${inY} |
 		angle: ${player.angle.toFixed(3)} Rad |
 		angle: ${toAngle(player.angle).toFixed(1)} ° |
+		P ray dis: ${playerRay.distance.toFixed(5)} |
+		ShadowDistance : ${ShadowDistance} |
 		speed: ${player.speed} |
 		RIGHT?: ${Math.abs(Math.floor((player.angle-Math.PI/2) / Math.PI) % 2)} |
 		UP?: ${Math.abs(Math.floor(player.angle / Math.PI) % 2)} |
@@ -399,8 +421,8 @@ function infoPanel() {
 		`;
 	const lines = playerDataText.split('|');
 
-	context.fillStyle = 'black';
-	context.font = "16px serif";
+	context.fillStyle = 'black'
+	context.font = '16px serif'
 	for (var i = 0; i<lines.length; i++)
 		context.fillText(lines[i], SCREEN_WIDTH - 200 - 40, 30 + (i * lineheight));
 }
@@ -410,6 +432,19 @@ function gameLoop() {
 	movePlayer()
 	const rays = getRays()
 	renderScreen(rays)
+	playerRay = castRay(player.angle)
+
+	let shadowDistance = calcShadowDistance(player.distance)
+	
+	context.fillStyle = (playerRay.vertical) ? colorDarkening('#ff0000',0) : '#ff0000'
+	context.fillStyle = colorDarkening(context.fillStyle, ShadowDistance)
+	context.fillRect(600,0, 100, 100)
+	let last = context.fillStyle
+	context.fillStyle = 'white'
+	context.font = "16px serif"
+	context.fillText(last, 620,50)
+	
+
 	if (mapSwitch) renderMinimap(rays)
 	if (infoSwitch) infoPanel()
 	
@@ -417,10 +452,10 @@ function gameLoop() {
 }
 
 document.addEventListener('keydown', (e) => {
-	if(e.key == "w" || e.keyCode == 38) player.speed = 3;
-	if(e.key == "s" || e.keyCode == 40) player.speed = -3;
-	if(e.key == "a" || e.keyCode == 37) player.angle += -toRadians(3)		// 7.5
-	if(e.key == "d" || e.keyCode == 39) player.angle += toRadians(3)		// 7.5
+	if(e.key == "w" || e.keyCode == 38) player.speed = 30;
+	if(e.key == "s" || e.keyCode == 40) player.speed = -30;
+	if(e.key == "a" || e.keyCode == 37) player.angle += -toRadians(5)		// 7.5
+	if(e.key == "d" || e.keyCode == 39) player.angle += toRadians(5)		// 7.5
 });
 
 document.addEventListener('keyup', (e) => {
@@ -430,8 +465,6 @@ document.addEventListener('keyup', (e) => {
 		if(e.keyCode == 27) clearInterval(game);							// ESC
 		if(e.keyCode == 77) mapSwitch = (mapSwitch) ? false : true;			// M
 		if(e.keyCode == 73) infoSwitch = (infoSwitch) ? false : true;		// I
-
-		console.log(mapSwitch, infoSwitch)
 });
 
 // document.addEventListener('mousemove', (e) => {
