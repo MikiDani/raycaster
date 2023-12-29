@@ -1,10 +1,9 @@
 // -------------------------------------------------------
-// 						CONSTRUCTOR
+// 						DANI RAYENGINE
 // -------------------------------------------------------
 
-import TexturesClass from '/js/textures-class.js';
-
-const textures = new TexturesClass()
+import TexturesClass from './textures-class.js';
+const texturesClass = new TexturesClass();
 
 const SCREEN_WIDTH = window.innerWidth;
 const SCREEN_HEIGHT = window.innerHeight;
@@ -31,16 +30,12 @@ const player = {
 
 var inX; var inY;
 
-var texture
-
-
 const menu = {
 	infoSwitch: true,
 	mapSwitch: true,
 	shadows: true,
 }
 
-var game
 var playerRay
 var shadowDistance
 
@@ -59,61 +54,15 @@ const COLORS = {
 }
 
 const map = [
-	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-	[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-	[1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-	[1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-	[1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-	[1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-	[1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-	[1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+	[0, 7, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 4, 4],
+	[7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
+	[6, 0, 6, 6, 0, 6, 6, 2, 2, 7, 2, 2, 7, 2, 2],
+	[5, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 4],
+	[4, 0, 6, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 4],
+	[3, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
+	[2, 0, 6, 0, 6, 0, 6, 0, 0, 0, 0, 0, 0, 0, 4],
+	[6, 6, 6, 6, 6, 6, 6, 3, 3, 3, 6, 6, 6, 6, 4],
 ];
-
-function toHex(num) {
-	return (num < 16 ? '0' : '') + num.toString(16).toUpperCase();
-}
-
-async function loadTexture() {
-    return new Promise((resolve, reject) => {
-        const img = new Image();
-
-        img.src = "img/textures/book1.png";
-
-		//brick1, brick2, bookshelf, walkstone, dani, wall1, wall2, wall3
-
-        img.onload = function() {
-            const imgWidth = this.width;
-            const imgHeight = this.height;
-            const imgCanvas = document.createElement("canvas");
-            imgCanvas.style.display = 'none';
-            imgCanvas.setAttribute('width', imgWidth);
-            imgCanvas.setAttribute('height', imgHeight);
-            document.body.appendChild(imgCanvas);
-            const imgContext = imgCanvas.getContext('2d');
-
-            imgContext.drawImage(img, 0, 0, imgWidth, imgHeight);
-
-            const pixel = imgContext.getImageData(0, 0, imgWidth, imgHeight).data;
-
-            var texture = new Array(imgHeight);
-            for (let n = 0; n < imgHeight; n++) texture[n] = new Array(imgWidth);
-
-            var count = 0;
-            for (let h = 0; h < imgHeight; h++) {
-                for (let w = 0; w < imgWidth; w++) {
-                    let hexColor = '#' + toHex(pixel[count]) + toHex(pixel[count + 1]) + toHex(pixel[count + 2]) + toHex(pixel[count + 3]);
-                    texture[h][w] = hexColor;
-                    count = count + 4;
-                }
-            }
-            resolve(texture);
-        };
-
-        img.onerror = function(error) {
-            reject(error);
-        };
-    });
-}
 
 function toRadians(deg) {
 	return ((deg * Math.PI) / 180);
@@ -206,6 +155,7 @@ function getVCrash(angle) {
 		distance: distance(player.x, player.y, nextX, nextY),
 		vertical: true,
 		start: Math.floor(((nextY / CELL_SIZE) - actCellY) * CELL_SIZE),
+		wall : wall,
 	}
 }
 
@@ -242,6 +192,7 @@ function getHCrash(angle) {
 		distance: distance(player.x, player.y, nextX, nextY),
 		vertical: false,
 		start: Math.floor(((nextX / CELL_SIZE) - actCellX) * CELL_SIZE),
+		wall: wall,
 	}
 }
 
@@ -278,45 +229,20 @@ function cutOutY(y) {
 	return y;
 }
 
-// --- old
-function colorDarkeningOne(color, size) {
-    var r = parseInt(color.substring(1, 3), 16)
-    var g = parseInt(color.substring(3, 5), 16)
-    var b = parseInt(color.substring(5, 7), 16)
-
-    r = Math.floor(r * (1 - size))
-    g = Math.floor(g * (1 - size))
-    b = Math.floor(b * (1 - size))
-
-    var newColor = "#" + ("0" + r.toString(16)).slice(-2) + ("0" + g.toString(16)).slice(-2) + ("0" + b.toString(16)).slice(-2)
-    return newColor;
+function colorDarkening(color, size) {
+    var rgbaArr = color.match(/\d+(\.\d+)?/g);
+    let r = Math.floor(parseInt(rgbaArr[0]) * (1 - size));
+    let g = Math.floor(parseInt(rgbaArr[1]) * (1 - size));
+    let b = Math.floor(parseInt(rgbaArr[2]) * (1 - size));
+    let a = Math.min(parseFloat(rgbaArr[3]));
+    return "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
 }
 
-function calcShadowDistanceAlpha(distance) {
-	let shadowDistance = (distance / 200) * 0.1;
+function calcShadowDistance(distance) {
+	let shadowDistance = (distance / 160) * 0.1;
 	shadowDistance = (shadowDistance > 1) ? 1 : shadowDistance;
 	shadowDistance = shadowDistance.toFixed(1);
 	return shadowDistance
-}
-
-// --- new
-function colorDarkening255(color, size) {
-	let r = ((parseInt(color.substring(1, 3), 16) - size) > 0) ? parseInt(color.substring(1, 3), 16) - size : 0;
-	let g = ((parseInt(color.substring(3, 5), 16) - size) > 0) ? parseInt(color.substring(3, 5), 16) - size : 0;
-	let b = ((parseInt(color.substring(5, 7), 16) - size) > 0) ? parseInt(color.substring(5, 7), 16) - size : 0;
-
-	return '#' + ('0' + r.toString(16)).slice(-2) + ('0' + g.toString(16)).slice(-2) + ('0' + b.toString(16)).slice(-2);
-}
-
-function calcShadowDistanceDecimal(distance) {
-	let slice = 600;
-	if (distance < slice) {
-		return 0;
-	} else if (distance > slice && distance - slice <= 255)
-		return (distance - slice).toFixed(0);
-	else {
-		return 255;
-	}
 }
 
 function renderScreen(rays) {
@@ -324,17 +250,12 @@ function renderScreen(rays) {
 		//const distance = ray.distance;
 		const distance = fixFhishEye(ray.distance, ray.angle, player.angle)
 		const wallHeight = ((CELL_SIZE) / distance) * 1450
-
 		const BRICK_SIZE = wallHeight / CELL_SIZE
 
 		// Wall
-		for(let n=0;n<CELL_SIZE; n++) {
-			//context.fillStyle = (ray.vertical) ? colorDarkening255(texture[n][ray.start], 25) : texture[n][ray.start]
-			context.fillStyle = (ray.vertical) ? colorDarkeningOne(texture[n][ray.start], 0.5) : texture[n][ray.start]
-
-			if (menu.shadows) {
-				context.fillStyle = colorDarkening255(context.fillStyle, calcShadowDistanceDecimal(distance)) // Lassú módszer
-			}
+		for(let n=0; n<CELL_SIZE; n++) {
+			
+			context.fillStyle = (ray.vertical) ? colorDarkening(texturesClass.textures[ray.wall][n][ray.start], 0.4) : texturesClass.textures[ray.wall][n][ray.start];
 
 			context.fillRect(
 				cutOutX(i * gridSize),
@@ -345,19 +266,19 @@ function renderScreen(rays) {
 
 			//Shadow
 			if (menu.shadows) {
-				// let shadowDistance = calcShadowDistanceAlpha(distance)
-				// context.fillStyle = `rgba(0, 0, 0, ${shadowDistance})`;
-				// context.fillRect(
-				// 	cutOutX(i * gridSize),
-				// 	cutOutY(Math.floor(((SCREEN_HEIGHT / 2) - (wallHeight / 2)) + (Math.ceil(n * BRICK_SIZE)))),
-				// 	gridSize,
-				// 	cutOutY(Math.ceil(BRICK_SIZE))
-				// );
+				let shadowDistance = calcShadowDistance(distance)
+				context.fillStyle = `rgba(0, 0, 0, ${shadowDistance})`;
+				context.fillRect(
+					cutOutX(i * gridSize),
+					cutOutY(Math.floor(((SCREEN_HEIGHT / 2) - (wallHeight / 2)) + (Math.ceil(n * BRICK_SIZE)))),
+					gridSize,
+					cutOutY(Math.ceil(BRICK_SIZE))
+				);
 			}
 		}
 
 		// Floor
-		context.fillStyle = texture[32][32];
+		context.fillStyle = texturesClass.textures[5][32][32];
 		context.fillRect(
 			i * gridSize,
 			(SCREEN_HEIGHT / 2) + (wallHeight / 2),
@@ -470,7 +391,7 @@ function gameLoop() {
 	renderScreen(rays)
 	playerRay = castRay(player.angle)
 
-	shadowDistance = calcShadowDistanceDecimal(playerRay.distance)
+	shadowDistance = calcShadowDistance(playerRay.distance)
 
 	if (menu.mapSwitch) renderMinimap(rays)
 	if (menu.infoSwitch) infoPanel()
@@ -479,6 +400,7 @@ function gameLoop() {
 }
 
 document.addEventListener('keydown', (e) => {
+	e.preventDefault();
 	if(e.key == "w" || e.keyCode == 38) player.speed = 30;
 	if(e.key == "s" || e.keyCode == 40) player.speed = -30;
 	if(e.key == "a" || e.keyCode == 37) player.angle += -toRadians(5)				// 7.5
@@ -486,6 +408,7 @@ document.addEventListener('keydown', (e) => {
 });
 
 document.addEventListener('keyup', (e) => {
+	e.preventDefault();
 	if(e.key == "w" || e.key == "s" || e.keyCode == 38 || e.keyCode == 40)
 		player.speed = 0;
 
@@ -495,30 +418,36 @@ document.addEventListener('keyup', (e) => {
 		if(e.keyCode == 72) menu.shadows = (menu.shadows) ? false : true;			// H
 });
 
+// optionsnál belehet majd állítani
+
 // document.addEventListener('mousemove', (e) => {
 // 	player.angle += toRadians(e.movementX)
 // });
 
-addEventListener("mousedown", () => {
-    player.speed = 30;
+let actionClickMove = null;
+
+addEventListener("mousedown", (e) => {
+	if (e.button === 0) {
+        actionClickMove = setInterval(function() {
+            (e.clientX <= SCREEN_WIDTH / 2) ? player.angle += -toRadians(7) : player.angle += toRadians(7);
+        }, 1);
+    }
+	if (e.button === 2) player.speed = 30;
 });
 
 addEventListener("mouseup", () => {
 	player.speed = 0;
+	clearInterval(actionClickMove)
+});
+
+// Kontextmenu disabled
+document.addEventListener('contextmenu', function(event) {
+    event.preventDefault();
 });
 
 // ---------- START ----------
 
-async function startGame() {
-	try {
-		texture = await loadTexture();
-		//console.log(texture)
-		game = setInterval(gameLoop, TRICK)
-	} catch (error) {
-		console.error(error);
-	}
-}
-
-window.onload = () => {
-	startGame();
-}
+window.onload = async () => {
+    const textures = await texturesClass.loadTexturesToArray();
+	const game = setInterval(gameLoop, TRICK)
+};
