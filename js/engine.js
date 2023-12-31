@@ -10,8 +10,8 @@ const walkInterval = -7;
 const SCREEN_WIDTH = window.innerWidth;
 const SCREEN_HEIGHT = window.innerHeight + Math.abs(walkInterval);
 
-//const numberOfRays = 1
-const numberOfRays = Math.floor(SCREEN_WIDTH / 4)
+const numberOfRays = 1
+//const numberOfRays = Math.floor(SCREEN_WIDTH / 4)
 
 const gridSize = Math.floor(SCREEN_WIDTH / numberOfRays)
 
@@ -28,10 +28,10 @@ const MINIMAP_Y = 4
 const PLAYER_SIZE = 6
 
 const player = {
-	x: CELL_SIZE * 1.5,
-	y: CELL_SIZE * 1.5,
+	x: CELL_SIZE * 4.5,
+	y: CELL_SIZE * 4.5,
 	z: 0,
-	angle: 0,
+	angle: -1.571,
 	speed: 0,
 }
 
@@ -248,7 +248,9 @@ function castRay(angle) {
 }
 
 function getRays() {
-	const initialAngle = player.angle - (FOV/2)
+	// const initialAngle = player.angle - (FOV/2)
+	// const angleStep = FOV / numberOfRays
+	const initialAngle = player.angle
 	const angleStep = FOV / numberOfRays
 
 	return Array.from({length: numberOfRays}, (_, i) => {
@@ -346,16 +348,23 @@ function renderScreen(rays) {
 		for(let y=0; y<DRAWEND; y++) {
 
 			//currentDist = h / (2.0 * y - h);
-			currentDist = DRAWEND / (2.0 * y - DRAWEND);
+			currentDist = SCREEN_HEIGHT / (2.0 * y - SCREEN_HEIGHT);
 
 			let weight = (currentDist - distPlayer) / (distWall - distPlayer);
 
 			let currentFloorX = weight * ray.floor.floorXWall + (1.0 - weight) * ray.posX;
 			let currentFloorY = weight * ray.floor.floorYWall + (1.0 - weight) * ray.posY;
-			// console.log('currentFloorX: ' + currentFloorX + ' | currentFloorY: ' + currentFloorY)
-
+			
 			let floorTexX = Math.floor(currentFloorX * CELL_SIZE) % CELL_SIZE;
 			let floorTexY = Math.floor(currentFloorY * CELL_SIZE) % CELL_SIZE;
+
+			if(player.speed !== 0) {
+				console.log('Weight: ' + weight)
+				if (typeof ray.up !== 'undefined') { console.log('UP: ' + ray.up) }
+				if (typeof ray.right !== 'undefined') {console.log('RIGHT: ' + ray.right) }
+				console.log('currentFloorX: ' + currentFloorX + ' | currentFloorY: ' + currentFloorY )
+				console.log('ray.floor.floorXWall: ' + ray.floor.floorXWall + ' | ray.floor.floorYWall: ' + ray.floor.floorYWall + ' posX: ' + ray.posX + ' posY: ' + ray.posY)
+			}
 
 			if (floorTexX>64) { floorTexX = 64 } else if(floorTexX < 0) { floorTexX = 0 }
 			if (floorTexY>64) { floorTexY = 64 } else if(floorTexY < 0) { floorTexY = 0 }
