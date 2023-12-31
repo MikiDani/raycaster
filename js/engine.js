@@ -18,21 +18,21 @@ const WALL_DISTANCE = (CELL_SIZE / 100) * 30
 
 const MINIMAP_SCALE = 0.25
 const MINIMAP_X = 5
-const MINIMAP_Y = 5
-const PLAYER_SIZE = 6;
+const MINIMAP_Y = 4
+const PLAYER_SIZE = 6
 
 const player = {
 	x: CELL_SIZE * 1.5,
 	y: CELL_SIZE * 1.5,
-	angle: 6.283,
+	angle: 0,
 	speed: 0,
 }
 
 var inX; var inY;
 
 const menu = {
-	infoSwitch: true,
-	mapSwitch: true,
+	infoSwitch: false,
+	mapSwitch: false,
 	shadows: true,
 }
 
@@ -54,14 +54,14 @@ const COLORS = {
 }
 
 const map = [
-	[0, 7, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 4, 4],
+	[1, 3, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 4, 4],
 	[7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
-	[6, 0, 6, 6, 0, 6, 6, 2, 2, 7, 2, 2, 7, 2, 2],
+	[6, 0, 6, 6, 0, 6, 6, 2, 3, 7, 3, 2, 7, 3, 2],
 	[5, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 4],
-	[4, 0, 6, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 4],
-	[3, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
+	[4, 0, 6, 0, 0, 0, 6, 0, 0, 7, 0, 0, 0, 0, 4],
+	[3, 0, 6, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 3],
 	[2, 0, 6, 0, 6, 0, 6, 0, 0, 0, 0, 0, 0, 0, 4],
-	[6, 6, 6, 6, 6, 6, 6, 3, 3, 3, 6, 6, 6, 6, 4],
+	[6, 6, 6, 6, 6, 6, 6, 3, 3, 3, 6, 6, 3, 6, 4],
 ];
 
 function toRadians(deg) {
@@ -150,11 +150,16 @@ function getVCrash(angle) {
 		if(!wall) { nextX += xA; nextY += yA }
 	}
 
+	let start = (!right)
+		? (CELL_SIZE - (Math.floor(((nextY / CELL_SIZE) - actCellY) * CELL_SIZE)) - 1)
+		: Math.floor(((nextY / CELL_SIZE) - actCellY) * CELL_SIZE);
+
 	return {
 		angle,
 		distance: distance(player.x, player.y, nextX, nextY),
 		vertical: true,
-		start: Math.floor(((nextY / CELL_SIZE) - actCellY) * CELL_SIZE),
+		right: right,
+		start: start,
 		wall : wall,
 	}
 }
@@ -187,11 +192,16 @@ function getHCrash(angle) {
 		if(!wall) { nextX += xA; nextY += yA; }
 	}
 
+	let start = (!up) 
+		? (CELL_SIZE - (Math.floor(((nextX / CELL_SIZE) - actCellX) * CELL_SIZE)) - 1)
+		: Math.floor(((nextX / CELL_SIZE) - actCellX) * CELL_SIZE);
+
 	return { 
 		angle,
 		distance: distance(player.x, player.y, nextX, nextY),
 		vertical: false,
-		start: Math.floor(((nextX / CELL_SIZE) - actCellX) * CELL_SIZE),
+		up: up,
+		start: start,
 		wall: wall,
 	}
 }
@@ -260,6 +270,7 @@ function renderScreen(rays) {
 			context.fillRect(
 				cutOutX(i * gridSize),
 				cutOutY(Math.floor(((SCREEN_HEIGHT / 2) - (wallHeight / 2)) + (Math.ceil(n * BRICK_SIZE)))),
+				//cutOutY((Math.ceil(n * BRICK_SIZE)), vicc
 				gridSize,
 				cutOutY(Math.ceil(BRICK_SIZE))
 			);
@@ -277,6 +288,22 @@ function renderScreen(rays) {
 			}
 		}
 
+		for(let n=0; n<CELL_SIZE; n++) {
+		
+			context.fillStyle = colorDarkening(texturesClass.textures[5][n][ray.start], 0.4)
+
+			context.fillRect(
+				cutOutX(i * gridSize),
+				cutOutY(Math.floor((SCREEN_HEIGHT / 2) + (wallHeight / 2))),
+				Math.ceil(n * BRICK_SIZE),
+				gridSize
+			);
+
+			// 
+
+		}
+
+		/*
 		// Floor
 		context.fillStyle = texturesClass.textures[5][32][32];
 		context.fillRect(
@@ -295,6 +322,7 @@ function renderScreen(rays) {
 			gridSize,
 			(SCREEN_HEIGHT / 2) - (wallHeight / 2),
 		);
+		*/
 	})
 }
 
@@ -339,7 +367,7 @@ function renderMinimap(rays) {
 		PLAYER_SIZE,
 	)
 
-	//PLAYER RAY
+	// PLAYER RAY
 	const rayLength = PLAYER_SIZE * 1;
 
 	context.strokeStyle = 'orange'
@@ -400,7 +428,6 @@ function gameLoop() {
 }
 
 document.addEventListener('keydown', (e) => {
-	e.preventDefault();
 	if(e.key == "w" || e.keyCode == 38) player.speed = 30;
 	if(e.key == "s" || e.keyCode == 40) player.speed = -30;
 	if(e.key == "a" || e.keyCode == 37) player.angle += -toRadians(5)				// 7.5
@@ -408,7 +435,6 @@ document.addEventListener('keydown', (e) => {
 });
 
 document.addEventListener('keyup', (e) => {
-	e.preventDefault();
 	if(e.key == "w" || e.key == "s" || e.keyCode == 38 || e.keyCode == 40)
 		player.speed = 0;
 
@@ -418,32 +444,60 @@ document.addEventListener('keyup', (e) => {
 		if(e.keyCode == 72) menu.shadows = (menu.shadows) ? false : true;			// H
 });
 
-// optionsnál belehet majd állítani
 
-// document.addEventListener('mousemove', (e) => {
-// 	player.angle += toRadians(e.movementX)
-// });
+if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+    // Mobil eszközön vagy
+	let actionClickMove = null;
 
-let actionClickMove = null;
+	document.addEventListener("touchstart", function(e) {
+		if (e.touches.length === 1) {
+			actionClickMove = setInterval(function() {
+				const touch = e.touches[0];
+				const clientX = touch.clientX;
+				const screenWidth = window.innerWidth; // Telefon kijelző szélessége
+	
+				if (clientX <= screenWidth / 2) {
+					player.angle += -toRadians(7);
+				} else {
+					player.angle += toRadians(7);
+				}
+				player.speed = 30;
+			}, 1);
+		}
+	});
+	
+	document.addEventListener("touchend", function(e) {
+		clearInterval(actionClickMove); // Törlés az időzítőből
+		player.speed = 0; // Amikor véget ér az érintés, a player.speed legyen 0
+	});
 
-addEventListener("mousedown", (e) => {
-	if (e.button === 0) {
-        actionClickMove = setInterval(function() {
-            (e.clientX <= SCREEN_WIDTH / 2) ? player.angle += -toRadians(7) : player.angle += toRadians(7);
-        }, 1);
-    }
-	if (e.button === 2) player.speed = 30;
-});
+} else {
+    console.log('Asztali vagy laptop eszközön vagy.');
+	// document.addEventListener('mousemove', (e) => {
+	// 	player.angle += toRadians(e.movementX)
+	// });
 
-addEventListener("mouseup", () => {
-	player.speed = 0;
-	clearInterval(actionClickMove)
-});
+	let actionClickMove = null;
 
-// Kontextmenu disabled
-document.addEventListener('contextmenu', function(event) {
-    event.preventDefault();
-});
+	addEventListener("mousedown", (e) => {
+		if (e.button === 0) {
+			actionClickMove = setInterval(function() {
+				(e.clientX <= SCREEN_WIDTH / 2) ? player.angle += -toRadians(7) : player.angle += toRadians(7);
+			}, 1);
+		}
+		if (e.button === 2) player.speed = 30;
+	});
+
+	addEventListener("mouseup", () => {
+		player.speed = 0;
+		clearInterval(actionClickMove)
+	});
+
+	// Kontextmenu disabled
+	document.addEventListener('contextmenu', function(event) {
+		event.preventDefault();
+	});
+}
 
 // ---------- START ----------
 

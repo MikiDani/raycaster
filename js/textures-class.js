@@ -1,6 +1,6 @@
 export default class TexturesClass {
     constructor() {
-        this.fileNames = ['brick6', 'brick2', 'brick3', 'brick4', 'brick5', 'brick1', 'book1', 'dani1']
+        this.fileNames = ['brick6', 'brick2', 'brick3', 'brick4', 'brick5', 'brick1', 'book1', 'dani1', 'vili1']
         this.textures = []
     }
 
