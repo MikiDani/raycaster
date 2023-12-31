@@ -5,18 +5,22 @@
 import TexturesClass from './textures-class.js';
 const texturesClass = new TexturesClass();
 
+const walkInterval = -10;
+
 const SCREEN_WIDTH = window.innerWidth;
-const SCREEN_HEIGHT = window.innerHeight;
+const SCREEN_HEIGHT = window.innerHeight + Math.abs(walkInterval);
 
 const numberOfRays = Math.floor(SCREEN_WIDTH / 6)
 const gridSize = Math.floor(SCREEN_WIDTH / numberOfRays)
 
-const TRICK = 30;
-const FOV = toRadians(60);
-const CELL_SIZE = 128;
-const WALL_DISTANCE = (CELL_SIZE / 100) * 30
+const TRICK = 30
+const FOV = toRadians(60)
+const CELL_SIZE = 64
+const MOVE_SPEED = 10
+const MOVE_ANGLE = 5
+const WALL_DISTANCE = (CELL_SIZE / 100) * 40
 
-const MINIMAP_SCALE = 0.25
+const MINIMAP_SCALE = 0.5
 const MINIMAP_X = 5
 const MINIMAP_Y = 4
 const PLAYER_SIZE = 6
@@ -24,6 +28,7 @@ const PLAYER_SIZE = 6
 const player = {
 	x: CELL_SIZE * 1.5,
 	y: CELL_SIZE * 1.5,
+	z: 0,
 	angle: 0,
 	speed: 0,
 }
@@ -31,9 +36,10 @@ const player = {
 var inX; var inY;
 
 const menu = {
-	infoSwitch: false,
-	mapSwitch: false,
+	infoSwitch: true,
+	mapSwitch: true,
 	shadows: true,
+	mouseSwitch: false,	// !!
 }
 
 var playerRay
@@ -54,14 +60,14 @@ const COLORS = {
 }
 
 const map = [
-	[1, 3, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 4, 4],
-	[7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
-	[6, 0, 6, 6, 0, 6, 6, 2, 3, 7, 3, 2, 7, 3, 2],
-	[5, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 4],
-	[4, 0, 6, 0, 0, 0, 6, 0, 0, 7, 0, 0, 0, 0, 4],
-	[3, 0, 6, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 3],
-	[2, 0, 6, 0, 6, 0, 6, 0, 0, 0, 0, 0, 0, 0, 4],
-	[6, 6, 6, 6, 6, 6, 6, 3, 3, 3, 6, 6, 3, 6, 4],
+	[2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4],
+	[5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
+	[5, 0, 1, 1, 0, 1, 1, 2, 3, 7, 3, 2, 7, 3, 4],
+	[5, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 4],
+	[5, 0,10, 0, 0, 0, 8, 0, 0,11, 0, 0, 0, 0, 4],
+	[5, 0,10, 0, 0, 0, 0, 0, 0,12, 0, 0, 0, 0, 4],
+	[5, 0,10, 0,11, 0,12, 0, 0, 0, 0, 0, 0, 0, 4],
+	[5, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 4],
 ];
 
 function toRadians(deg) {
@@ -110,8 +116,20 @@ function movePlayer() {
 
 		(moveX) ? player.x += Math.cos(player.angle) * player.speed : false;
 		(moveY) ? player.y += Math.sin(player.angle) * player.speed : false;
+
+		player.z = playerWalk()
 	}
 }
+
+function playerWalk() {
+	const amplitude = (Math.abs(walkInterval) - walkInterval) / 2;
+	const offset = (Math.abs(walkInterval) + walkInterval) / 2;
+	const frequency = 10;
+
+	const value = Math.sin(frequency * Date.now() * 0.001) * amplitude + offset;
+	return Math.floor(value);
+}
+
 
 function outOfMapBounds(x, y) {
 	return x < 0 || x >= map[0].length || y < 0 || y >= map.length;
@@ -264,53 +282,52 @@ function renderScreen(rays) {
 
 		// Wall
 		for(let n=0; n<CELL_SIZE; n++) {
-			
-			context.fillStyle = (ray.vertical) ? colorDarkening(texturesClass.textures[ray.wall][n][ray.start], 0.4) : texturesClass.textures[ray.wall][n][ray.start];
 
-			context.fillRect(
-				cutOutX(i * gridSize),
-				cutOutY(Math.floor(((SCREEN_HEIGHT / 2) - (wallHeight / 2)) + (Math.ceil(n * BRICK_SIZE)))),
-				//cutOutY((Math.ceil(n * BRICK_SIZE)), vicc
-				gridSize,
-				cutOutY(Math.ceil(BRICK_SIZE))
-			);
-
-			//Shadow
-			if (menu.shadows) {
-				let shadowDistance = calcShadowDistance(distance)
-				context.fillStyle = `rgba(0, 0, 0, ${shadowDistance})`;
+			if (typeof ray.vertical !== 'undefined') {
+				context.fillStyle = (ray.vertical) ? colorDarkening(texturesClass.textures[ray.wall][n][ray.start], 0.4) : texturesClass.textures[ray.wall][n][ray.start];
+				
 				context.fillRect(
 					cutOutX(i * gridSize),
-					cutOutY(Math.floor(((SCREEN_HEIGHT / 2) - (wallHeight / 2)) + (Math.ceil(n * BRICK_SIZE)))),
+					cutOutY(player.z + Math.floor((((SCREEN_HEIGHT / 2)) - (wallHeight / 2)) + (Math.ceil(n * BRICK_SIZE)))),
+					//cutOutY((Math.ceil(n * BRICK_SIZE)), vicc
 					gridSize,
 					cutOutY(Math.ceil(BRICK_SIZE))
 				);
+	
+				//Shadow
+				if (menu.shadows) {
+					let shadowDistance = calcShadowDistance(distance)
+					context.fillStyle = `rgba(0, 0, 0, ${shadowDistance})`;
+					context.fillRect(
+						cutOutX(i * gridSize),
+						cutOutY(player.z + Math.floor(((SCREEN_HEIGHT / 2) - (wallHeight / 2)) + (Math.ceil(n * BRICK_SIZE)))),
+						gridSize,
+						cutOutY(Math.ceil(BRICK_SIZE))
+					);
+				}
 			}
 		}
 
-		for(let n=0; n<CELL_SIZE; n++) {
+		// for(let n=0; n<CELL_SIZE; n++) {
 		
-			context.fillStyle = colorDarkening(texturesClass.textures[5][n][ray.start], 0.4)
+		// 	context.fillStyle = colorDarkening(texturesClass.textures[5][n][ray.start], 0.4)
 
-			context.fillRect(
-				cutOutX(i * gridSize),
-				cutOutY(Math.floor((SCREEN_HEIGHT / 2) + (wallHeight / 2))),
-				Math.ceil(n * BRICK_SIZE),
-				gridSize
-			);
+		// 	context.fillRect(
+		// 		cutOutX(i * gridSize),
+		// 		cutOutY(Math.floor((SCREEN_HEIGHT / 2) + (wallHeight / 2))),
+		// 		Math.ceil(n * BRICK_SIZE),
+		// 		gridSize
+		// 	);
+		// }
 
-			// 
-
-		}
-
-		/*
+		
 		// Floor
-		context.fillStyle = texturesClass.textures[5][32][32];
+		context.fillStyle = texturesClass.textures[3][32][32];
 		context.fillRect(
 			i * gridSize,
-			(SCREEN_HEIGHT / 2) + (wallHeight / 2),
+			player.z + (SCREEN_HEIGHT / 2) + (wallHeight / 2),
 			gridSize,
-			(SCREEN_HEIGHT / 2) - (wallHeight / 2),
+			SCREEN_HEIGHT
 		);
 		
 		// Ceiling
@@ -320,9 +337,8 @@ function renderScreen(rays) {
 			i * gridSize,
 			0,
 			gridSize,
-			(SCREEN_HEIGHT / 2) - (wallHeight / 2),
+			player.z + (SCREEN_HEIGHT / 2) - (wallHeight / 2),
 		);
-		*/
 	})
 }
 
@@ -391,6 +407,7 @@ function infoPanel() {
 		------------- |
 		x: ${player.x.toFixed(3)} |
 		y: ${player.y.toFixed(3)} |
+		z: ${player.z.toFixed(3)} |
 		inX: ${inX} |
 		inY: ${inY} |
 		angle: ${player.angle.toFixed(3)} Rad |
@@ -427,26 +444,8 @@ function gameLoop() {
 	//clearInterval(game)
 }
 
-document.addEventListener('keydown', (e) => {
-	if(e.key == "w" || e.keyCode == 38) player.speed = 30;
-	if(e.key == "s" || e.keyCode == 40) player.speed = -30;
-	if(e.key == "a" || e.keyCode == 37) player.angle += -toRadians(5)				// 7.5
-	if(e.key == "d" || e.keyCode == 39) player.angle += toRadians(5)				// 7.5
-});
-
-document.addEventListener('keyup', (e) => {
-	if(e.key == "w" || e.key == "s" || e.keyCode == 38 || e.keyCode == 40)
-		player.speed = 0;
-
-		if(e.keyCode == 27) { clearInterval(game); console.log('STOP!') }			// ESC
-		if(e.keyCode == 77) menu.mapSwitch = (menu.mapSwitch) ? false : true;		// M
-		if(e.keyCode == 73) menu.infoSwitch = (menu.infoSwitch) ? false : true;		// I
-		if(e.keyCode == 72) menu.shadows = (menu.shadows) ? false : true;			// H
-});
-
-
 if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-    // Mobil eszközön vagy
+    // MOBILE
 	let actionClickMove = null;
 
 	document.addEventListener("touchstart", function(e) {
@@ -455,13 +454,12 @@ if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(naviga
 				const touch = e.touches[0];
 				const clientX = touch.clientX;
 				const screenWidth = window.innerWidth; // Telefon kijelző szélessége
-	
 				if (clientX <= screenWidth / 2) {
-					player.angle += -toRadians(7);
+					player.angle += -toRadians(MOVE_ANGLE);
 				} else {
-					player.angle += toRadians(7);
+					player.angle += toRadians(MOVE_ANGLE);
 				}
-				player.speed = 30;
+				player.speed = MOVE_SPEED;
 			}, 1);
 		}
 	});
@@ -472,31 +470,50 @@ if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(naviga
 	});
 
 } else {
-    console.log('Asztali vagy laptop eszközön vagy.');
-	// document.addEventListener('mousemove', (e) => {
-	// 	player.angle += toRadians(e.movementX)
-	// });
-
-	let actionClickMove = null;
-
-	addEventListener("mousedown", (e) => {
-		if (e.button === 0) {
-			actionClickMove = setInterval(function() {
-				(e.clientX <= SCREEN_WIDTH / 2) ? player.angle += -toRadians(7) : player.angle += toRadians(7);
-			}, 1);
-		}
-		if (e.button === 2) player.speed = 30;
+    // DESKTOP
+	document.addEventListener('keydown', (e) => {
+		if(e.key == "w" || e.keyCode == 38) player.speed = MOVE_SPEED;
+		if(e.key == "s" || e.keyCode == 40) player.speed = -MOVE_SPEED;
+		if(e.key == "a" || e.keyCode == 37) player.angle += -toRadians(MOVE_ANGLE)
+		if(e.key == "d" || e.keyCode == 39) player.angle += toRadians(MOVE_ANGLE)
+	});
+	
+	document.addEventListener('keyup', (e) => {
+		if(e.key == "w" || e.key == "s" || e.keyCode == 38 || e.keyCode == 40)
+			player.speed = 0;
+	
+			if(e.keyCode == 27) { clearInterval(game); console.log('STOP!') }			// ESC
+			if(e.keyCode == 77) menu.mapSwitch = (menu.mapSwitch) ? false : true;		// M
+			if(e.keyCode == 73) menu.infoSwitch = (menu.infoSwitch) ? false : true;		// I
+			if(e.keyCode == 72) menu.shadows = (menu.shadows) ? false : true;			// H
 	});
 
-	addEventListener("mouseup", () => {
-		player.speed = 0;
-		clearInterval(actionClickMove)
-	});
-
-	// Kontextmenu disabled
-	document.addEventListener('contextmenu', function(event) {
-		event.preventDefault();
-	});
+	if(menu.mouseSwitch) {
+		// document.addEventListener('mousemove', (e) => {
+		// 		player.angle += toRadians(e.movementX)
+		// });
+	
+		let actionClickMove = null;
+	
+		addEventListener("mousedown", (e) => {
+			if (e.button === 0) {
+				actionClickMove = setInterval(function() {
+					(e.clientX <= SCREEN_WIDTH / 2) ? player.angle += -toRadians(MOVE_ANGLE) : player.angle += toRadians(MOVE_ANGLE);
+				}, 1);
+			}
+			if (e.button === 2) player.speed = MOVE_SPEED;
+		});
+	
+		addEventListener("mouseup", () => {
+			player.speed = 0;
+			clearInterval(actionClickMove)
+		});
+	
+		// Kontextmenu disabled
+		document.addEventListener('contextmenu', function(event) {
+			event.preventDefault();
+		});
+	}
 }
 
 // ---------- START ----------

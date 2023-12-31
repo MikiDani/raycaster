@@ -1,15 +1,16 @@
 export default class TexturesClass {
     constructor() {
-        this.fileNames = ['brick6', 'brick2', 'brick3', 'brick4', 'brick5', 'brick1', 'book1', 'dani1', 'vili1']
+        this.fileNames = ['wall1', 'wall2', 'wall3', 'wall4', 'wall5', 'wall6', 'wall7', 'wall8', 'book1', 'a_wall1', 'a_wall2', 'a_wall3',]
         this.textures = []
     }
 
     async loadTexturesToArray() {
+        this.textures.push('null');
         for (const filename of this.fileNames) {
-            console.log(filename);
             let loadTexture = await this.loadTexture(filename)
-            this.textures.push(loadTexture);
+            this.textures.push(loadTexture)
         }
+        //console.log(this.textures)
     }
 
     async loadTexture(filename) {
