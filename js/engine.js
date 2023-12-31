@@ -5,12 +5,14 @@
 import TexturesClass from './textures-class.js';
 const texturesClass = new TexturesClass();
 
-const walkInterval = -10;
+const walkInterval = -7;
 
 const SCREEN_WIDTH = window.innerWidth;
 const SCREEN_HEIGHT = window.innerHeight + Math.abs(walkInterval);
 
-const numberOfRays = Math.floor(SCREEN_WIDTH / 6)
+//const numberOfRays = 1
+const numberOfRays = Math.floor(SCREEN_WIDTH / 4)
+
 const gridSize = Math.floor(SCREEN_WIDTH / numberOfRays)
 
 const TRICK = 30
@@ -42,8 +44,10 @@ const menu = {
 	mouseSwitch: false,	// !!
 }
 
+var game
 var playerRay
 var shadowDistance
+var p = 2		// !!
 
 const canvas = document.createElement("canvas")
 canvas.setAttribute('width', SCREEN_WIDTH)
@@ -130,7 +134,6 @@ function playerWalk() {
 	return Math.floor(value);
 }
 
-
 function outOfMapBounds(x, y) {
 	return x < 0 || x >= map[0].length || y < 0 || y >= map.length;
 }
@@ -172,13 +175,20 @@ function getVCrash(angle) {
 		? (CELL_SIZE - (Math.floor(((nextY / CELL_SIZE) - actCellY) * CELL_SIZE)) - 1)
 		: Math.floor(((nextY / CELL_SIZE) - actCellY) * CELL_SIZE);
 
+	let floor = (!right)
+		? {'floorXWall': nextX + start, 'floorYWall': nextY } 
+		: {'floorXWall': nextX + start, 'floorYWall': nextY + 1.0};
+
 	return {
+		wall : wall,
+		posX: nextX,
+		posY: nextY,
 		angle,
 		distance: distance(player.x, player.y, nextX, nextY),
 		vertical: true,
 		right: right,
 		start: start,
-		wall : wall,
+		floor: floor,
 	}
 }
 
@@ -214,13 +224,20 @@ function getHCrash(angle) {
 		? (CELL_SIZE - (Math.floor(((nextX / CELL_SIZE) - actCellX) * CELL_SIZE)) - 1)
 		: Math.floor(((nextX / CELL_SIZE) - actCellX) * CELL_SIZE);
 
+	let floor = (!up)
+		? {'floorXWall': nextX, 'floorYWall': nextY + start } 
+		: {'floorXWall': nextX + 1.0, 'floorYWall': nextY + start};
+
 	return { 
+		wall: wall,
+		posX: nextX,
+		posY: nextY,
 		angle,
 		distance: distance(player.x, player.y, nextX, nextY),
 		vertical: false,
 		up: up,
 		start: start,
-		wall: wall,
+		floor: floor,
 	}
 }
 
@@ -233,6 +250,7 @@ function castRay(angle) {
 function getRays() {
 	const initialAngle = player.angle - (FOV/2)
 	const angleStep = FOV / numberOfRays
+
 	return Array.from({length: numberOfRays}, (_, i) => {
 		const angle = initialAngle + i * angleStep;
 		const ray = castRay(angle)
@@ -280,6 +298,10 @@ function renderScreen(rays) {
 		const wallHeight = ((CELL_SIZE) / distance) * 1450
 		const BRICK_SIZE = wallHeight / CELL_SIZE
 
+		const HEIGHT_REMAINDER = SCREEN_WIDTH - (SCREEN_WIDTH / 2 + (wallHeight / 2))
+		const DRAWEND = HEIGHT_REMAINDER / BRICK_SIZE
+		//const drawEnd = SCREEN_HEIGHT
+
 		// Wall
 		for(let n=0; n<CELL_SIZE; n++) {
 
@@ -289,7 +311,6 @@ function renderScreen(rays) {
 				context.fillRect(
 					cutOutX(i * gridSize),
 					cutOutY(player.z + Math.floor((((SCREEN_HEIGHT / 2)) - (wallHeight / 2)) + (Math.ceil(n * BRICK_SIZE)))),
-					//cutOutY((Math.ceil(n * BRICK_SIZE)), vicc
 					gridSize,
 					cutOutY(Math.ceil(BRICK_SIZE))
 				);
@@ -307,38 +328,89 @@ function renderScreen(rays) {
 				}
 			}
 		}
-
-		// for(let n=0; n<CELL_SIZE; n++) {
 		
-		// 	context.fillStyle = colorDarkening(texturesClass.textures[5][n][ray.start], 0.4)
+		// // VERTIKÁLIS MÓDSZER
+		// /////////////////////////////////////////////////////////////////////////////////////////////
+		// //FLOOR CASTING (függőleges változat, közvetlenül a függőleges falcsík megrajzolása után az aktuális x-hez)
+		// console.log(ray.floor.floorXWall, ray.floor.floorYWall) //x, y a padlótexel helyzete a fal alján
+	
+		let distWall, distPlayer, currentDist;
 
+		distWall = distance;
+		distPlayer = 0.0;
+
+		// húzza meg a padlót a rajzolás végétől a képernyő aljáig
+		// for(let y = drawEnd + 1; y < h; y++)
+
+		// floor
+		for(let y=0; y<DRAWEND; y++) {
+
+			//currentDist = h / (2.0 * y - h);
+			currentDist = DRAWEND / (2.0 * y - DRAWEND);
+
+			let weight = (currentDist - distPlayer) / (distWall - distPlayer);
+
+			let currentFloorX = weight * ray.floor.floorXWall + (1.0 - weight) * ray.posX;
+			let currentFloorY = weight * ray.floor.floorYWall + (1.0 - weight) * ray.posY;
+			// console.log('currentFloorX: ' + currentFloorX + ' | currentFloorY: ' + currentFloorY)
+
+			let floorTexX = Math.floor(currentFloorX * CELL_SIZE) % CELL_SIZE;
+			let floorTexY = Math.floor(currentFloorY * CELL_SIZE) % CELL_SIZE;
+
+			if (floorTexX>64) { floorTexX = 64 } else if(floorTexX < 0) { floorTexX = 0 }
+			if (floorTexY>64) { floorTexY = 64 } else if(floorTexY < 0) { floorTexY = 0 }
+			
+			//let buffer = (textures[3][CELL_SIZE * floorTexY + floorTexX] >> 1) & 8355711;
+			//console.log('buffer[y][x]: ' + buffer)
+			
+			// ---
+			// console.log('currentFloorX: ' + currentFloorX + ' | currentFloorY: ' + currentFloorY)
+			// console.log('floorTexX: ' + floorTexX + ' floorTexY: ' + floorTexY + ' | color: ' + texturesClass.textures[3][floorTexY][floorTexX])
+			// ---
+
+			context.fillStyle = texturesClass.textures[6][floorTexY][floorTexX];
+			context.fillRect(
+				i * gridSize,
+				player.z + (SCREEN_HEIGHT / 2) + (wallHeight / 2) + (y * BRICK_SIZE),
+				gridSize,
+				BRICK_SIZE
+			);
+		}
+		
+		//SAJAT RAJZ
+		// let p = 1;
+		// for(let n=0; n<DRAWEND; n++) {
+		// 	p++;
+		// 	//floor
+		// 	context.fillStyle = texturesClass.textures[p][32][32];
 		// 	context.fillRect(
-		// 		cutOutX(i * gridSize),
-		// 		cutOutY(Math.floor((SCREEN_HEIGHT / 2) + (wallHeight / 2))),
-		// 		Math.ceil(n * BRICK_SIZE),
-		// 		gridSize
+		// 		i * gridSize,
+		// 		player.z + (SCREEN_HEIGHT / 2) + (wallHeight / 2) + (n * BRICK_SIZE),
+		// 		gridSize,
+		// 		BRICK_SIZE
 		// 	);
+		// 	p = (p==9) ? p=1 : p;
 		// }
 
+		/////////////////////////////////////////////////////////////////////////
+		// 1.0
+		// // Floor
+		// context.fillStyle = texturesClass.textures[3][32][32];
+		// context.fillRect(
+		// 	i * gridSize,
+		// 	player.z + (SCREEN_HEIGHT / 2) + (wallHeight / 2),
+		// 	gridSize,
+		// 	SCREEN_HEIGHT
+		// );
 		
-		// Floor
-		context.fillStyle = texturesClass.textures[3][32][32];
-		context.fillRect(
-			i * gridSize,
-			player.z + (SCREEN_HEIGHT / 2) + (wallHeight / 2),
-			gridSize,
-			SCREEN_HEIGHT
-		);
-		
-		// Ceiling
+		// // Ceiling
 		// context.fillStyle = COLORS.ceiling;
-		context.fillStyle = COLORS.ceiling;
-		context.fillRect(
-			i * gridSize,
-			0,
-			gridSize,
-			player.z + (SCREEN_HEIGHT / 2) - (wallHeight / 2),
-		);
+		// context.fillRect(
+		// 	i * gridSize,
+		// 	0,
+		// 	gridSize,
+		// 	player.z + (SCREEN_HEIGHT / 2) - (wallHeight / 2),
+		// );
 	})
 }
 
@@ -520,5 +592,5 @@ if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(naviga
 
 window.onload = async () => {
     const textures = await texturesClass.loadTexturesToArray();
-	const game = setInterval(gameLoop, TRICK)
+	game = setInterval(gameLoop, TRICK)
 };
