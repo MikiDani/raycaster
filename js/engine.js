@@ -519,8 +519,10 @@ if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(naviga
 			if(e.keyCode == 73) menu.infoSwitch = (menu.infoSwitch) ? false : true;					// I
 			if(e.keyCode == 72) menu.shadowsSwitch = (menu.shadowsSwitch) ? false : true;			// H
 			if(e.keyCode == 70) menu.floorSwitch = (menu.floorSwitch) ? false : true;				// F
-			if(e.keyCode == 49) floorTextureId = ( floorTextureId >= texturesClass.floorTextures.length-1) ? 1 : floorTextureId + 1;111
-				
+			if(e.keyCode == 49) 
+				floorTextureId = ( floorTextureId >= texturesClass.floorTextures.length-1)			// 1
+					? 1 
+					: floorTextureId + 1;
 	});
 
 	if(menu.mouseSwitch) {
