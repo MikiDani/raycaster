@@ -12,6 +12,7 @@ const SCREEN_HEIGHT = window.innerHeight + Math.abs(walkInterval);
 
 //const numberOfRays = 1
 const numberOfRays = Math.floor(SCREEN_WIDTH / 4)
+const skyGridSize = 4
 
 const gridSize = Math.floor(SCREEN_WIDTH / numberOfRays)
 
@@ -291,7 +292,6 @@ function renderScreen(rays) {
 	let textureWidth = texturesClass.skyTextures[skyTextureId].data[0].length
 	// let textureHeight = texturesClass.skyTextures[skyTextureId].data.length
 	let widthPixel, arundPixel;
-	let skyGridSize = 4
 	let skyAngle = toAngle(player.angle)
 	let plusWidth = (textureWidth / 360)
 	let flip = Math.floor(skyAngle * plusWidth)
