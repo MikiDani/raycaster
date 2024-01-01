@@ -1,16 +1,18 @@
 export default class TexturesClass {
     constructor() {
-        this.fileNames = ['wall1', 'wall2', 'wall3', 'wall4', 'wall5', 'wall6', 'wall7', 'wall8', 'book1', 'a_wall1', 'a_wall2', 'a_wall3',]
-        this.textures = []
+        this.wallFileNames = ['wall1', 'wall2', 'wall3', 'wall4', 'wall5', 'wall6', 'wall7', 'wall8', 'book1', 'a_wall1', 'a_wall2', 'a_wall3',]
+        this.wallTextures = []
+        this.floorFileNames = ['floor1', 'floor2', 'floor3', 'floort1']
+        this.floorTextures = []
     }
 
-    async loadTexturesToArray() {
-        this.textures.push('null');
-        for (const filename of this.fileNames) {
+    async loadTexturesToArray(textureArray, fileNames) {
+        textureArray.push('null');
+        for (const filename of fileNames) {
             let loadTexture = await this.loadTexture(filename)
-            this.textures.push(loadTexture)
+            textureArray.push(loadTexture)
         }
-        //console.log(this.textures)
+        return textureArray;
     }
 
     async loadTexture(filename) {
@@ -24,6 +26,7 @@ export default class TexturesClass {
                 const imgHeight = this.height
                 const imgCanvas = document.createElement("canvas")
                 imgCanvas.style.display = 'none'
+                imgCanvas.setAttribute('id', filename)
                 imgCanvas.setAttribute('width', imgWidth)
                 imgCanvas.setAttribute('height', imgHeight)
                 document.body.appendChild(imgCanvas);
@@ -42,7 +45,8 @@ export default class TexturesClass {
                         count = count + 4
                     }
                 }
-                good(texture);
+
+                good({name: filename, data: texture});
             };
     
             img.onerror = function(error) {
