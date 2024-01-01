@@ -10,8 +10,8 @@ const walkInterval = -7;
 const SCREEN_WIDTH = window.innerWidth;
 const SCREEN_HEIGHT = window.innerHeight + Math.abs(walkInterval);
 
-const numberOfRays = 1
-//const numberOfRays = Math.floor(SCREEN_WIDTH / 4)
+//const numberOfRays = 1
+const numberOfRays = Math.floor(SCREEN_WIDTH / 4)
 
 const gridSize = Math.floor(SCREEN_WIDTH / numberOfRays)
 
@@ -248,10 +248,10 @@ function castRay(angle) {
 }
 
 function getRays() {
-	// const initialAngle = player.angle - (FOV/2)
-	// const angleStep = FOV / numberOfRays
-	const initialAngle = player.angle
+	const initialAngle = player.angle - (FOV/2)
 	const angleStep = FOV / numberOfRays
+	// const initialAngle = player.angle
+	// const angleStep = FOV / numberOfRays
 
 	return Array.from({length: numberOfRays}, (_, i) => {
 		const angle = initialAngle + i * angleStep;
@@ -347,8 +347,9 @@ function renderScreen(rays) {
 		// floor
 		for(let y=0; y<DRAWEND; y++) {
 
-			//currentDist = h / (2.0 * y - h);
+			//currentDist = h / (2.0 * y - h);	// EREDETI
 			currentDist = SCREEN_HEIGHT / (2.0 * y - SCREEN_HEIGHT);
+			currentDist = distance;
 
 			let weight = (currentDist - distPlayer) / (distWall - distPlayer);
 
@@ -358,7 +359,7 @@ function renderScreen(rays) {
 			let floorTexX = Math.floor(currentFloorX * CELL_SIZE) % CELL_SIZE;
 			let floorTexY = Math.floor(currentFloorY * CELL_SIZE) % CELL_SIZE;
 
-			if(player.speed !== 0) {
+			if(player.speed == 100000) {
 				console.log('Weight: ' + weight)
 				if (typeof ray.up !== 'undefined') { console.log('UP: ' + ray.up) }
 				if (typeof ray.right !== 'undefined') {console.log('RIGHT: ' + ray.right) }
