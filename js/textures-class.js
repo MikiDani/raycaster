@@ -1,9 +1,11 @@
 export default class TexturesClass {
     constructor() {
-        this.wallFileNames = ['wall1', 'wall2', 'wall3', 'wall4', 'wall5', 'wall6', 'wall7', 'wall8', 'book1', 'a_wall1', 'a_wall2', 'a_wall3']
+        this.wallFileNames = ['wall1', 'wall2', 'wall3', 'wall4', 'wall5', 'wall6', 'wall7', 'wall8', 'book1']
         this.wallTextures = []
-        this.floorFileNames = ['floor1', 'floor2', 'floor3', 'floort1']
+        this.floorFileNames = ['floor1', 'floor2', 'floor3', 'floort1', 'floort2']
         this.floorTextures = []
+        this.skyFileNames = ['sky1', 'sky2', 'sky3', 'sky4']
+        this.skyTextures = []
     }
 
     async loadTexturesToArray(textureArray, fileNames) {

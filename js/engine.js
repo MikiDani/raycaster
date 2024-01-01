@@ -18,7 +18,7 @@ const gridSize = Math.floor(SCREEN_WIDTH / numberOfRays)
 const TRICK = 30
 const FOV = toRadians(60)
 const CELL_SIZE = 64
-const MOVE_SPEED = 10
+const MOVE_SPEED = 20
 const MOVE_ANGLE = 5
 const WALL_DISTANCE = (CELL_SIZE / 100) * 40
 
@@ -31,25 +31,27 @@ const player = {
 	x: CELL_SIZE * 12.5,
 	y: CELL_SIZE * 2.5,
 	z: 0,
-	angle: -4.713,
+	angle: -5,
 	speed: 0,
 }
 
 var inX; var inY;
 
 const menu = {
+	clearGameSwitch: false,
 	infoSwitch: false,
 	mapSwitch: false,
 	shadowsSwitch: true,
-	mouseSwitch: false,	// !!
+	mouseSwitch: true,
 	floorSwitch: true,
+	skySwitch: true,
 }
 
 var game
 var playerRay
 var shadowDistance
-var floorTextureId = 4
-var p = 2		// !!
+var floorTextureId = 3
+var skyTextureId = 1
 
 const canvas = document.createElement("canvas")
 canvas.setAttribute('width', SCREEN_WIDTH)
@@ -59,12 +61,6 @@ const context = canvas.getContext('2d')
 
 // -------------------------------------------------------
 
-const COLORS = {
-	ray: 'yellow',
-	floor: '#ccc',
-	ceiling: '#39bbff',
-}
-
 const map = [
 	[2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4],
 	[5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
@@ -72,12 +68,12 @@ const map = [
 	[5, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
 	[5, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
 	[5, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
-	[5, 0, 1, 0,11, 8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
+	[5, 0, 1, 0, 9, 8, 8, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 4],
 	[5, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
 	[5, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
 	[5, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
 	[5, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
-	[5, 6, 6, 6, 6, 6, 6, 7, 8, 9,10,11,12, 7, 7, 7, 7, 7, 4],
+	[5, 6, 6, 6, 6, 6, 6, 7, 8, 9, 9, 9, 9, 7, 7, 7, 7, 7, 4],
 ];
 
 function toRadians(deg) {
@@ -291,6 +287,35 @@ function calcShadowDistance(distance) {
 
 function renderScreen(rays) {
 
+	//FIRST DRAW SKY
+	let textureWidth = texturesClass.skyTextures[skyTextureId].data[0].length
+	// let textureHeight = texturesClass.skyTextures[skyTextureId].data.length
+	let widthPixel, arundPixel;
+	let skyGridSize = 4
+	let skyAngle = toAngle(player.angle)
+	let plusWidth = (textureWidth / 360)
+	let flip = Math.floor(skyAngle * plusWidth)
+
+	if(menu.skySwitch) {
+		for(let h=0; h<((SCREEN_HEIGHT / skyGridSize) / 2)+5; h++) {
+			widthPixel = 0
+			for(let w=0; w<(SCREEN_WIDTH / skyGridSize); w++) {
+
+				arundPixel = (widthPixel + flip) % textureWidth;
+
+				context.fillStyle = texturesClass.skyTextures[skyTextureId].data[h][arundPixel];
+				context.fillRect(
+					(w * skyGridSize),
+					(h * skyGridSize),
+					skyGridSize,
+					skyGridSize,
+				);
+
+				widthPixel = (widthPixel>textureWidth) ? 0 : widthPixel=widthPixel+1;
+			}
+		}
+	}
+
 	// FIRST DRAW FLOOR
 	if(menu.floorSwitch) {
 		let floorGridsize = gridSize * 2
@@ -327,7 +352,6 @@ function renderScreen(rays) {
 
 		// Wall
 		for(let n=0; n<CELL_SIZE; n++) {
-
 			if (typeof ray.vertical !== 'undefined') {
 				context.fillStyle = (ray.vertical) ? colorDarkening(texturesClass.wallTextures[ray.wall].data[n][ray.start], 0.4) : texturesClass.wallTextures[ray.wall].data[n][ray.start];
 				
@@ -362,15 +386,16 @@ function renderScreen(rays) {
 				SCREEN_HEIGHT
 			);
 		}
-		
-		// // Ceiling
-		// context.fillStyle = COLORS.ceiling;
-		// context.fillRect(
-		// 	i * gridSize,
-		// 	0,
-		// 	gridSize,
-		// 	player.z + (SCREEN_HEIGHT / 2) - (wallHeight / 2),
-		// );
+		// Simple Sky
+		if(!menu.skySwitch) {
+			context.fillStyle = texturesClass.skyTextures[skyTextureId].data[0][0];
+			context.fillRect(
+				i * gridSize,
+				0,
+				gridSize,
+				player.z + (SCREEN_HEIGHT / 2) - (wallHeight / 2),
+			);
+		}
 	})
 }
 
@@ -394,7 +419,7 @@ function renderMinimap(rays) {
 	
 	// FOV RAYS       
 	rays.forEach(ray => {
-		context.strokeStyle = COLORS.ray
+		context.strokeStyle = 'yellow'
 		context.lineWidth = 1;
 		context.beginPath()
 		context.moveTo((player.x * MINIMAP_SCALE) + MINIMAP_X, (player.y * MINIMAP_SCALE) + MINIMAP_Y)
@@ -473,7 +498,7 @@ function gameLoop() {
 	if (menu.mapSwitch) renderMinimap(rays)
 	if (menu.infoSwitch) infoPanel()
 	
-	//clearInterval(game)
+	if (menu.clearGameSwitch) clearInterval(game)
 }
 
 if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
@@ -519,10 +544,15 @@ if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(naviga
 			if(e.keyCode == 73) menu.infoSwitch = (menu.infoSwitch) ? false : true;					// I
 			if(e.keyCode == 72) menu.shadowsSwitch = (menu.shadowsSwitch) ? false : true;			// H
 			if(e.keyCode == 70) menu.floorSwitch = (menu.floorSwitch) ? false : true;				// F
+			if(e.keyCode == 75) menu.skySwitch = (menu.skySwitch) ? false : true;					// K
 			if(e.keyCode == 49) 
 				floorTextureId = ( floorTextureId >= texturesClass.floorTextures.length-1)			// 1
 					? 1 
 					: floorTextureId + 1;
+			if(e.keyCode == 50) 
+				skyTextureId = ( skyTextureId >= texturesClass.skyTextures.length-1)				// 2
+					? 1 
+					: skyTextureId + 1;
 	});
 
 	if(menu.mouseSwitch) {
@@ -558,6 +588,7 @@ if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(naviga
 window.onload = async () => {
     texturesClass.wallTextures = await texturesClass.loadTexturesToArray(texturesClass.wallTextures, texturesClass.wallFileNames);
     texturesClass.floorTextures = await texturesClass.loadTexturesToArray(texturesClass.floorTextures, texturesClass.floorFileNames);
+    texturesClass.skyTextures = await texturesClass.loadTexturesToArray(texturesClass.skyTextures, texturesClass.skyFileNames);
 
 	//console.log(texturesClass.floorTextures)
 
