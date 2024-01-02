@@ -29,10 +29,10 @@ const MINIMAP_Y = 4
 const PLAYER_SIZE = 6
 
 const player = {
-	x: CELL_SIZE * 12.5,
-	y: CELL_SIZE * 2.5,
+	x: CELL_SIZE * 6.5,
+	y: CELL_SIZE * 4.5,
 	z: 0,
-	angle: -5,
+	angle: 44.5,
 	speed: 0,
 }
 
@@ -40,7 +40,7 @@ var inX; var inY;
 
 const menu = {
 	clearGameSwitch: false,
-	infoSwitch: true,
+	infoSwitch: false,
 	mapSwitch: false,
 	shadowsSwitch: true,
 	mouseSwitch: true,
@@ -102,26 +102,31 @@ function movePlayer() {
 		let actX = Math.floor(player.x / CELL_SIZE)
 		let actY = Math.floor(player.y / CELL_SIZE)
 		inX =  Math.floor(player.x - (actX * CELL_SIZE))
-		inY =  Math.floor(player.y - (actY * CELL_SIZE))		
-			
+		inY =  Math.floor(player.y - (actY * CELL_SIZE))
+		
 		let moveX = true
 		let moveY = true
 
 		if (player.x < player.x + (Math.cos(player.angle) * player.speed)) {
-			// LEFT
+			// RIGHT
 			if (map[actY][actX+1] && inX >= CELL_SIZE - WALL_DISTANCE) moveX = false;
 		} else {
-			// RIGHT
+			// LEFT
 			if (map[actY][actX-1] && inX <= WALL_DISTANCE) moveX = false;
 		}
 
 		if (player.y < player.y + (Math.sin(player.angle) * player.speed)) {
-			// UP
+			// DOWN
 			if (map[actY+1][actX] && inY >= CELL_SIZE - WALL_DISTANCE) moveY = false;
 		} else {
-			// DOWN
+			// UP
 			if (map[actY-1][actX] && inY <= WALL_DISTANCE) moveY = false;
 		}
+
+		// FORTYFIVE CHECK
+		let psPlayerX = Math.floor((player.x + Math.cos(player.angle) * player.speed) / CELL_SIZE)
+		let psPlayerY = Math.floor((player.y + Math.sin(player.angle) * player.speed) / CELL_SIZE)
+		if (map[psPlayerY][psPlayerX]) { moveX = false;	moveY = false; }
 
 		(moveX) ? player.x += Math.cos(player.angle) * player.speed : false;
 		(moveY) ? player.y += Math.sin(player.angle) * player.speed : false;
@@ -467,7 +472,7 @@ function infoPanel() {
 	const playerDataText = `
 		Player Data:  |
 		------------- |
-		Frame time: ${timeStop} mss |
+		Frame time: ${timeStop} ms |
 		x: ${player.x.toFixed(3)} |
 		y: ${player.y.toFixed(3)} |
 		z: ${player.z.toFixed(3)} |
