@@ -16,7 +16,7 @@ const skyGridSize = 4
 
 const gridSize = Math.floor(SCREEN_WIDTH / NUMBER_OF_RAYS)
 
-const TRICK = 30
+const TRICK = 60
 const FOV = toRadians(60)
 const CELL_SIZE = 64
 const MOVE_SPEED = 20
@@ -40,7 +40,7 @@ var inX; var inY;
 
 const menu = {
 	clearGameSwitch: false,
-	infoSwitch: false,
+	infoSwitch: true,
 	mapSwitch: false,
 	shadowsSwitch: true,
 	mouseSwitch: true,
@@ -53,6 +53,7 @@ var playerRay
 var shadowDistance
 var floorTextureId = 3
 var skyTextureId = 1
+var timeStart
 
 const canvas = document.createElement("canvas")
 canvas.setAttribute('width', SCREEN_WIDTH)
@@ -458,11 +459,15 @@ function renderMinimap(rays) {
 
 function infoPanel() {
 	context.fillStyle = 'white';
-	context.fillRect(SCREEN_WIDTH - 230 - 10, 10, 200, 350)
+	context.fillRect(SCREEN_WIDTH - 230 - 10, 10, 200, 370)
 	const lineheight = 20;
+
+	var timeStop = (Date.now()-timeStart)
+
 	const playerDataText = `
 		Player Data:  |
 		------------- |
+		Frame time: ${timeStop} mss |
 		x: ${player.x.toFixed(3)} |
 		y: ${player.y.toFixed(3)} |
 		z: ${player.z.toFixed(3)} |
@@ -488,7 +493,10 @@ function infoPanel() {
 }
 
 function gameLoop() {
-	clearScreen()
+
+	timeStart = Date.now();
+
+	//clearScreen()
 	movePlayer()
 	const rays = getRays()
 	renderScreen(rays)
@@ -497,6 +505,9 @@ function gameLoop() {
 	shadowDistance = calcShadowDistance(playerRay.distance)
 
 	if (menu.mapSwitch) renderMinimap(rays)
+
+
+
 	if (menu.infoSwitch) infoPanel()
 	
 	if (menu.clearGameSwitch) clearInterval(game)
