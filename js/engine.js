@@ -10,11 +10,11 @@ const walkInterval = -7;
 const SCREEN_WIDTH = window.innerWidth;
 const SCREEN_HEIGHT = window.innerHeight + Math.abs(walkInterval);
 
-//const numberOfRays = 1
-const numberOfRays = Math.floor(SCREEN_WIDTH / 4)
+//const NUMBER_OF_RAYS = 1
+const NUMBER_OF_RAYS = Math.floor(SCREEN_WIDTH / 4)
 const skyGridSize = 4
 
-const gridSize = Math.floor(SCREEN_WIDTH / numberOfRays)
+const gridSize = Math.floor(SCREEN_WIDTH / NUMBER_OF_RAYS)
 
 const TRICK = 30
 const FOV = toRadians(60)
@@ -59,6 +59,7 @@ canvas.setAttribute('width', SCREEN_WIDTH)
 canvas.setAttribute('HEIGHT', SCREEN_HEIGHT)
 document.body.appendChild(canvas)
 const context = canvas.getContext('2d')
+context.imageSmoothingEnabled = false	// teszt üzem
 
 // -------------------------------------------------------
 
@@ -242,11 +243,11 @@ function castRay(angle) {
 
 function getRays() {
 	// const initialAngle = player.angle		// 1 RAY TEST MODE
-	// const angleStep = FOV / numberOfRays		// 1 RAY TEST MODE
+	// const angleStep = FOV / NUMBER_OF_RAYS		// 1 RAY TEST MODE
 	const initialAngle = player.angle - (FOV/2)
-	const angleStep = FOV / numberOfRays
+	const angleStep = FOV / NUMBER_OF_RAYS
 
-	return Array.from({length: numberOfRays}, (_, i) => {
+	return Array.from({length: NUMBER_OF_RAYS}, (_, i) => {
 		const angle = initialAngle + i * angleStep;
 		const ray = castRay(angle)
 		return ray
@@ -475,7 +476,7 @@ function infoPanel() {
 		RIGHT?: ${Math.abs(Math.floor((player.angle-Math.PI/2) / Math.PI) % 2)} |
 		UP?: ${Math.abs(Math.floor(player.angle / Math.PI) % 2)} |
 		------------- |
-		RAYS: ${numberOfRays} |
+		RAYS: ${NUMBER_OF_RAYS} |
 		gridSize: ${gridSize} |
 		`;
 	const lines = playerDataText.split('|');
