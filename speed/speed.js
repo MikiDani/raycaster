@@ -1,4 +1,6 @@
 
+// https://stackoverflow.com/questions/58482163/how-to-improve-html-canvas-performance-drawing-pixels
+
 window.onload = () => {
 
     const SCREEN_WIDTH = window.innerWidth;
