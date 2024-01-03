@@ -12,9 +12,9 @@ const SCREEN_HEIGHT = window.innerHeight + Math.abs(walkInterval);
 
 //const NUMBER_OF_RAYS = 1
 const NUMBER_OF_RAYS = Math.floor(SCREEN_WIDTH / 4)
-const skyGridSize = 4
+const SKY_GRID_SIZE = 4
 
-const gridSize = Math.floor(SCREEN_WIDTH / NUMBER_OF_RAYS)
+const GRID_SIZE = Math.floor(SCREEN_WIDTH / NUMBER_OF_RAYS)
 
 const TRICK = 60
 const FOV = toRadians(60)
@@ -33,8 +33,13 @@ const player = {
 	y: CELL_SIZE * 4.5,
 	z: 0,
 	angle: 44.5,
+	dirX: null,
+	dirY: null,
 	speed: 0,
 }
+
+player.dirX = calcDirX(player.angle)
+player.dirY = calcDirY(player.angle)
 
 var inX; var inY;
 
@@ -51,9 +56,11 @@ const menu = {
 var game
 var playerRay
 var shadowDistance
-var floorTextureId = 3
+var floorTextureId = 7
 var skyTextureId = 1
 var timeStart
+
+var rayDirX0, rayDirY0, rayDirX1, rayDirY1;
 
 const canvas = document.createElement("canvas")
 canvas.setAttribute('width', SCREEN_WIDTH)
@@ -78,6 +85,18 @@ const map = [
 	[5, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
 	[5, 6, 6, 6, 6, 6, 6, 7, 8, 9, 9, 9, 9, 7, 7, 7, 7, 7, 4],
 ];
+
+function calcDirX(angle) {
+	let returnValue = Math.abs(Math.floor((angle - Math.PI/2) / Math.PI) % 2);
+	returnValue = (returnValue == 0) ? -1 : returnValue;
+	return returnValue;
+}
+
+function calcDirY(angle) {
+	let returnValue = Math.abs(Math.floor(angle / Math.PI) % 2);
+	returnValue = (returnValue == 0) ? -1 : returnValue;
+	return returnValue;
+}
 
 function toRadians(deg) {
 	return ((deg * Math.PI) / 180);
@@ -152,8 +171,10 @@ function distance(x1, y1, x2, y2) {
 	return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 }
 
+// VERTICAL CHECK
 function getVCrash(angle) {
 	const right = Math.abs(Math.floor((angle-Math.PI/2) / Math.PI) % 2)
+	const up = Math.abs(Math.floor(angle / Math.PI) % 2)
 
 	const firstX = (right)
 	? Math.floor(player.x / CELL_SIZE) * CELL_SIZE + CELL_SIZE
@@ -187,18 +208,19 @@ function getVCrash(angle) {
 
 	return {
 		wall : wall,
-		posX: nextX,
-		posY: nextY,
 		angle,
 		distance: distance(player.x, player.y, nextX, nextY),
 		vertical: true,
-		right: right,
 		start: start,
+		dirX: right,
+		dirY: up,
 	}
 }
 
+// HORIZONTAL CHECK
 function getHCrash(angle) {
 	const up = Math.abs(Math.floor(angle / Math.PI) % 2)
+	const right = Math.abs(Math.floor((angle-Math.PI/2) / Math.PI) % 2)
 	
 	const firstY = (up)
 	? Math.floor(player.y / CELL_SIZE) * CELL_SIZE
@@ -231,13 +253,12 @@ function getHCrash(angle) {
 
 	return { 
 		wall: wall,
-		posX: nextX,
-		posY: nextY,
 		angle,
 		distance: distance(player.x, player.y, nextX, nextY),
 		vertical: false,
-		up: up,
 		start: start,
+		dirY: up,
+		dirX: right,
 	}
 }
 
@@ -295,61 +316,143 @@ function calcShadowDistance(distance) {
 
 function renderScreen(rays) {
 
-	//FIRST DRAW SKY
-	let textureWidth = texturesClass.skyTextures[skyTextureId].data[0].length
-	// let textureHeight = texturesClass.skyTextures[skyTextureId].data.length
-	let widthPixel, arundPixel;
-	let skyAngle = toAngle(player.angle)
-	let plusWidth = (textureWidth / 360)
-	let flip = Math.floor(skyAngle * plusWidth)
-
-	if(menu.skySwitch) {
-		for(let h=0; h<((SCREEN_HEIGHT / skyGridSize) / 2)+5; h++) {
-			widthPixel = 0
-			for(let w=0; w<(SCREEN_WIDTH / skyGridSize); w++) {
-
-				arundPixel = (widthPixel + flip) % textureWidth;
-
-				context.fillStyle = texturesClass.skyTextures[skyTextureId].data[h][arundPixel];
-				context.fillRect(
-					(w * skyGridSize),
-					(h * skyGridSize),
-					skyGridSize,
-					skyGridSize,
-				);
-
-				widthPixel = (widthPixel>textureWidth) ? 0 : widthPixel=widthPixel+1;
+	// OWN FIRST DRAW SKY
+	if (true) {
+		let textureWidth = texturesClass.skyTextures[skyTextureId].data[0].length
+		// let textureHeight = texturesClass.skyTextures[skyTextureId].data.length
+		let widthPixel, arundPixel;
+		let skyAngle = toAngle(player.angle)
+		let plusWidth = (textureWidth / 360)
+		let flip = Math.floor(skyAngle * plusWidth)
+	
+		if(menu.skySwitch) {
+			for(let h=0; h<((SCREEN_HEIGHT / SKY_GRID_SIZE) / 2)+5; h++) {
+				widthPixel = 0
+				for(let w=0; w<(SCREEN_WIDTH / SKY_GRID_SIZE); w++) {
+	
+					arundPixel = (widthPixel + flip) % textureWidth;
+	
+					context.fillStyle = texturesClass.skyTextures[skyTextureId].data[h][arundPixel];
+					context.fillRect(
+						(w * SKY_GRID_SIZE),
+						(h * SKY_GRID_SIZE),
+						SKY_GRID_SIZE,
+						SKY_GRID_SIZE,
+					);
+	
+					widthPixel = (widthPixel>textureWidth) ? 0 : widthPixel=widthPixel+1;
+				}
 			}
 		}
 	}
 
-	// FIRST DRAW FLOOR
-	if(menu.floorSwitch) {
-		let floorGridsize = gridSize * 2
-		let textureWidth = texturesClass.floorTextures[floorTextureId].data[0].length
-		let textureHeight = texturesClass.floorTextures[floorTextureId].data.length
-		let realTextureWidth = textureWidth * floorGridsize
-		let realTextureHeight = textureHeight * floorGridsize
-	
-		let wCount = Math.ceil(SCREEN_WIDTH / realTextureWidth);
-		let hCount = Math.ceil((SCREEN_HEIGHT / 2) / realTextureHeight);
-		for(let hs=0; hs<hCount; hs++){
-			for(let ws=0; ws<wCount; ws++){
-				//TEXTURE
-				for(let h=0; h<textureHeight; h++) {
-					for(let w=0; w<textureWidth; w++) {
-						context.fillStyle = texturesClass.floorTextures[floorTextureId].data[h][w];
-						context.fillRect(
-							(ws * realTextureWidth) + (w * floorGridsize),
-							player.z + (SCREEN_HEIGHT / 2) + (hs * realTextureHeight) + (h * floorGridsize),
-							floorGridsize,
-							floorGridsize + 1,
-						);
+	// OWN FIRST DRAW FLOOR
+	if(false) {
+		if(menu.floorSwitch) {
+			let floorGRID_SIZE = GRID_SIZE * 2
+			let textureWidth = texturesClass.floorTextures[floorTextureId].data[0].length
+			let textureHeight = texturesClass.floorTextures[floorTextureId].data.length
+			let realTextureWidth = textureWidth * floorGRID_SIZE
+			let realTextureHeight = textureHeight * floorGRID_SIZE
+		
+			let wCount = Math.ceil(SCREEN_WIDTH / realTextureWidth);
+			let hCount = Math.ceil((SCREEN_HEIGHT / 2) / realTextureHeight);
+			for(let hs=0; hs<hCount; hs++){
+				for(let ws=0; ws<wCount; ws++){
+					//TEXTURE
+					for(let h=0; h<textureHeight; h++) {
+						for(let w=0; w<textureWidth; w++) {
+							context.fillStyle = texturesClass.floorTextures[floorTextureId].data[h][w];
+							context.fillRect(
+								(ws * realTextureWidth) + (w * floorGRID_SIZE),
+								player.z + (SCREEN_HEIGHT / 2) + (hs * realTextureHeight) + (h * floorGRID_SIZE),
+								floorGRID_SIZE,
+								floorGRID_SIZE + 1,
+							);
+						}
 					}
 				}
 			}
 		}
 	}
+
+	// ---------------------
+
+	///////////////////////////
+	// SECOND FIRST DRAW FLOOR
+	if(true) {
+
+		let planeX = 0.0
+		let planeY = 0.66
+
+		let floorGridSize = GRID_SIZE
+
+		let screenHeightNow = (SCREEN_HEIGHT / floorGridSize)
+		let screenWidthNow = (SCREEN_WIDTH / floorGridSize)
+		// Dani +
+		let plusWidth = (screenWidthNow / 180)
+		let flip = Math.floor(toAngle(player.angle) * plusWidth)
+
+		for(let y = 0; y < (screenHeightNow / 2); y++) {
+			// rayDir a bal szélső sugárhoz (x = 0) és a jobb szélső sugárhoz (x = w)
+			rayDirX0 = player.dirX - planeX;
+			rayDirY0 = player.dirY - planeY;
+			rayDirX1 = player.dirX + planeX;
+			rayDirY1 = player.dirY + planeY;
+	
+			// Jelenlegi y pozíció a képernyő közepéhez (a horizonthoz) képest
+			let p = y + screenHeightNow;
+	
+			// A kamera függőleges helyzete.
+			let posZ = 4.5 * screenHeightNow;
+	
+			// A kamera és a padló közötti vízszintes távolság az aktuális sorban.
+			// 0,5 a z pozíció pontosan középen a padló és a mennyezet között.
+			let rowDistance = posZ / p
+	
+			// kiszámítja a valós világ lépésvektorát, amelyet minden x-hez hozzá kell adni (a kamera síkjával párhuzamosan)
+			// a lépésről lépésre történő összeadás elkerüli a szorzásokat a belső ciklusban lévő súllyal
+			let floorStepX = rowDistance * (rayDirX1 - rayDirX0) / screenWidthNow;
+			let floorStepY = rowDistance * (rayDirY1 - rayDirY0) / screenWidthNow;
+
+			//console.log(floorStepX, floorStepY)
+	
+			// a bal szélső oszlop valós világbeli koordinátái. Ez frissülni fog, amint jobbra lépünk.
+			let floorX = player.x + rowDistance * rayDirX0;
+			let floorY = player.y + rowDistance * rayDirY0;
+	
+			//console.log(Math.floor(floorX), Math.floor(floorY))
+
+			for (let x = 0; x < screenWidthNow; ++x) {
+				// a cellakoordinát egyszerűen a floorX és floorY betűs részéből kapjuk
+				
+				let cellX = Math.floor(floorX);
+				let cellY = Math.floor(floorY);
+				
+				// lekérjük a textúra koordinátáját a tört részből
+				// get the texture coordinate from the fractional part
+				// get the texture coordinate from the fractional part
+				let tx = (CELL_SIZE * (floorX - cellX)) + flip & (CELL_SIZE - 1);
+				let ty = (CELL_SIZE * (floorY - cellY)) & (CELL_SIZE - 1);
+
+				floorX += floorStepX;
+				floorY += floorStepY;
+		
+				// floor
+				context.fillStyle = texturesClass.wallTextures[floorTextureId].data[ty][tx];	
+				context.fillRect(
+					(x * GRID_SIZE),
+					(y * GRID_SIZE) + (player.z + Math.floor((SCREEN_HEIGHT/2))),
+					GRID_SIZE,
+					GRID_SIZE,
+				);
+				// color = texture[floorTexture][texWidth * ty + tx];
+				// color = (color >> 1) & 8355711; // make a bit darker
+				// buffer[y][x] = color;
+			}
+		}
+	}
+	// ---------
 
 	rays.forEach((ray, i) => {
 		//const distance = ray.distance;
@@ -358,38 +461,40 @@ function renderScreen(rays) {
 		const BRICK_SIZE = wallHeight / CELL_SIZE
 
 		// Wall
-		for(let n=0; n<CELL_SIZE; n++) {
-			if (typeof ray.vertical !== 'undefined') {
-				context.fillStyle = (ray.vertical) ? colorDarkening(texturesClass.wallTextures[ray.wall].data[n][ray.start], 0.4) : texturesClass.wallTextures[ray.wall].data[n][ray.start];
-				
-				context.fillRect(
-					cutOutX(i * gridSize),
-					cutOutY(player.z + Math.floor((((SCREEN_HEIGHT / 2)) - (wallHeight / 2)) + (Math.ceil(n * BRICK_SIZE)))),
-					gridSize,
-					cutOutY(Math.ceil(BRICK_SIZE))
-				);
-	
-				//Shadow
-				if (menu.shadowsSwitch) {
-					let shadowDistance = calcShadowDistance(distance)
-					context.fillStyle = `rgba(0, 0, 0, ${shadowDistance})`;
+		if (true) {
+			for(let n=0; n<CELL_SIZE; n++) {
+				if (typeof ray.vertical !== 'undefined') {
+					context.fillStyle = (ray.vertical) ? colorDarkening(texturesClass.wallTextures[ray.wall].data[n][ray.start], 0.4) : texturesClass.wallTextures[ray.wall].data[n][ray.start];
+					
 					context.fillRect(
-						cutOutX(i * gridSize),
-						cutOutY(player.z + Math.floor(((SCREEN_HEIGHT / 2) - (wallHeight / 2)) + (Math.ceil(n * BRICK_SIZE)))),
-						gridSize,
+						cutOutX(i * GRID_SIZE),
+						cutOutY(player.z + Math.floor((((SCREEN_HEIGHT / 2)) - (wallHeight / 2)) + (Math.ceil(n * BRICK_SIZE)))),
+						GRID_SIZE,
 						cutOutY(Math.ceil(BRICK_SIZE))
 					);
+		
+					//Shadow
+					if (menu.shadowsSwitch) {
+						let shadowDistance = calcShadowDistance(distance)
+						context.fillStyle = `rgba(0, 0, 0, ${shadowDistance})`;
+						context.fillRect(
+							cutOutX(i * GRID_SIZE),
+							cutOutY(player.z + Math.floor(((SCREEN_HEIGHT / 2) - (wallHeight / 2)) + (Math.ceil(n * BRICK_SIZE)))),
+							GRID_SIZE,
+							cutOutY(Math.ceil(BRICK_SIZE))
+						);
+					}
 				}
 			}
 		}
 		
 		// Simple Floor
 		if(!menu.floorSwitch) {
-			context.fillStyle = texturesClass.floorTextures[floorTextureId].data[0][0];
+			context.fillStyle = texturesClass.wallTextures[floorTextureId].data[0][0];
 			context.fillRect(
-				i * gridSize,
+				i * GRID_SIZE,
 				player.z + (SCREEN_HEIGHT / 2) + (wallHeight / 2),
-				gridSize,
+				GRID_SIZE,
 				SCREEN_HEIGHT
 			);
 		}
@@ -397,9 +502,9 @@ function renderScreen(rays) {
 		if(!menu.skySwitch) {
 			context.fillStyle = texturesClass.skyTextures[skyTextureId].data[0][0];
 			context.fillRect(
-				i * gridSize,
+				i * GRID_SIZE,
 				0,
-				gridSize,
+				GRID_SIZE,
 				player.z + (SCREEN_HEIGHT / 2) - (wallHeight / 2),
 			);
 		}
@@ -464,8 +569,8 @@ function renderMinimap(rays) {
 
 function infoPanel() {
 	context.fillStyle = 'white';
-	context.fillRect(SCREEN_WIDTH - 230 - 10, 10, 200, 370)
-	const lineheight = 20;
+	context.fillRect(SCREEN_WIDTH - 230 - 10, 10, 200, 400)
+	const lineheight = 16;
 
 	var timeStop = (Date.now()-timeStart)
 
@@ -476,23 +581,30 @@ function infoPanel() {
 		x: ${player.x.toFixed(3)} |
 		y: ${player.y.toFixed(3)} |
 		z: ${player.z.toFixed(3)} |
+		P. ray Distance : ${playerRay.distance.toFixed(3)} |
+		Shadow Distance : ${shadowDistance} |
 		inX: ${inX} |
 		inY: ${inY} |
 		angle: ${player.angle.toFixed(3)} Rad |
 		angle: ${toAngle(player.angle).toFixed(1)} ° |
-		P ray dis: ${playerRay.distance.toFixed(5)} |
-		ShadowDistance : ${shadowDistance} |
 		speed: ${player.speed} |
-		RIGHT?: ${Math.abs(Math.floor((player.angle-Math.PI/2) / Math.PI) % 2)} |
-		UP?: ${Math.abs(Math.floor(player.angle / Math.PI) % 2)} |
-		------------- |
+		P. dirX: ${calcDirX(player.angle)} |
+		P. dirY: ${calcDirY(player.angle)} |
+		----------------------- |
 		RAYS: ${NUMBER_OF_RAYS} |
-		gridSize: ${gridSize} |
+		GRID_SIZE: ${GRID_SIZE} |
+		------------------------|
+		rayDirX0: ${rayDirX0.toFixed(5)}   |
+		rayDirY0: ${rayDirY0.toFixed(5)}   |
+		------------------------|
+		rayDirX1: ${rayDirX1.toFixed(5)}   |
+		rayDirY1: ${rayDirY1.toFixed(5)}   |
 		`;
+
 	const lines = playerDataText.split('|');
 
 	context.fillStyle = 'black'
-	context.font = '16px serif'
+	context.font = '12px serif'
 	for (var i = 0; i<lines.length; i++)
 		context.fillText(lines[i], SCREEN_WIDTH - 200 - 40, 30 + (i * lineheight));
 }
@@ -563,7 +675,7 @@ if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(naviga
 			if(e.keyCode == 70) menu.floorSwitch = (menu.floorSwitch) ? false : true;				// F
 			if(e.keyCode == 75) menu.skySwitch = (menu.skySwitch) ? false : true;					// K
 			if(e.keyCode == 49) 
-				floorTextureId = ( floorTextureId >= texturesClass.floorTextures.length-1)			// 1
+				floorTextureId = ( floorTextureId >= texturesClass.wallTextures.length-1)			// 1			!!! FLOOR LESZ 
 					? 1 
 					: floorTextureId + 1;
 			if(e.keyCode == 50) 
