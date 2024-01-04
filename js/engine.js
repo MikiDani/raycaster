@@ -56,7 +56,7 @@ const menu = {
 var game
 var playerRay
 var shadowDistance
-var floorTextureId = 7
+var floorTextureId = 3
 var skyTextureId = 1
 var timeStart
 
@@ -142,7 +142,7 @@ function movePlayer() {
 			if (map[actY-1][actX] && inY <= WALL_DISTANCE) moveY = false;
 		}
 
-		// FORTYFIVE CHECK
+		// 45° CHECK
 		let psPlayerX = Math.floor((player.x + Math.cos(player.angle) * player.speed) / CELL_SIZE)
 		let psPlayerY = Math.floor((player.y + Math.sin(player.angle) * player.speed) / CELL_SIZE)
 		if (map[psPlayerY][psPlayerX]) { moveX = false;	moveY = false; }
@@ -214,6 +214,8 @@ function getVCrash(angle) {
 		start: start,
 		dirX: right,
 		dirY: up,
+		rayDirX: nextX,
+		rayDirY: nextY,
 	}
 }
 
@@ -259,6 +261,8 @@ function getHCrash(angle) {
 		start: start,
 		dirY: up,
 		dirX: right,
+		rayDirX: nextX,
+		rayDirY: nextY,
 	}
 }
 
@@ -380,6 +384,12 @@ function renderScreen(rays) {
 
 	///////////////////////////
 	// SECOND FIRST DRAW FLOOR
+
+	// console.log(rays.length)
+	// console.log(rays[rays.length-1])
+	// console.log(rays[0])
+	// console.log(rays[0], rays[rays.length])
+
 	if(true) {
 
 		let planeX = 0.0
@@ -389,66 +399,47 @@ function renderScreen(rays) {
 
 		let screenHeightNow = (SCREEN_HEIGHT / floorGridSize)
 		let screenWidthNow = (SCREEN_WIDTH / floorGridSize)
-		// Dani +
-		let plusWidth = (screenWidthNow / 180)
-		let flip = Math.floor(toAngle(player.angle) * plusWidth)
 
 		for(let y = 0; y < (screenHeightNow / 2); y++) {
 			// rayDir a bal szélső sugárhoz (x = 0) és a jobb szélső sugárhoz (x = w)
-			rayDirX0 = player.dirX - planeX;
-			rayDirY0 = player.dirY - planeY;
-			rayDirX1 = player.dirX + planeX;
-			rayDirY1 = player.dirY + planeY;
-	
-			// Jelenlegi y pozíció a képernyő közepéhez (a horizonthoz) képest
-			let p = y + screenHeightNow;
-	
-			// A kamera függőleges helyzete.
-			let posZ = 4.5 * screenHeightNow;
-	
-			// A kamera és a padló közötti vízszintes távolság az aktuális sorban.
-			// 0,5 a z pozíció pontosan középen a padló és a mennyezet között.
-			let rowDistance = posZ / p
-	
-			// kiszámítja a valós világ lépésvektorát, amelyet minden x-hez hozzá kell adni (a kamera síkjával párhuzamosan)
-			// a lépésről lépésre történő összeadás elkerüli a szorzásokat a belső ciklusban lévő súllyal
-			let floorStepX = rowDistance * (rayDirX1 - rayDirX0) / screenWidthNow;
-			let floorStepY = rowDistance * (rayDirY1 - rayDirY0) / screenWidthNow;
+			rayDirX1 = rays[0].rayDirX - planeX
+			rayDirX0 = rays[0].rayDirX + planeX
+			rayDirY1 = rays[rays.length-1].rayDirY - planeY
+			rayDirY0 = rays[rays.length-1].rayDirY + planeY
 
-			//console.log(floorStepX, floorStepY)
-	
-			// a bal szélső oszlop valós világbeli koordinátái. Ez frissülni fog, amint jobbra lépünk.
-			let floorX = player.x + rowDistance * rayDirX0;
-			let floorY = player.y + rowDistance * rayDirY0;
+			let p = y + screenHeightNow / 2;
+			//let posZ = 0.5 * screenHeightNow // ORIGINAL
+			let posZ = 0.5 * screenHeightNow * 8 	// OWN
+			let rowDistance = posZ / p
+
+			let floorStepX = rowDistance * (rayDirX1 - rayDirX0) / screenWidthNow
+			let floorStepY = rowDistance * (rayDirY1 - rayDirY0) / screenWidthNow
+
+			let floorX = player.x + rowDistance * rayDirX0
+			let floorY = player.y + rowDistance * rayDirY0
 	
 			//console.log(Math.floor(floorX), Math.floor(floorY))
 
 			for (let x = 0; x < screenWidthNow; ++x) {
 				// a cellakoordinát egyszerűen a floorX és floorY betűs részéből kapjuk
 				
-				let cellX = Math.floor(floorX);
-				let cellY = Math.floor(floorY);
+				let cellX = Math.floor(floorX)
+				let cellY = Math.floor(floorY)
 				
-				// lekérjük a textúra koordinátáját a tört részből
-				// get the texture coordinate from the fractional part
-				// get the texture coordinate from the fractional part
-				let tx = (CELL_SIZE * (floorX - cellX)) + flip & (CELL_SIZE - 1);
-				let ty = (CELL_SIZE * (floorY - cellY)) & (CELL_SIZE - 1);
+				let tx = (CELL_SIZE * (floorX - cellX)) & (CELL_SIZE -1)
+				let ty = (CELL_SIZE * (floorY - cellY)) & (CELL_SIZE -1)
 
-				floorX += floorStepX;
-				floorY += floorStepY;
+				floorX += floorStepX
+				floorY += floorStepY
 		
 				// floor
-				context.fillStyle = texturesClass.wallTextures[floorTextureId].data[ty][tx];	
+				context.fillStyle = texturesClass.wallTextures[floorTextureId].data[ty][tx]
 				context.fillRect(
 					(x * GRID_SIZE),
 					(y * GRID_SIZE) + (player.z + Math.floor((SCREEN_HEIGHT/2))),
 					GRID_SIZE,
 					GRID_SIZE,
 				);
-				// color = texture[floorTexture][texWidth * ty + tx];
-				// color = (color >> 1) & 8355711; // make a bit darker
-				// buffer[y][x] = color;
 			}
 		}
 	}
