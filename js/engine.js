@@ -29,10 +29,10 @@ const MINIMAP_Y = 4
 const PLAYER_SIZE = 6
 
 const player = {
-	x: CELL_SIZE * 6.5,
-	y: CELL_SIZE * 4.5,
+	x: CELL_SIZE * 1.5,
+	y: CELL_SIZE * 1.5,
 	z: 0,
-	angle: 44.5,
+	angle: 0,
 	dirX: null,
 	dirY: null,
 	speed: 0,
@@ -45,7 +45,7 @@ var inX; var inY;
 
 const menu = {
 	clearGameSwitch: false,
-	infoSwitch: false,
+	infoSwitch: true,
 	mapSwitch: true,
 	shadowsSwitch: true,
 	mouseSwitch: true,
@@ -59,8 +59,6 @@ var shadowDistance
 var floorTextureId = 2
 var skyTextureId = 1
 var timeStart
-
-var rayDirX0, rayDirY0, rayDirX1, rayDirY1;
 
 const canvas = document.createElement("canvas")
 canvas.setAttribute('width', SCREEN_WIDTH)
@@ -276,7 +274,7 @@ function castRay(angle) {
 }
 
 function getRays() {
-	// const initialAngle = player.angle		// 1 RAY TEST MODE
+	// const initialAngle = player.angle			// 1 RAY TEST MODE
 	// const angleStep = FOV / NUMBER_OF_RAYS		// 1 RAY TEST MODE
 	const initialAngle = player.angle - (FOV/2)
 	const angleStep = FOV / NUMBER_OF_RAYS
@@ -353,61 +351,6 @@ function renderScreen(rays) {
 		}
 	}
 
-	// DRAW FLOOR
-	if(true) {
-		let planeX = 1.0
-		let planeY = 0.66
-
-		const FLOOR_GRID_SIZE = GRID_SIZE
-
-		let textWidth = texturesClass.floorTextures[floorTextureId].imgWidth
-		let textHeight = texturesClass.floorTextures[floorTextureId].imgHeight
-
-		let screenHeightNow = (SCREEN_HEIGHT / FLOOR_GRID_SIZE)
-		let screenWidthNow = (SCREEN_WIDTH / FLOOR_GRID_SIZE)
-
-		for(let y=Math.floor(screenHeightNow / 2); y<screenHeightNow; ++y) {
-			rayDirX0 = rays[0].rayDirX - planeX
-			rayDirY0 = rays[0].rayDirY - planeY
-			rayDirX1 = rays[rays.length-1].rayDirX + planeX
-			rayDirY1 = rays[rays.length-1].rayDirY + planeY
-
-			let p = y + screenHeightNow / 2;
-			
-			//let posZ = 0.5 * screenHeightNow // ORIGINAL		
-			let posZ = 0.5 * screenHeightNow// OWN
-
-			let rowDistance = posZ / p
-
-			let floorStepX = rowDistance * (rayDirX1 - rayDirX0) / screenWidthNow
-			let floorStepY = rowDistance * (rayDirY1 - rayDirY0) / screenWidthNow
-			
-			let floorX = player.x + rowDistance * rayDirX0
-			let floorY = player.y + rowDistance * rayDirY0
-	
-			for (let x = 0; x < screenWidthNow; ++x) {
-				
-				let cellX = floorX | 0;
-				let cellY = floorY | 0;
-				
-				floorX += floorStepX
-				floorY += floorStepY
-								
-				let tx = (textWidth * (floorX - cellX)) & (textWidth - 1);
-				let ty = (textHeight * (floorY - cellY)) & (textHeight - 1);
-
-				// floor
-				//context.fillStyle = texturesClass.wallTextures[floorTextureId].data[ty][tx]
-				context.fillStyle = texturesClass.floorTextures[floorTextureId].data[textWidth * ty + tx]
-				context.fillRect(
-					(x * FLOOR_GRID_SIZE),
-					(y * FLOOR_GRID_SIZE) + player.z,
-					FLOOR_GRID_SIZE,
-					FLOOR_GRID_SIZE,
-				);
-			}
-		}
-	}
 	// START RAYS
 	rays.forEach((ray, i) => {
 		//const distance = ray.distance;
@@ -444,7 +387,7 @@ function renderScreen(rays) {
 		}
 
 		// Simple Floor
-		if(!menu.floorSwitch) {
+		if(menu.floorSwitch) {
 			context.fillStyle = texturesClass.wallTextures[floorTextureId].data[0][0];
 			context.fillRect(
 				i * GRID_SIZE,
@@ -525,7 +468,7 @@ function renderMinimap(rays) {
 
 function infoPanel() {
 	context.fillStyle = 'white';
-	context.fillRect(SCREEN_WIDTH - 230 - 10, 10, 200, 400)
+	context.fillRect(SCREEN_WIDTH - 230 - 10, 10, 200, 320)
 	const lineheight = 16;
 
 	var timeStop = (Date.now()-timeStart)
@@ -550,11 +493,6 @@ function infoPanel() {
 		RAYS: ${NUMBER_OF_RAYS} |
 		GRID_SIZE: ${GRID_SIZE} |
 		------------------------|
-		rayDirX0: ${rayDirX0.toFixed(5)}   |
-		rayDirY0: ${rayDirY0.toFixed(5)}   |
-		------------------------|
-		rayDirX1: ${rayDirX1.toFixed(5)}   |
-		rayDirY1: ${rayDirY1.toFixed(5)}   |
 		`;
 
 	const lines = playerDataText.split('|');
@@ -567,6 +505,9 @@ function infoPanel() {
 
 function gameLoop() {
 
+	context.fillStyle = 'black'
+	context.fillRect(0, SCREEN_HEIGHT/2, SCREEN_WIDTH, SCREEN_HEIGHT)
+
 	timeStart = Date.now()
 
 	movePlayer()
@@ -576,9 +517,7 @@ function gameLoop() {
 	shadowDistance = calcShadowDistance(playerRay.distance)
 
 	if (menu.mapSwitch) renderMinimap(rays)
-
 	if (menu.infoSwitch) infoPanel()
-	
 	if (menu.clearGameSwitch) clearInterval(game)
 }
 
@@ -627,7 +566,7 @@ if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(naviga
 			if(e.keyCode == 70) menu.floorSwitch = (menu.floorSwitch) ? false : true;				// F
 			if(e.keyCode == 75) menu.skySwitch = (menu.skySwitch) ? false : true;					// K
 			if(e.keyCode == 49) 
-				floorTextureId = ( floorTextureId >= texturesClass.floorTextures.length-1)			// 1
+				floorTextureId = ( floorTextureId >= texturesClass.wallTextures.length-1)			// 1
 					? 1 
 					: floorTextureId + 1;
 			if(e.keyCode == 50) 
@@ -668,7 +607,6 @@ if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(naviga
 
 window.onload = async () => {
     texturesClass.wallTextures = await texturesClass.loadTexturesToArray(texturesClass.wallTextures, texturesClass.wallFileNames, 1);
-    texturesClass.floorTextures = await texturesClass.loadTexturesToArray(texturesClass.floorTextures, texturesClass.floorFileNames, 2);
     texturesClass.skyTextures = await texturesClass.loadTexturesToArray(texturesClass.skyTextures, texturesClass.skyFileNames, 1);
 
 	game = setInterval(gameLoop, CLOCKSIGNAL)
