@@ -16,7 +16,7 @@ const SKY_GRID_SIZE = 4
 
 const GRID_SIZE = Math.floor(SCREEN_WIDTH / NUMBER_OF_RAYS)
 
-const TRICK = 60
+const CLOCKSIGNAL = 60
 const FOV = toRadians(60)
 const CELL_SIZE = 64
 const MOVE_SPEED = 20
@@ -46,7 +46,7 @@ var inX; var inY;
 const menu = {
 	clearGameSwitch: false,
 	infoSwitch: false,
-	mapSwitch: false,
+	mapSwitch: true,
 	shadowsSwitch: true,
 	mouseSwitch: true,
 	floorSwitch: true,
@@ -56,7 +56,7 @@ const menu = {
 var game
 var playerRay
 var shadowDistance
-var floorTextureId = 3
+var floorTextureId = 2
 var skyTextureId = 1
 var timeStart
 
@@ -109,11 +109,6 @@ function toAngle(rad) {
 		degrees += 360;
 	}
 	return degrees;
-}
-
-function clearScreen() {
-	context.fillStyle = 'black'
-	context.fillRect(0,0, SCREEN_WIDTH, SCREEN_HEIGHT)
 }
 
 function movePlayer() {
@@ -189,6 +184,8 @@ function getVCrash(angle) {
 	let nextX = firstX;
 	let nextY = firstY;
 	let actCellY;
+	let lastCellX;
+	let lastCellY;
 
 	while(!wall) {
 		const cellX = (right) ? Math.floor(nextX / CELL_SIZE) : Math.floor(nextX / CELL_SIZE) - 1;
@@ -199,7 +196,7 @@ function getVCrash(angle) {
 		wall = map[cellY][cellX]
 		actCellY = cellY
 
-		if(!wall) { nextX += xA; nextY += yA }
+		if(!wall) { nextX += xA; nextY += yA; lastCellX = cellX; lastCellY = cellY; }
 	}
 
 	let start = (!right)
@@ -208,6 +205,8 @@ function getVCrash(angle) {
 
 	return {
 		wall : wall,
+		wallX: lastCellX,
+		wallY: lastCellY,
 		angle,
 		distance: distance(player.x, player.y, nextX, nextY),
 		vertical: true,
@@ -236,6 +235,8 @@ function getHCrash(angle) {
 	let nextX = firstX;
 	let nextY = firstY;
 	let actCellX;
+	let lastCellX;
+	let lastCellY;
 
 	while(!wall) {
 		const cellX = Math.floor(nextX / CELL_SIZE)
@@ -246,7 +247,7 @@ function getHCrash(angle) {
 		wall = map[cellY][cellX]
 		actCellX = cellX
 
-		if(!wall) { nextX += xA; nextY += yA; }
+		if(!wall) { nextX += xA; nextY += yA; lastCellX = cellX; lastCellY = cellY; }
 	}
 
 	let start = (!up) 
@@ -255,6 +256,8 @@ function getHCrash(angle) {
 
 	return { 
 		wall: wall,
+		wallX: lastCellX,
+		wallY: lastCellY,
 		angle,
 		distance: distance(player.x, player.y, nextX, nextY),
 		vertical: false,
@@ -350,101 +353,62 @@ function renderScreen(rays) {
 		}
 	}
 
-	// OWN FIRST DRAW FLOOR
-	if(false) {
-		if(menu.floorSwitch) {
-			let floorGRID_SIZE = GRID_SIZE * 2
-			let textureWidth = texturesClass.floorTextures[floorTextureId].data[0].length
-			let textureHeight = texturesClass.floorTextures[floorTextureId].data.length
-			let realTextureWidth = textureWidth * floorGRID_SIZE
-			let realTextureHeight = textureHeight * floorGRID_SIZE
-		
-			let wCount = Math.ceil(SCREEN_WIDTH / realTextureWidth);
-			let hCount = Math.ceil((SCREEN_HEIGHT / 2) / realTextureHeight);
-			for(let hs=0; hs<hCount; hs++){
-				for(let ws=0; ws<wCount; ws++){
-					//TEXTURE
-					for(let h=0; h<textureHeight; h++) {
-						for(let w=0; w<textureWidth; w++) {
-							context.fillStyle = texturesClass.floorTextures[floorTextureId].data[h][w];
-							context.fillRect(
-								(ws * realTextureWidth) + (w * floorGRID_SIZE),
-								player.z + (SCREEN_HEIGHT / 2) + (hs * realTextureHeight) + (h * floorGRID_SIZE),
-								floorGRID_SIZE,
-								floorGRID_SIZE + 1,
-							);
-						}
-					}
-				}
-			}
-		}
-	}
-
-	// ---------------------
-
-	///////////////////////////
-	// SECOND FIRST DRAW FLOOR
-
-	// console.log(rays.length)
-	// console.log(rays[rays.length-1])
-	// console.log(rays[0])
-	// console.log(rays[0], rays[rays.length])
-
+	// DRAW FLOOR
 	if(true) {
-
-		let planeX = 0.0
+		let planeX = 1.0
 		let planeY = 0.66
 
-		let floorGridSize = GRID_SIZE
+		const FLOOR_GRID_SIZE = GRID_SIZE
 
-		let screenHeightNow = (SCREEN_HEIGHT / floorGridSize)
-		let screenWidthNow = (SCREEN_WIDTH / floorGridSize)
+		let textWidth = texturesClass.floorTextures[floorTextureId].imgWidth
+		let textHeight = texturesClass.floorTextures[floorTextureId].imgHeight
 
-		for(let y = 0; y < (screenHeightNow / 2); y++) {
-			// rayDir a bal szélső sugárhoz (x = 0) és a jobb szélső sugárhoz (x = w)
-			rayDirX1 = rays[0].rayDirX - planeX
-			rayDirX0 = rays[0].rayDirX + planeX
-			rayDirY1 = rays[rays.length-1].rayDirY - planeY
-			rayDirY0 = rays[rays.length-1].rayDirY + planeY
+		let screenHeightNow = (SCREEN_HEIGHT / FLOOR_GRID_SIZE)
+		let screenWidthNow = (SCREEN_WIDTH / FLOOR_GRID_SIZE)
+
+		for(let y=Math.floor(screenHeightNow / 2); y<screenHeightNow; ++y) {
+			rayDirX0 = rays[0].rayDirX - planeX
+			rayDirY0 = rays[0].rayDirY - planeY
+			rayDirX1 = rays[rays.length-1].rayDirX + planeX
+			rayDirY1 = rays[rays.length-1].rayDirY + planeY
 
 			let p = y + screenHeightNow / 2;
-			//let posZ = 0.5 * screenHeightNow // ORIGINAL
-			let posZ = 0.5 * screenHeightNow * 8 	// OWN
+			
+			//let posZ = 0.5 * screenHeightNow // ORIGINAL		
+			let posZ = 0.5 * screenHeightNow// OWN
+
 			let rowDistance = posZ / p
 
 			let floorStepX = rowDistance * (rayDirX1 - rayDirX0) / screenWidthNow
 			let floorStepY = rowDistance * (rayDirY1 - rayDirY0) / screenWidthNow
-
+			
 			let floorX = player.x + rowDistance * rayDirX0
 			let floorY = player.y + rowDistance * rayDirY0
 	
-			//console.log(Math.floor(floorX), Math.floor(floorY))
-
 			for (let x = 0; x < screenWidthNow; ++x) {
-				// a cellakoordinát egyszerűen a floorX és floorY betűs részéből kapjuk
 				
-				let cellX = Math.floor(floorX)
-				let cellY = Math.floor(floorY)
+				let cellX = floorX | 0;
+				let cellY = floorY | 0;
 				
-				let tx = (CELL_SIZE * (floorX - cellX)) & (CELL_SIZE -1)
-				let ty = (CELL_SIZE * (floorY - cellY)) & (CELL_SIZE -1)
-
 				floorX += floorStepX
 				floorY += floorStepY
-		
+								
+				let tx = (textWidth * (floorX - cellX)) & (textWidth - 1);
+				let ty = (textHeight * (floorY - cellY)) & (textHeight - 1);
+
 				// floor
-				context.fillStyle = texturesClass.wallTextures[floorTextureId].data[ty][tx]
+				//context.fillStyle = texturesClass.wallTextures[floorTextureId].data[ty][tx]
+				context.fillStyle = texturesClass.floorTextures[floorTextureId].data[textWidth * ty + tx]
 				context.fillRect(
-					(x * GRID_SIZE),
-					(y * GRID_SIZE) + (player.z + Math.floor((SCREEN_HEIGHT/2))),
-					GRID_SIZE,
-					GRID_SIZE,
+					(x * FLOOR_GRID_SIZE),
+					(y * FLOOR_GRID_SIZE) + player.z,
+					FLOOR_GRID_SIZE,
+					FLOOR_GRID_SIZE,
 				);
 			}
 		}
 	}
-	// ---------
-
+	// START RAYS
 	rays.forEach((ray, i) => {
 		//const distance = ray.distance;
 		const distance = fixFhishEye(ray.distance, ray.angle, player.angle)
@@ -478,7 +442,7 @@ function renderScreen(rays) {
 				}
 			}
 		}
-		
+
 		// Simple Floor
 		if(!menu.floorSwitch) {
 			context.fillStyle = texturesClass.wallTextures[floorTextureId].data[0][0];
@@ -489,6 +453,7 @@ function renderScreen(rays) {
 				SCREEN_HEIGHT
 			);
 		}
+
 		// Simple Sky
 		if(!menu.skySwitch) {
 			context.fillStyle = texturesClass.skyTextures[skyTextureId].data[0][0];
@@ -544,7 +509,7 @@ function renderMinimap(rays) {
 	)
 
 	// PLAYER RAY
-	const rayLength = PLAYER_SIZE * 1;
+	const rayLength = PLAYER_SIZE * 5;
 
 	context.strokeStyle = 'orange'
 	context.lineWidth = 1;
@@ -602,19 +567,15 @@ function infoPanel() {
 
 function gameLoop() {
 
-	timeStart = Date.now();
+	timeStart = Date.now()
 
-	//clearScreen()
 	movePlayer()
 	const rays = getRays()
 	renderScreen(rays)
 	playerRay = castRay(player.angle)
-
 	shadowDistance = calcShadowDistance(playerRay.distance)
 
 	if (menu.mapSwitch) renderMinimap(rays)
-
-
 
 	if (menu.infoSwitch) infoPanel()
 	
@@ -666,7 +627,7 @@ if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(naviga
 			if(e.keyCode == 70) menu.floorSwitch = (menu.floorSwitch) ? false : true;				// F
 			if(e.keyCode == 75) menu.skySwitch = (menu.skySwitch) ? false : true;					// K
 			if(e.keyCode == 49) 
-				floorTextureId = ( floorTextureId >= texturesClass.wallTextures.length-1)			// 1			!!! FLOOR LESZ 
+				floorTextureId = ( floorTextureId >= texturesClass.floorTextures.length-1)			// 1
 					? 1 
 					: floorTextureId + 1;
 			if(e.keyCode == 50) 
@@ -706,11 +667,9 @@ if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(naviga
 // ---------- START ----------
 
 window.onload = async () => {
-    texturesClass.wallTextures = await texturesClass.loadTexturesToArray(texturesClass.wallTextures, texturesClass.wallFileNames);
-    texturesClass.floorTextures = await texturesClass.loadTexturesToArray(texturesClass.floorTextures, texturesClass.floorFileNames);
-    texturesClass.skyTextures = await texturesClass.loadTexturesToArray(texturesClass.skyTextures, texturesClass.skyFileNames);
+    texturesClass.wallTextures = await texturesClass.loadTexturesToArray(texturesClass.wallTextures, texturesClass.wallFileNames, 1);
+    texturesClass.floorTextures = await texturesClass.loadTexturesToArray(texturesClass.floorTextures, texturesClass.floorFileNames, 2);
+    texturesClass.skyTextures = await texturesClass.loadTexturesToArray(texturesClass.skyTextures, texturesClass.skyFileNames, 1);
 
-	//console.log(texturesClass.floorTextures)
-
-	game = setInterval(gameLoop, TRICK)
+	game = setInterval(gameLoop, CLOCKSIGNAL)
 };
