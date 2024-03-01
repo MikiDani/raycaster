@@ -1,0 +1,83 @@
+html {
+  box-sizing: border-box;
+  overflow: hidden;
+  margin: 0;
+  background-color: black;
+}
+
+body {
+  margin: 0;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  background-color: black;
+}
+
+#container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: black;
+  height: 100wh;
+}
+
+canvas {
+  will-change: auto;
+}
+
+#menu-bg {
+  margin: 0 auto;
+}
+
+.loading-box {
+  background-color: rgba(244, 146, 49, 0.6666666667);
+  font-family: "Alfa Slab One", serif;
+  font-size: 18px;
+}
+
+#menu-box {
+  box-sizing: border-box;
+  background-color: rgba(193, 101, 9, 0.6666666667);
+  padding: 25px;
+  margin-top: 20%;
+}
+
+.menu-row {
+  font-family: "Alfa Slab One", serif;
+  font-size: 18px;
+  background-color: rgba(244, 146, 49, 0.6666666667);
+  width: 100%;
+  height: 40px;
+}
+
+.menu-element {
+  margin-bottom: 10px;
+}
+.menu-element:hover {
+  cursor: pointer;
+  background-color: #e7bb8f !important;
+}
+
+.logo-position {
+  position: absolute;
+  top: 20%;
+  left: 50vw;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  -webkit-transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  -o-transform: translate(-50%, -50%);
+}
+
+.bg-menu-selector {
+  background-color: #c15909;
+}
+
+.control-small-width {
+  width: 100px !important;
+}
+
+.invisible-pointer {
+  pointer-events: none;
+}/*# sourceMappingURL=game.css.map */

@@ -1,0 +1,104 @@
+{
+    "map": [
+        [1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 1],
+        [1, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 2, 1, 4, 1, 1],
+        [1, 5, 2, 6, 2, 3, 2, 2, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1],
+        [1, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1]
+    ],
+    "player": {
+        "x": 1.5,
+        "y": 1.5,
+        "angle": 15
+    },
+    "walls": [
+        {
+            "textures": {
+                "style01": ["wall1"]
+            },
+            "type": "basic"
+        },
+        {
+            "textures": {
+                "style01": ["wall2"]
+            },
+            "type": "basic"
+        },
+        {
+            "textures": {
+                "style01": ["wall3-1", "wall3-2", "wall3-3", "wall3-4"]
+            },
+            "type": "animated",
+            "anim_switch": true,
+            "anim_function": null,
+            "anim_speed": 80,
+            "anim_repeat": true,
+            "anim_repeatCount": 0,
+            "anim_startFrame": 1,
+            "anim_maxFrame": 4,
+            "anim_actFrame": 1
+        },
+        {
+            "textures": {
+                "style01": ["door1-1", "door1-2", "door1-3", "door1-4", "door1-5", "door1-6", "door1-7", "door1-8", "door1-9"]
+            },
+            "type": "door",
+            "anim_switch": false,
+            "anim_function": null,
+            "anim_speed": 80,
+            "anim_repeat": 10,
+            "anim_repeatCount": 0,
+            "anim_startFrame": 2,
+            "anim_maxFrame": 9,
+            "anim_actFrame": 1
+        },
+        {
+            "textures": {
+                "style01": ["wall4"]
+            },
+            "type": "basic"
+        },
+        {
+            "textures": {
+                "style01": ["wall5"]
+            },
+            "type": "test"
+        }
+    ],
+    "sprites": [
+        {
+            "textures": {
+                "plant": ["plant1"]
+            },
+            "active": true,
+            "type": "fix",
+            "mode": "object",
+            "animation": false,
+            "x": 6.5,
+            "y": 4.5,
+            "z": -15,
+            "angle": 0,
+            "distance": null
+        },
+        {
+            "textures": {
+                "coins": ["coin1"]
+            },
+            "active": true,
+            "type": "pickup",
+            "mode": "coin",
+            "animation": false,
+            "x": 2.5,
+            "y": 2.5,
+            "z": -15,
+            "angle": 0,
+            "distance": null
+        }
+    ]
+}
