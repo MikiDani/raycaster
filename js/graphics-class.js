@@ -1,9 +1,3 @@
-//var GameWidth = window.innerWidth;
-//var GameHeight = window.innerHeight;
-
-var GameWidth = 1024;
-var GameHeight = 768;
-
 export default class GaphicsClass {
 	constructor ({mapDataClass: mapDataClass, spritesClass: spritesClass, texturesClass: texturesClass, CELL_SIZE: CELL_SIZE, player: player, menu: menu, gamePlay: gamePlay, check: check})
 	{
@@ -34,8 +28,7 @@ export default class GaphicsClass {
 		this.context
 		this.rays
 
-		this.screenColorize = 
-		{
+		this.screenColorize = {
 			switch: false,
 			color: null,
 			alpha: null,
@@ -77,17 +70,17 @@ export default class GaphicsClass {
 		}
 	}
 	
-	screenColorizeOptions(color, alpha, time) {
+	screenColorizeOptions(colorizeOption) {
 		if (!this.screenColorize.switch) {
 			this.screenColorize.switch = true
-			this.screenColorize.color = color
-			this.screenColorize.alpha = alpha
+			this.screenColorize.color = colorizeOption.color
+			this.screenColorize.alpha = colorizeOption.alpha
 			this.screenColorize.action = setInterval(() => {
 				this.screenColorize.switch = false
 				this.screenColorize.color = null
 				this.screenColorize.alpha = null
 				clearInterval(this.screenColorize.action)
-			}, time);
+			}, colorizeOption.time);
 		}
 	}
 
@@ -506,8 +499,9 @@ export default class GaphicsClass {
 		const spriteRayLength = 50;
 	
 		// SPRITES DRAW
-		this.spritesClass.sprites.forEach(sprite => {
+		this.spritesClass.nearSprites.forEach(nearIndex => {
 			//console.log(sprite)
+			let sprite = this.spritesClass.sprites[nearIndex]
 			if (sprite.active) {
 				this.context.fillStyle = 'red';
 				this.context.fillRect(
@@ -656,21 +650,12 @@ export default class GaphicsClass {
 		// START RAYS
 		this.rays.forEach((ray, i) => {
 			//const distance = ray.distance;
-
-			// if (this.mapDataClass.map[ray.wallY][ray.wallX].type == 'test') {
-			// 	//console.log('TEST!!!');
-			// 	ray.distance = ray.distance + 100
-			// }
-
 			const distance = this.fixFhishEye(ray.distance, ray.angle, this.player.angle)
 			const wallHeight = ((this.CELL_SIZE) / distance) * 1450
 			const BRICK_SIZE = wallHeight / this.CELL_SIZE
 	
 			// Wall
 			let nowTexture = this.mapDataClass.returnActualTexture(ray.wallY, ray.wallX)
-
-			//			console.log(nowTexture)
-
 			let actualTexture = this.loadTexture('wallTextures', nowTexture)
 
 			for(let n=0; n<this.CELL_SIZE; n++) {
@@ -766,7 +751,6 @@ export default class GaphicsClass {
 						if (this.SLIP_WIDTH + (wi * this.GRID_SIZE) + this.GRID_SIZE > 0) {
 
 							//console.log(actualTexture.data[colorY][colorX])
-
 							if(actualTexture.data[colorY][colorX] != 'rgba(0, 0, 0, 0)') {
 
 								this.context.fillStyle = actualTexture.data[colorY][colorX];

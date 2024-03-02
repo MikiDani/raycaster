@@ -107,6 +107,7 @@ function movePlayer() {
 		let checkX = check.playerCheckX = actX + playerAngleDirection.x	 //ideiglenes check-hez
 		let checkY = check.playerCheckY = actY + playerAngleDirection.y  //ideiglenes check-hez
 
+		// Controlling the sprite relative to the player's movement.
 		spritesClass.sprites.forEach((sprite,i) => {
 			let playerActX = Math.floor(player.x / CELL_SIZE)
 			let playerActY = Math.floor(player.y / CELL_SIZE)
@@ -114,21 +115,29 @@ function movePlayer() {
 			let spriteActX = Math.floor(sprite.x / CELL_SIZE)
 			let spriteActY = Math.floor(sprite.y / CELL_SIZE)
 
-			if ((spriteActX == playerActX) && (spriteActY == playerActY)
-			&& sprite.active == true && sprite.type == 'pickup' && sprite.mode == "coin") {
-				sprite.active = false
-				console.log(sprite.value)
-				player.score = parseInt(player.score) + parseInt(sprite.value)
-				console.log('PICK UP COIN!!!' + player.score)
-				// Színezés teszt
-				graphicsClass.screenColorizeOptions('255, 180, 50', 0.5, 200);
+			// ACTUAL PLAYER BRICK
+			if ((spriteActX == playerActX) && (spriteActY == playerActY)) {
+
+				// PICKUP COINS
+				if (sprite.active == true && sprite.type == 'pickup' && sprite.mode.includes("coin")) {
+					sprite.active = false
+					player.score = parseInt(player.score) + parseInt(sprite.value)
+					console.log('PICK UP COIN!!!' + player.score)
+					// COLORIZE SCREEN
+					let colorizeOption = {}
+					if (sprite.mode=='coin1') colorizeOption = { color: "255, 180, 50", alpha: 0.5, time: 200 }
+					if (sprite.mode=='coin2') colorizeOption = { color: "255, 255, 255", alpha: 0.5, time: 200 }
+					if (sprite.mode=='coin3') colorizeOption = { color: "200, 100, 0", alpha: 0.5, time: 200 }
+					graphicsClass.screenColorizeOptions(colorizeOption);
+				}
 			}
 			
-			// if ((spriteActX == checkX) && (spriteActY == checkY)) {
-			// 	console.log('SPRITE A KÖVETKEZŐ!!!')
-			// 	moveX = false
-			// 	moveY = false
-			// }
+			if ((spriteActX == checkX) && (spriteActY == checkY)) {
+				console.log('SPRITE A KÖVETKEZŐ!!!')
+				if (sprite.type == 'pickup') return;
+				moveX = false
+				moveY = false
+			}
 		})
 
 		// 45° CHECK
@@ -143,8 +152,9 @@ function movePlayer() {
 	}
 }
 
-function moveCteature(creature) {
-	if (creature.speed != 0) {
+function moveCreature(creature) {
+	if (typeof creature.speed != 'undefined' && creature.speed != 0) {
+
 		let actX = Math.floor(creature.x / CELL_SIZE)
 		let actY = Math.floor(creature.y / CELL_SIZE)
 		creature.inX =  Math.floor(creature.x - (actX * CELL_SIZE))
@@ -152,27 +162,35 @@ function moveCteature(creature) {
 		
 		let moveX = true
 		let moveY = true
+		
+		function checkIndex(arr, y, x) {
+			if (arr[y] && arr[y][x]) return arr[y][x]; else return false;
+		}
 
 		if (creature.x < creature.x + (Math.cos(creature.angle) * creature.speed)) {
 			// RIGHT
-			if (graphicsClass.map[actY][actX+1] && creature.inX >= CELL_SIZE - inputClass.WALL_DISTANCE) moveX = false;
+			if(checkIndex(mapDataClass.map, actY, actX+1))
+				if (mapDataClass.map[actY][actX+1] && creature.inX >= CELL_SIZE - inputClass.WALL_DISTANCE) moveX = false;
 		} else {
 			// LEFT
-			if (graphicsClass.map[actY][actX-1] && creature.inX <= inputClass.WALL_DISTANCE) moveX = false;
+			if(checkIndex(mapDataClass.map, actY, actX-1))
+				if (mapDataClass.map[actY][actX-1] && creature.inX <= inputClass.WALL_DISTANCE) moveX = false;
 		}
 		
 		if (creature.y < creature.y + (Math.sin(creature.angle) * creature.speed)) {
 			// DOWN
-			if (graphicsClass.map[actY+1][actX] && creature.inY >= CELL_SIZE - inputClass.WALL_DISTANCE) moveY = false;
+			if(checkIndex(mapDataClass.map, actY+1, actX))
+				if (mapDataClass.map[actY+1][actX] && creature.inY >= CELL_SIZE - inputClass.WALL_DISTANCE) moveY = false;
 		} else {
 			// UP
-			if (graphicsClass.map[actY-1][actX] && creature.inY <= inputClass.WALL_DISTANCE) moveY = false;
+			if(checkIndex(mapDataClass.map, actY-1, actX))
+				if (mapDataClass.map[actY-1][actX] && creature.inY <= inputClass.WALL_DISTANCE) moveY = false;
 		}
 
-		(moveX) ? creature.x += Math.cos(creature.angle) * creature.speed : false;
-		(moveY) ? creature.y += Math.sin(creature.angle) * creature.speed : false;
-
-		creature.angle += 0.03
+		if (creature.move) {
+			(moveX) ? creature.x += Math.cos(creature.angle) * creature.speed : false;
+			(moveY) ? creature.y += Math.sin(creature.angle) * creature.speed : false;
+		}
 
 		let creatureAngleDirection = checkDirection(graphicsClass.toAngle(creature.angle), creature.speed)
 
@@ -181,11 +199,23 @@ function moveCteature(creature) {
 
 		let playerActX = Math.floor(player.x / CELL_SIZE)
 		let playerActY = Math.floor(player.y / CELL_SIZE)
+
 		if ((playerActX == checkX) && (playerActY == checkY)) {
 			console.log('PLAYER TALÁLAT!!!')
-			creature.speed = 0
-			clearInterval(creature.animationFunction)
+			creature.move = false
+			creature.animation = false
+
+			let colorizeOption = { color: "255, 0, 0", alpha: 0.5, time: 200 }
+			graphicsClass.screenColorizeOptions(colorizeOption);
+
+			// clearInterval(creature.animationFunction)
+		} else {
+			creature.move = true
+			creature.animation = true
+			creature.angle += 0.03
 		}
+
+		
 	}
 }
 
@@ -199,10 +229,11 @@ function playerWalk() {
 }
 
 function creatureSpriteSelect(creature) {
-	creature.actAnimationFrame = (creature.actAnimationFrame) ? creature.actAnimationFrame : 1;
+	creature.actAnimationFrame = (creature.actAnimationFrame) ? creature.actAnimationFrame : 2;
 
 	let angDif = graphicsClass.toAngle(creature.angle - player.angle);
 
+	// ROTATION
 	if (creature.rotation) {
 		var rot_b = creature.rotationFrames[0]; var rot_d = creature.rotationFrames[1];
 		var rot_a = creature.rotationFrames[2]; var rot_c = creature.rotationFrames[3];
@@ -211,15 +242,20 @@ function creatureSpriteSelect(creature) {
 		var rot_a = 'a'; var rot_c = 'a';
 	}
 
+	let texturename;
+
+	// ANIMATIONFRAME
 	if (angDif >= 315 && angDif <= 360 || angDif >= 0 && angDif < 45) {
-		creature.texturePlace[1] = creature.texturePlace[0]+'_'+rot_b+creature.actAnimationFrame
+		texturename = `${creature.dirConstruction[0]}_${rot_b}${creature.actAnimationFrame}`
 	} else if (angDif >= 45 && angDif < 135) {
-		creature.texturePlace[1] = creature.texturePlace[0]+'_'+rot_d+creature.actAnimationFrame
+		texturename = `${creature.dirConstruction[0]}_${rot_d}${creature.actAnimationFrame}`
 	} else if (angDif >= 135 && angDif < 225) {
-		creature.texturePlace[1] = creature.texturePlace[0]+'_'+rot_a+creature.actAnimationFrame
+		texturename = `${creature.dirConstruction[0]}_${rot_a}${creature.actAnimationFrame}`
 	} else if (angDif >= 225 && angDif < 315) {
-		creature.texturePlace[1] = creature.texturePlace[0]+'_'+rot_c+creature.actAnimationFrame
-	}	
+		texturename = `${creature.dirConstruction[0]}_${rot_c}${creature.actAnimationFrame}`
+	}
+
+	return texturename;
 }
 
 async function loadindDatas() {
@@ -251,22 +287,17 @@ async function loadindDatas() {
     }
 
 	console.log(spritesClass.sprites)
-	
-    // texturesClass.creaturesTextures = await texturesClass.loadTexturesToArray(texturesClass.creaturesTextures, texturesClass.creaturesFileNames, 'creatures')
 }
 
-function gameLoop() {
-	gamePlay.timeStart = Date.now()
-	movePlayer()
-	graphicsClass.rays = graphicsClass.getRays()
-	graphicsClass.renderScreen()
-
-	spritesClass.sprites = spritesClass.sprites.sort((a, b) => b.distance - a.distance)
-	
-	spritesClass.sprites.forEach((sprite, index) => {
+function spritesCheck() {
+	// ARRANGE SPRITES
+	spritesClass.nearSprites.forEach((nearIndex, index) => {
+		let sprite = spritesClass.sprites[nearIndex]
 		if (sprite.active) {
-			// ÉLŐLÉNYEK
+			let getActualTexture = sprite.dirConstruction[1]
+			// IF CREATURES
 			if (sprite.type == 'creature') {
+				
 				if(sprite.animation != false) {
 					if(!sprite.animationFunction) {
 						sprite.actAnimationFrame = sprite.animationFrames[0]
@@ -278,27 +309,37 @@ function gameLoop() {
 					}
 				}
 
-				if(sprite.move == 'stay') {
-					creatureSpriteSelect(sprite)
+				if(sprite.moveType == 'mode1') {
+					console.log('Itt')
+					getActualTexture = creatureSpriteSelect(sprite)
+					moveCreature(sprite)
 				}
 
-				if(sprite.move == 'mode1') {
-					creatureSpriteSelect(sprite)
-					moveCteature(sprite)
-				}
-
-				if(sprite.move == 'levitation') {
+				if(sprite.moveType == 'levitation') {
 					sprite.z = playerWalk()
 				}
 			}
 			
-			let actualTexture = texturesClass.spriteTextures[sprite.dirConstruction[0]][sprite.dirConstruction[1]];
+			let actualTexture = texturesClass.spriteTextures[sprite.dirConstruction[0]][getActualTexture];
 
 			graphicsClass.renderScreenSprites(sprite, index, actualTexture)
 		}
 	});
 
-	// villogó képernyő
+}
+
+function gameLoop() {
+	gamePlay.timeStart = Date.now()
+	movePlayer()
+	graphicsClass.rays = graphicsClass.getRays()
+	graphicsClass.renderScreen()
+
+	spritesClass.sprites = spritesClass.sprites.sort((a, b) => b.distance - a.distance)
+
+	spritesClass.selectNearSprites()
+
+	spritesCheck()
+
 	graphicsClass.screenColorizeAction()
 
 	if (menu.mapSwitch) graphicsClass.renderMinimap(graphicsClass.rays)
@@ -310,7 +351,7 @@ function gameLoop() {
 
 async function gameMenu() {
 	if(menu.menuactive) {
-		// MENU
+		//// MENU
 		clearInterval(gamePlay.game)
 		gamePlay.game = null		
 		inputClass.moveMenuStar()
@@ -320,7 +361,7 @@ async function gameMenu() {
 		graphicsClass.clrScr()
 		return;
 	} else {
-		// GAME
+		//// GAME
 		
 		// LOADING
 		if (!gamePlay.gameLoaded) {
@@ -348,8 +389,8 @@ async function gameMenu() {
 //	  GAME START	|
 //-------------------
 const texturesClass = new TexturesClass ()
-const spritesClass 	= new SpritesClass  ({CELL_SIZE: CELL_SIZE, texturesClass: texturesClass})
 const mapDataClass 	= new MapDataClass  ({texturesClass: texturesClass})
+const spritesClass 	= new SpritesClass  ({CELL_SIZE: CELL_SIZE, player: player, texturesClass: texturesClass, mapDataClass: mapDataClass})
 const graphicsClass = new GaphicsClass  ({mapDataClass: mapDataClass, spritesClass: spritesClass, texturesClass: texturesClass, CELL_SIZE: CELL_SIZE, player: player, menu: menu, gamePlay: gamePlay, check: check})
 const inputClass 	= new InputsClass   ({mapDataClass: mapDataClass, graphicsClass: graphicsClass, menu: menu, gameMenu: gameMenu, player: player, keyPressed: keyPressed, gamePlay: gamePlay, check: check})
 

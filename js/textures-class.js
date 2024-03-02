@@ -16,56 +16,6 @@ export default class TexturesClass {
         
         this.wallTextures = []
         this.spriteTextures = []
-        /*
-        this.creaturesTextures = []
-        
-        this.wallFileNames = {
-            'style01':[
-                'wall1', 'wall2', 'wall3', 'wall4', 'wall5',
-            ],
-            'style02':[
-                'wall6', 'wall7', 'wall8', 'book1',
-            ],
-            'style03':[
-                'paint1_1', 'paint1_2',
-            ],
-            'alpha01':[
-                'a_wall1', 'a_wall2', 'a_wall3',
-            ],
-        } */
-        /*
-        this.objectFileNames = {
-            'plant':[
-                'plant1',
-            ],
-            'coins':[
-                'coin1', 'coin2', 'coin3'
-            ],
-        }
-        */
-        /* this.creaturesFileNames = {
-            'figure': [
-                'figure_a1','figure_a2', 'figure_a3', 
-            ],
-            'dog': [
-                'dog_a1', 'dog_a2', 'dog_a3', 'dog_a4',
-                'dog_b1', 'dog_b2', 'dog_b3', 'dog_b4',
-                'dog_c1', 'dog_c2', 'dog_c3', 'dog_c4',
-                'dog_d1', 'dog_d2', 'dog_d3', 'dog_d4',
-            ],
-            'mage': [
-                'mage_a1',
-            ],
-            'ninja1': [
-                'ninja1_a1',
-            ],
-            'ninja2': [
-                'ninja2_a1', 'ninja2_a2', 'ninja2_a3', 'ninja2_a4',
-            ],
-            'ninja3': [
-                'ninja3_a1', 'ninja3_a2', 'ninja3_a3', 'ninja3_a4',
-            ],
-        } */
     }
 
     async loadTexturesToArray(textureArray, fileNames, dir) {
@@ -141,6 +91,8 @@ export default class TexturesClass {
                             count = count + 4
                         }
                     }
+                    // Delete canvas in DOM
+                    document.getElementById('graphics-container').innerHTML = '';
     
                     good({name: filename, imgWidth: imgWidth, imgHeight: imgHeight, data: texture});
                 };

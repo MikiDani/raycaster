@@ -240,8 +240,8 @@ export default class InputClass {
     }
 
     handleKeyPress = () => {
-        if (this.keyPressed['a']) { this.player.angle += -this.graphicsClass.toRadians(3); }
-        if (this.keyPressed['d']) { this.player.angle += this.graphicsClass.toRadians(3); }
+        if (this.keyPressed['a']) { this.player.angle += -this.graphicsClass.toRadians(5); }
+        if (this.keyPressed['d']) { this.player.angle += this.graphicsClass.toRadians(5); }
         if (this.keyPressed['q']) { this.player.angle += -this.graphicsClass.toRadians(this.MOVE_ANGLE); }
         if (this.keyPressed['e']) { this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE); }
         if (this.keyPressed['w']) { this.player.speed = this.MOVE_SPEED }
