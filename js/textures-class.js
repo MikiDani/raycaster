@@ -101,8 +101,7 @@ export default class TexturesClass {
                     fault(error);
                 };
                 console.log('A ' + filename + ' betöltődött...');
-            }
-            
+            }  
         });
     }
 }

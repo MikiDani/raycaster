@@ -179,8 +179,8 @@ export default class InputClass {
                 if (event.key == '2') this.menu.floorSwitch = !this.menu.floorSwitch;
                 if (event.key == 'm') this.menu.mapSwitch = !this.menu.mapSwitch;
                 if (event.key == 'i') this.menu.infoSwitch = !this.menu.infoSwitch;
-                if (event.key == 'h') this.menu.shadowsSwitch = !this.menu.shadowsSwitch;
-                if (event.key == 'j') this.menu.spriteShadowsSwitch = !this.menu.spriteShadowsSwitch;
+                if (event.key == 'g') this.menu.shadowsSwitch = !this.menu.shadowsSwitch;
+                if (event.key == 'h') this.menu.spriteShadowsSwitch = !this.menu.spriteShadowsSwitch;
             }
         });
 
@@ -193,8 +193,8 @@ export default class InputClass {
             this.keyPressed[event.key] = true
             if (event.key == 'm') this.menu.mapSwitch = !this.menu.mapSwitch;
             if (event.key == 'i') this.menu.infoSwitch = !this.menu.infoSwitch;
-            if (event.key == 'h') this.menu.shadowsSwitch = !this.menu.shadowsSwitch;
-            if (event.key == 'j') this.menu.spriteShadowsSwitch = !this.menu.spriteShadowsSwitch;
+            if (event.key == 'g') this.menu.shadowsSwitch = !this.menu.shadowsSwitch;
+            if (event.key == 'h') this.menu.spriteShadowsSwitch = !this.menu.spriteShadowsSwitch;
         }
 
         ////////

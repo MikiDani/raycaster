@@ -12,8 +12,8 @@ const CLOCKSIGNAL = 30
 const CELL_SIZE = 64
 
 const player = {
-	x: CELL_SIZE * 3.5,
-	y: CELL_SIZE * 4.5,
+	x: CELL_SIZE * 1.5,
+	y: CELL_SIZE * 1.5,
 	z: 0,
 	inX: null,
 	inY: null,
@@ -75,6 +75,44 @@ function checkDirection(angle, speed) {
     } else {
         return { y: 0, x: 1 * sign };				// Default Up-Right
     }
+}
+
+function spritesCheck() {
+	// ARRANGE SPRITES
+	spritesClass.nearSprites.forEach((nearIndex, index) => {
+		let sprite = spritesClass.sprites[nearIndex]
+		if (sprite.active) {
+			let getActualTexture = sprite.dirConstruction[1]
+			// IF CREATURES
+			if (sprite.type == 'creature') {
+				
+				if(sprite.animation != false) {
+					if(!sprite.animationFunction) {
+						sprite.actAnimationFrame = sprite.animationFrames[0]
+						sprite.animationFunction = setInterval(() => {
+							sprite.actAnimationFrame++
+							if (sprite.actAnimationFrame>sprite.animationFrames.length)
+								sprite.actAnimationFrame = sprite.animationFrames[0]
+						}, sprite.animationSpeed)
+					}
+				}
+
+				if(sprite.moveType == 'mode1') {
+					getActualTexture = creatureSpriteSelect(sprite)
+					moveCreature(sprite)
+				}
+
+				if(sprite.moveType == 'levitation') {
+					sprite.z = playerWalk()
+				}
+			}
+			
+			let actualTexture = texturesClass.spriteTextures[sprite.dirConstruction[0]][getActualTexture];
+
+			graphicsClass.renderScreenSprites(sprite, index, actualTexture)
+		}
+	});
+
 }
 
 function movePlayer() {
@@ -152,6 +190,15 @@ function movePlayer() {
 	}
 }
 
+function playerWalk() {
+	const amplitude = (Math.abs(graphicsClass.WALKINTERVAL) - graphicsClass.WALKINTERVAL) / 2;
+	const offset = (Math.abs(graphicsClass.WALKINTERVAL) + graphicsClass.WALKINTERVAL) / 2;
+	const frequency = 10;
+
+	const value = Math.sin(frequency * Date.now() * 0.001) * amplitude + offset;
+	return Math.floor(value);
+}
+
 function moveCreature(creature) {
 	if (typeof creature.speed != 'undefined' && creature.speed != 0) {
 
@@ -219,15 +266,6 @@ function moveCreature(creature) {
 	}
 }
 
-function playerWalk() {
-	const amplitude = (Math.abs(graphicsClass.WALKINTERVAL) - graphicsClass.WALKINTERVAL) / 2;
-	const offset = (Math.abs(graphicsClass.WALKINTERVAL) + graphicsClass.WALKINTERVAL) / 2;
-	const frequency = 10;
-
-	const value = Math.sin(frequency * Date.now() * 0.001) * amplitude + offset;
-	return Math.floor(value);
-}
-
 function creatureSpriteSelect(creature) {
 	creature.actAnimationFrame = (creature.actAnimationFrame) ? creature.actAnimationFrame : 2;
 
@@ -289,66 +327,6 @@ async function loadindDatas() {
 	console.log(spritesClass.sprites)
 }
 
-function spritesCheck() {
-	// ARRANGE SPRITES
-	spritesClass.nearSprites.forEach((nearIndex, index) => {
-		let sprite = spritesClass.sprites[nearIndex]
-		if (sprite.active) {
-			let getActualTexture = sprite.dirConstruction[1]
-			// IF CREATURES
-			if (sprite.type == 'creature') {
-				
-				if(sprite.animation != false) {
-					if(!sprite.animationFunction) {
-						sprite.actAnimationFrame = sprite.animationFrames[0]
-						sprite.animationFunction = setInterval(() => {
-							sprite.actAnimationFrame++
-							if (sprite.actAnimationFrame>sprite.animationFrames.length)
-								sprite.actAnimationFrame = sprite.animationFrames[0]
-						}, sprite.animationSpeed)
-					}
-				}
-
-				if(sprite.moveType == 'mode1') {
-					console.log('Itt')
-					getActualTexture = creatureSpriteSelect(sprite)
-					moveCreature(sprite)
-				}
-
-				if(sprite.moveType == 'levitation') {
-					sprite.z = playerWalk()
-				}
-			}
-			
-			let actualTexture = texturesClass.spriteTextures[sprite.dirConstruction[0]][getActualTexture];
-
-			graphicsClass.renderScreenSprites(sprite, index, actualTexture)
-		}
-	});
-
-}
-
-function gameLoop() {
-	gamePlay.timeStart = Date.now()
-	movePlayer()
-	graphicsClass.rays = graphicsClass.getRays()
-	graphicsClass.renderScreen()
-
-	spritesClass.sprites = spritesClass.sprites.sort((a, b) => b.distance - a.distance)
-
-	spritesClass.selectNearSprites()
-
-	spritesCheck()
-
-	graphicsClass.screenColorizeAction()
-
-	if (menu.mapSwitch) graphicsClass.renderMinimap(graphicsClass.rays)
-	if (menu.infoSwitch) graphicsClass.infoPanel()
-	if (menu.clearGameSwitch) clearInterval(gamePlay.game)
-
-	//clearInterval(gamePlay.game)
-}
-
 async function gameMenu() {
 	if(menu.menuactive) {
 		//// MENU
@@ -383,6 +361,30 @@ async function gameMenu() {
 		}
 	}
 	return;
+}
+
+function gameLoop() {
+	gamePlay.timeStart = Date.now()
+
+	movePlayer()
+
+	graphicsClass.rays = graphicsClass.getRays()
+
+	graphicsClass.renderScreen()
+
+	spritesClass.sprites = spritesClass.sprites.sort((a, b) => b.distance - a.distance)
+
+	spritesClass.selectNearSprites()
+
+	spritesCheck()
+
+	graphicsClass.screenColorizeAction()
+
+	if (menu.mapSwitch) graphicsClass.renderMinimap(graphicsClass.rays)
+	if (menu.infoSwitch) graphicsClass.infoPanel()
+	if (menu.clearGameSwitch) clearInterval(gamePlay.game)
+
+	//clearInterval(gamePlay.game)
 }
 
 //-------------------
