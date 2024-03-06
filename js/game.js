@@ -273,8 +273,7 @@ function creatureSpriteSelect(creature) {
 
 	// ROTATION
 	if (creature.rotation) {
-		var rot_b = creature.rotationFrames[0]; var rot_d = creature.rotationFrames[1];
-		var rot_a = creature.rotationFrames[2]; var rot_c = creature.rotationFrames[3];
+		var rot_b = creature.rotationFrames[0]; var rot_d = creature.rotationFrames[1]; var rot_a = creature.rotationFrames[2]; var rot_c = creature.rotationFrames[3];
 	} else {
 		var rot_b = 'a'; var rot_d = 'a';
 		var rot_a = 'a'; var rot_c = 'a';
@@ -283,16 +282,16 @@ function creatureSpriteSelect(creature) {
 	let texturename;
 
 	// ANIMATIONFRAME
-	if (angDif >= 315 && angDif <= 360 || angDif >= 0 && angDif < 45) {
-		texturename = `${creature.dirConstruction[0]}_${rot_b}${creature.actAnimationFrame}`
-	} else if (angDif >= 45 && angDif < 135) {
-		texturename = `${creature.dirConstruction[0]}_${rot_d}${creature.actAnimationFrame}`
-	} else if (angDif >= 135 && angDif < 225) {
+	if (angDif >= 135 && angDif < 225) {
 		texturename = `${creature.dirConstruction[0]}_${rot_a}${creature.actAnimationFrame}`
+	} else if (angDif >= 315 && angDif <= 360 || angDif >= 0 && angDif < 45) {
+		texturename = `${creature.dirConstruction[0]}_${rot_b}${creature.actAnimationFrame}`
 	} else if (angDif >= 225 && angDif < 315) {
 		texturename = `${creature.dirConstruction[0]}_${rot_c}${creature.actAnimationFrame}`
+	} else if (angDif >= 45 && angDif < 135) {
+		texturename = `${creature.dirConstruction[0]}_${rot_d}${creature.actAnimationFrame}`
 	}
-
+	
 	return texturename;
 }
 

@@ -4,7 +4,8 @@ export default class InputClass {
         this.graphicsClass = graphicsClass
         //--------------------------------------------------------------------
         this.MOVE_SPEED = 20
-        this.MOVE_ANGLE = 0.5
+        this.MOVE_ANGLE = 5
+        this.MOVE_ANGLE_SLOW = 0.5
         this.WALL_DISTANCE = (graphicsClass.CELL_SIZE / 100) * 40
         //--------------------------------------------------------------------
         this.menu = menu
@@ -14,6 +15,7 @@ export default class InputClass {
         this.keybordListener = null
         this.gamePlay = gamePlay
         this.check = check
+        this.mouseMoveSwitsh = false
 
         this.loadInputs()
         this.moveMenuStar()
@@ -145,7 +147,7 @@ export default class InputClass {
             if(event.key == 'Escape') {
                 // MENU PUSH ESC
                 if (this.menu.optionsActive) {
-                    this.menu.optionsActive = false;
+                    this.menu.optionsActive = false
                     this.graphicsClass.makeMenu()
                     return;
                 }
@@ -153,6 +155,8 @@ export default class InputClass {
                 // GAME PUSH ESC
                 if (!this.menu.menuactive) {
                     this.menu.menuactive = false
+                    this.mouseMoveSwitsh = false
+                    $("body").css({cursor: "default"});
                     this.menuGameJumpAction();
                     return;
                 }
@@ -214,38 +218,76 @@ export default class InputClass {
         ////////
         // MOUSE
         ////////
-        document.addEventListener('click', function(event) {
-            let element = event.target;
-            while (element) {
-                if (element.id) {
-                    this.menuAction(element.id)
-                    this.moveMenuStar(0)
-                }
-                element = element.parentElement;
-            }
-        }.bind(this));
 
-        document.addEventListener('mouseover', function(event) {
-            let element = event.target;
-            while (element) {
-                if (element.id) {
-                    //console.log('Az element ID-je:', element.id)
-                    this.changeMenuStar(element.id, false)
-                    if (element.id == 'menu-bg' || element.id == 'menu-box') this.moveMenuStar(0);
-                    return;
+        // MENU MOUSE USE
+        document.addEventListener('click', (event) => {
+            if (this.menu.menuactive) {
+                let element = event.target;
+                while (element) {
+                    if (element.id) {
+                        this.menuAction(element.id)
+                        this.moveMenuStar(0)
+                    }
+                    element = element.parentElement;
                 }
-                element = element.parentElement;
             }
-        }.bind(this));
+        });
+
+        document.addEventListener('mouseover', (event) => {
+            if (this.menu.menuactive) {
+                let element = event.target;
+                while (element) {
+                    if (element.id) {
+                        //console.log('Az element ID-je:', element.id)
+                        this.changeMenuStar(element.id, false)
+                        if (element.id == 'menu-bg' || element.id == 'menu-box') this.moveMenuStar(0);
+                        return;
+                    }
+                    element = element.parentElement;
+                }
+            }
+        });
+
+        // GAME MOUSE USE
+        $("#canvas").on('click', (event) => {
+            $("body").css({cursor: "crosshair"});
+            if(this.mouseMoveSwitsh) {
+                if (event.pageX > (this.graphicsClass.SCREEN_WIDTH / 2)) {
+                    this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE * 2)
+                } else {
+                    this.player.angle += -this.graphicsClass.toRadians(this.MOVE_ANGLE * 2)
+                }
+            }
+            this.mouseMoveSwitsh = true
+        });
+
+        var lastMouseX = null;
+        $(document).on('mousemove', (event) => {
+            if (!(this.menu.menuactive) && this.mouseMoveSwitsh) {
+                var movementX = event.clientX;
+                if(movementX != null) {
+                    if (movementX > lastMouseX) {
+                        this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE)
+                    } else {
+                        this.player.angle += -this.graphicsClass.toRadians(this.MOVE_ANGLE)
+                    }
+                }
+                lastMouseX = movementX                
+            }
+        });
     }
 
     handleKeyPress = () => {
-        if (this.keyPressed['a']) { this.player.angle += -this.graphicsClass.toRadians(5); }
-        if (this.keyPressed['d']) { this.player.angle += this.graphicsClass.toRadians(5); }
-        if (this.keyPressed['q']) { this.player.angle += -this.graphicsClass.toRadians(this.MOVE_ANGLE); }
-        if (this.keyPressed['e']) { this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE); }
+        if (this.keyPressed['a']) { this.player.angle += -this.graphicsClass.toRadians(this.MOVE_ANGLE); }
+        if (this.keyPressed['d']) { this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE); }
+        if (this.keyPressed['ArrowLeft']) { this.player.angle += -this.graphicsClass.toRadians(this.MOVE_ANGLE); }
+        if (this.keyPressed['ArrowRight']) { this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE); }
+        if (this.keyPressed['q']) { this.player.angle += -this.graphicsClass.toRadians(this.MOVE_ANGLE_SLOW); }
+        if (this.keyPressed['e']) { this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE_SLOW); }
         if (this.keyPressed['w']) { this.player.speed = this.MOVE_SPEED }
         if (this.keyPressed['s']) { this.player.speed = -this.MOVE_SPEED }
+        if (this.keyPressed['ArrowUp']) { this.player.speed = this.MOVE_SPEED }
+        if (this.keyPressed['ArrowDown']) { this.player.speed = -this.MOVE_SPEED }
 
         this.keybordListener = requestAnimationFrame(this.handleKeyPress);
     }

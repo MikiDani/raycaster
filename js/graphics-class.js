@@ -7,7 +7,7 @@ export default class GaphicsClass {
 		//--------------------------------------------------------------------
 		this.CELL_SIZE = CELL_SIZE
 		this.WALKINTERVAL = -7
-		this.SKY_GRID_SIZE = 5
+		this.SKY_GRID_SIZE = 3	// !!!!!!   5
 		this.FOV = this.toRadians(60)
 		this.MINIMAP_SCALE = 0.333
 		this.MINIMAP_X = 5
