@@ -27,8 +27,8 @@ const menu = {
 	menuactive: true,
 	optionsActive: false,
 	clearGameSwitch: false,
-	infoSwitch: true,
-	mapSwitch: true,
+	infoSwitch: false,
+	mapSwitch: false,
 	shadowsSwitch: true,
 	spriteShadowsSwitch: true,
 	mouseSwitch: true,
@@ -303,14 +303,24 @@ async function loadindDatas() {
 	player.y = mapData.player.y * CELL_SIZE
 	player.angle = graphicsClass.toRadians(mapData.player.angle)
 
-	texturesClass.errorTextures = await texturesClass.loadTexturesToArray(texturesClass.errorTextures, texturesClass.errorFileNames, 'errors')
-	texturesClass.skyTextures = await texturesClass.loadTexturesToArray(texturesClass.skyTextures, texturesClass.skyFileNames, 'skys')
-	texturesClass.floorTextures = await texturesClass.loadTexturesToArray(texturesClass.floorTextures, texturesClass.floorFileNames, 'floors')
+	//texturesClass.errorTextures = await texturesClass.loadTexturesToArray(texturesClass.errorTextures, texturesClass.errorFileNames, 'errors')
+
+	// Load Error Texture
+	let error = mapData.error[0]
+	await texturesClass.loadTexturesPicture(error, 'error', texturesClass.errorTexture)
+
+	// Load SKY Texture
+	let sky = mapData.sky[0]
+	await texturesClass.loadTexturesPicture(sky, 'skys', texturesClass.skyTexture)
+
+	// Load Floor Texture
+	let floor = mapData.floor[0]
+	await texturesClass.loadTexturesPicture(floor, 'floors', texturesClass.floorTexture)
 
 	// Load Wall Textures
 	for (let i = 0; i < mapData.walls.length; i++) {
         let wall = mapData.walls[i]
-		let dirConstruction = await texturesClass.loadTexturesToThis(wall.textures, 'walls', texturesClass.wallTextures)
+		let dirConstruction = await texturesClass.loadTextureToArray(wall.textures, 'walls', texturesClass.wallTextures)
 		mapDataClass.createWall(wall, dirConstruction)
     }
 	// Map Array upload Wall textures
@@ -319,11 +329,9 @@ async function loadindDatas() {
 	// Load Sprites
 	for (let i = 0; i < mapData.sprites.length; i++) {
         let sprite = mapData.sprites[i]
-		let dirConstruction = await texturesClass.loadTexturesToThis(sprite.textures, 'sprites', texturesClass.spriteTextures)		
+		let dirConstruction = await texturesClass.loadTextureToArray(sprite.textures, 'sprites', texturesClass.spriteTextures)		
 		spritesClass.createSprite(sprite, dirConstruction)
     }
-
-	console.log(spritesClass.sprites)
 }
 
 async function gameMenu() {
@@ -366,17 +374,11 @@ function gameLoop() {
 	gamePlay.timeStart = Date.now()
 
 	movePlayer()
-
 	graphicsClass.rays = graphicsClass.getRays()
-
 	graphicsClass.renderScreen()
-
 	spritesClass.sprites = spritesClass.sprites.sort((a, b) => b.distance - a.distance)
-
 	spritesClass.selectNearSprites()
-
 	spritesCheck()
-
 	graphicsClass.screenColorizeAction()
 
 	if (menu.mapSwitch) graphicsClass.renderMinimap(graphicsClass.rays)

@@ -7,11 +7,10 @@ export default class GaphicsClass {
 		//--------------------------------------------------------------------
 		this.CELL_SIZE = CELL_SIZE
 		this.WALKINTERVAL = -7
-		this.SKY_GRID_SIZE = 3	// !!!!!!   5
 		this.FOV = this.toRadians(60)
-		this.MINIMAP_SCALE = 0.333
-		this.MINIMAP_X = 5
-		this.MINIMAP_Y = 4
+		this.MINIMAP_SCALE = 0.1333
+		this.MINIMAP_X = 10
+		this.MINIMAP_Y = 10
 		this.PLAYER_SIZE = 6
 		this.SPRITE_SIZE = 6
 		//--------------------------------------------------------------------
@@ -23,7 +22,6 @@ export default class GaphicsClass {
 		this.check = check
 		
 		this.floorTexture = ['floor', 'floor1']
-		this.skyTexture = ['sky', 'sky1']
 
 		this.context
 		this.rays
@@ -126,10 +124,6 @@ export default class GaphicsClass {
 		container.appendChild(canvas)
 		this.context = canvas.getContext('2d')
 		this.context.imageSmoothingEnabled = false
-
-		const graphicsDiv = document.createElement("div")
-		graphicsDiv.setAttribute('id', 'graphics-container')
-		container.appendChild(graphicsDiv)
 	}
 
 	makeMenu() {
@@ -586,67 +580,67 @@ export default class GaphicsClass {
 
 	renderScreen() {
 		// OWN FIRST DRAW SKY
-		if (true) {
-			let actualTexture = this.loadTexture('skyTextures', this.skyTexture)
+		if(this.menu.skySwitch) {
 			
-			let textureWidth = actualTexture.data[0].length
+			console.log(this.texturesClass.skyTexture.type)
 
-			let widthPixel, arundPixel;
-			let skyAngle = this.toAngle(this.player.angle)
-			let plusWidth = (textureWidth / 360)
-			let flip = Math.floor(skyAngle * plusWidth)
-			
-			if(this.menu.skySwitch) {
-				for(let h=0; h<((this.GAME_HEIGHT / this.SKY_GRID_SIZE) / 2)+5; h++) {
-					widthPixel = 0
-					for(let w=0; w<(this.SCREEN_WIDTH / this.SKY_GRID_SIZE); w++) {
-		
-						arundPixel = (widthPixel + flip) % textureWidth;
-		
-						this.context.fillStyle = actualTexture.data[h][arundPixel];
-						this.context.fillRect(
-							(w * this.SKY_GRID_SIZE),
-							(h * this.SKY_GRID_SIZE),
-							this.SKY_GRID_SIZE,
-							this.SKY_GRID_SIZE,
-						);
-		
-						widthPixel = (widthPixel>textureWidth) ? 0 : widthPixel=widthPixel+1;
+			if (this.texturesClass.skyTexture.type == 'sky') {
+				let texture = this.texturesClass.skyTexture.element
+				let textureWidth = this.texturesClass.skyTexture.textureWidth
+				let textureHeight = this.texturesClass.skyTexture.textureHeight
+	
+				let largestTextureWidth = textureWidth * 2
+				let largestTextureHeight = textureHeight * 2
+				
+				if (texture) {
+					let skyAngle = this.toAngle(this.player.angle)
+					let textureSlice =textureWidth / 360
+					let flip = skyAngle * textureSlice
+					
+					let textureSliceLargest = largestTextureWidth / 360
+					let flipLargest = skyAngle * textureSliceLargest
+					
+					this.context.drawImage(texture,
+						flip, 0,
+						textureWidth-flip, textureHeight,
+						0, 0,
+						largestTextureWidth-flipLargest, largestTextureHeight)
+					
+					if (textureWidth-flip <= canvas.width) {
+						this.context.drawImage(texture,	
+							0, 0,
+							textureWidth, textureHeight,
+							largestTextureWidth-flipLargest, 0,
+							largestTextureWidth, largestTextureHeight)
 					}
+				}
+			} else {
+				// CEILING 			"sky": [ {"texture": { "ceiling1": ["ceiling1"] }, "type": "celling" } ],
+				let texture = this.texturesClass.skyTexture.element
+				console.log(texture)
+				let textureWidth = this.texturesClass.skyTexture.textureWidth
+				let textureHeight = this.texturesClass.skyTexture.textureHeight
+				
+				var repetitionX = Math.ceil(canvas.width / textureWidth)
+				
+				for (var i = 0; i < repetitionX; i++) {
+					this.context.drawImage(texture, i * textureWidth, 0, textureWidth, textureHeight * 1.3);
 				}
 			}
 		}
 	
 		// Floor Shadow
 		if (this.menu.floorSwitch) {
-			let actualTexture = this.loadTexture('floorTextures', this.floorTexture)
-	
-			let textureWidth = actualTexture.imgWidth
-			let textureHeight = actualTexture.imgHeight
-			const FLOOR_HEIGHT = this.GAME_HEIGHT / 2 / this.GRID_SIZE;
-			const BRICK_HEIGHT = textureHeight / FLOOR_HEIGHT;
+			let texture = this.texturesClass.floorTexture.element
+			let textureWidth = this.texturesClass.floorTexture.textureWidth
 			
-			let widthPixel, arundPixel
-			let floorAngle = this.toAngle(this.player.angle)
-			let plusWidth = (textureWidth / 360)
-			let flip = Math.floor(floorAngle * plusWidth)
-	
-			widthPixel = 0
-			for (let i = 0; i < this.rays.length; i++) {
-				for (let y = 0; y < FLOOR_HEIGHT; y++) {
-					this.context.fillStyle = actualTexture.data[Math.floor(y * BRICK_HEIGHT)][arundPixel];
-					arundPixel = (widthPixel + flip) % textureWidth;
-					this.context.fillRect(
-						Math.floor(i * this.GRID_SIZE),
-						Math.floor(this.player.z + (this.GAME_HEIGHT / 2) + y * this.GRID_SIZE),
-						this.GRID_SIZE,
-						Math.floor(BRICK_HEIGHT * this.GRID_SIZE)
-					);
-				}
-				widthPixel = (widthPixel>textureWidth) ? 0 : widthPixel=widthPixel+1;
+			var repetitionX = Math.ceil(canvas.width / textureWidth)
+			
+			for (var i = 0; i < repetitionX; i++) {
+				this.context.drawImage(texture, i * textureWidth, canvas.height / 2);
 			}
 		}
-		
+
 		// START RAYS
 		this.rays.forEach((ray, i) => {
 			//const distance = ray.distance;
