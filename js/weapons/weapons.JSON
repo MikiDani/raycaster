@@ -1,0 +1,48 @@
+{
+    "weapons": [
+        {
+            "textures": {
+                "player_weapon1": ["player_weapon1"]
+            },
+            "name": "player_weapon1",
+            "type": "fps",
+            "mode": "",
+            "active": false
+        },
+        {
+            "textures": {
+                "map_weapon1": ["map_weapon1"]
+            },
+            "name": "map_weapon1",
+            "type": "pickup",
+            "mode": "",
+            "active": false,
+            "x": null,
+            "y": null,
+            "z": 0,
+            "angle": null,
+            "distance": null,
+            "animation": false
+        }
+    ],
+    "ammos": [
+        {
+            "textures": {
+                "ammo_weapon1": ["ammo_weapon1"]
+            },
+            "name": "ammo_weapon1",
+            "type": "ammo",
+            "mode": "",
+            "active": false,
+            "move": true,
+            "demage": 1,
+            "speed": 10,
+            "x": null,
+            "y": null,
+            "z": 0,
+            "angle": null,
+            "distance": null,
+            "animation": false
+        }
+    ]
+}

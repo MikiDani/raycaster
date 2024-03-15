@@ -7,16 +7,19 @@ export default class SpritesClass {
         this.player = player
         this.CELL_SIZE = CELL_SIZE
         //--------------------------------
-        this.distance = 12
+        this.lookDistance = 25
         this.sprites = []
         this.nearSprites = []
+
+        this.weponsSprites = []
     }
 
-    createSprite(spriteData, dirConstruction) {
+    createSprite(spriteData, dirConstruction, thisArray) {
         let spriteArray = [];
         
         spriteArray.dirConstruction = dirConstruction;
 
+        if (typeof spriteData.name !== 'undefined')                 spriteArray.name = spriteData.name;
         if (typeof spriteData.active !== 'undefined')               spriteArray.active = spriteData.active;
         if (typeof spriteData.type !== 'undefined')                 spriteArray.type = spriteData.type;
         if (typeof spriteData.mode !== 'undefined')                 spriteArray.mode = spriteData.mode;
@@ -38,33 +41,35 @@ export default class SpritesClass {
         if (typeof spriteData.rotationFrames !== 'undefined')       spriteArray.rotationFrames = spriteData.rotationFrames;
         if (typeof spriteData.animationSpeed !== 'undefined')       spriteArray.animationSpeed = spriteData.animationSpeed;
         if (typeof spriteData.animationFunction !== 'undefined')    spriteArray.animationFunction = spriteData.animationFunction;
-                
-        this.sprites.push(spriteArray)
+        
+        thisArray.push(spriteArray)
     }
 
     selectNearSprites() {
         let pY = Math.floor(this.player.y / this.CELL_SIZE)
         let pX = Math.floor(this.player.x / this.CELL_SIZE)
         
-        let checkYmin = (pY - this.distance > 0)
-        ? pY - this.distance
+        let checkYmin = (pY - this.lookDistance > 0)
+        ? pY - this.lookDistance
         : 0;
 
-        let checkYmax = (pY + this.distance < this.mapDataClass.map.length)
-        ? pY + this.distance 
+        let checkYmax = (pY + this.lookDistance < this.mapDataClass.map.length)
+        ? pY + this.lookDistance
         : this.mapDataClass.map[0].length;
 
-        let checkXmin = (pX - this.distance > 0)
-        ? pX - this.distance
+        let checkXmin = (pX - this.lookDistance > 0)
+        ? pX - this.lookDistance
         : 0;
         
-        let checkXmax = (pX + this.distance < this.mapDataClass.map[0].length)
-        ? pX + this.distance 
+        let checkXmax = (pX + this.lookDistance < this.mapDataClass.map[0].length)
+        ? pX + this.lookDistance 
         : this.mapDataClass.map[0].length;
 
         this.nearSprites = []
         this.sprites.forEach((sprite, index) => {
 
+            if (sprite.distance === null) sprite.distance = 5000
+            
             let sY = Math.floor(sprite.y / this.CELL_SIZE)
             let sX = Math.floor(sprite.x / this.CELL_SIZE)
 
@@ -72,5 +77,23 @@ export default class SpritesClass {
                 sX >= checkXmin && sX <= checkXmax) this.nearSprites.push(index)
         });
         // console.log(this.nearSprites);
+    }
+
+    startShot() {
+        // console.log(this.texturesClass.weaponsTextures)
+        // console.log(this.player.weapon)
+
+        console.log(this.sprites)
+        
+        var findAmmo = this.weponsSprites.find(objektum => objektum.name == `ammo_weapon${this.player.weapon}`);
+
+        if (findAmmo) {
+            let ammo = { ...findAmmo };
+            ammo.active = true
+            ammo.x = this.player.x + Math.cos(this.player.angle) * 64;
+            ammo.y = this.player.y + Math.sin(this.player.angle) * 64;
+            ammo.angle = this.player.angle
+            this.sprites.push(ammo)
+        }
     }
 }

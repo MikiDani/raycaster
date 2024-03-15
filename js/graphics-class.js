@@ -494,7 +494,6 @@ export default class GaphicsClass {
 	
 		// SPRITES DRAW
 		this.spritesClass.nearSprites.forEach(nearIndex => {
-			//console.log(sprite)
 			let sprite = this.spritesClass.sprites[nearIndex]
 			if (sprite.active) {
 				this.context.fillStyle = 'red';
@@ -581,9 +580,7 @@ export default class GaphicsClass {
 	renderScreen() {
 		// OWN FIRST DRAW SKY
 		if(this.menu.skySwitch) {
-			
-			console.log(this.texturesClass.skyTexture.type)
-
+			// SKY
 			if (this.texturesClass.skyTexture.type == 'sky') {
 				let texture = this.texturesClass.skyTexture.element
 				let textureWidth = this.texturesClass.skyTexture.textureWidth
@@ -704,15 +701,12 @@ export default class GaphicsClass {
 		})
 	}
 
-	renderScreenSprites(sprite, index, actualTexture) {		
-		var spriteDistance = Math.sqrt(Math.pow(this.player.y - sprite.y, 2) + Math.pow(this.player.x - sprite.x, 2));
+	renderScreenSprites(sprite, actualTexture) {		
 		var spriteAngle = Math.atan2(sprite.y - this.player.y, sprite.x - this.player.x);
 
 		spriteAngle = this.toAngle(spriteAngle)
-
-		this.spritesClass.sprites[index].distance = Number(spriteDistance)
 		
-		let spriteHeight = ((this.CELL_SIZE) / spriteDistance) * 1200
+		let spriteHeight = ((this.CELL_SIZE) / sprite.distance) * 1200
 		
 		let brick_number = spriteHeight / this.GRID_SIZE
 		let color_num = spriteHeight / actualTexture.imgHeight
@@ -737,7 +731,7 @@ export default class GaphicsClass {
 			let wi = isOnTheScreen - Math.floor(brick_number/2)
 			for(let w=0; w<brick_number; w++)
 			{
-				if(typeof this.rays[wi] != 'undefined' && this.rays[wi].distance > spriteDistance) {
+				if(typeof this.rays[wi] != 'undefined' && this.rays[wi].distance > sprite.distance) {
 					for(let h=0; h<brick_number; h++) {
 						let colorX = Math.floor(((w * this.GRID_SIZE) / color_num))
 						let colorY = Math.floor(((h * this.GRID_SIZE) / color_num))
@@ -756,8 +750,8 @@ export default class GaphicsClass {
 								);
 								
 								// Sprite Shadow
-								if (this.menu.spriteShadowsSwitch && spriteDistance>300 && actualTexture.data[colorY][colorX] !== 'rgba(0, 0, 0, 0)') {
-									let shadowDistance = this.calcShadowDistance(spriteDistance)
+								if (this.menu.spriteShadowsSwitch && sprite.distance>300 && actualTexture.data[colorY][colorX] !== 'rgba(0, 0, 0, 0)') {
+									let shadowDistance = this.calcShadowDistance(sprite.distance)
 									this.context.fillStyle = `rgba(0, 0, 0, ${shadowDistance})`
 									this.context.fillRect(
 										this.cutOutX(this.SLIP_WIDTH + (wi * this.GRID_SIZE)),

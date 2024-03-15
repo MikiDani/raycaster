@@ -1,6 +1,7 @@
 export default class InputClass {
-    constructor ({mapDataClass: mapDataClass, graphicsClass: graphicsClass, menu: menu, gameMenu: gameMenu, player: player, keyPressed: keyPressed, gamePlay: gamePlay, check: check}) {
+    constructor ({mapDataClass: mapDataClass, spritesClass: spritesClass, graphicsClass: graphicsClass, menu: menu, gameMenu: gameMenu, player: player, keyPressed: keyPressed, gamePlay: gamePlay, check: check}) {
         this.mapDataClass = mapDataClass
+        this.spritesClass = spritesClass
         this.graphicsClass = graphicsClass
         //--------------------------------------------------------------------
         this.MOVE_SPEED = 20
@@ -185,6 +186,7 @@ export default class InputClass {
                 if (event.key == 'i') this.menu.infoSwitch = !this.menu.infoSwitch;
                 if (event.key == 'g') this.menu.shadowsSwitch = !this.menu.shadowsSwitch;
                 if (event.key == 'h') this.menu.spriteShadowsSwitch = !this.menu.spriteShadowsSwitch;
+                if (event.ctrlKey) {  console.log('CONTROL'); this.spritesClass.startShot() }
             }
         });
 
@@ -193,7 +195,6 @@ export default class InputClass {
         ////////////////////////////////
         if (!this.menu.menuactive) {
             // GAME
-            console.log(this.keyPressed);
             this.keyPressed[event.key] = true
             if (event.key == 'm') this.menu.mapSwitch = !this.menu.mapSwitch;
             if (event.key == 'i') this.menu.infoSwitch = !this.menu.infoSwitch;

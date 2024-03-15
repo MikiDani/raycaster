@@ -3,6 +3,7 @@ export default class TexturesClass {
 		this.errorTexture = []
 		this.skyTexture = []
 		this.floorTexture = []
+		this.weaponsTextures = []
 		this.wallTextures = []
 		this.spriteTextures = []
 	}
@@ -104,7 +105,7 @@ export default class TexturesClass {
 				img.onerror = function(error) {
 					fault(error);
 				};
-				console.log('A ' + filename + ' betöltődött...');
+				// console.log('A ' + filename + ' betöltődött...');
 			}  
 		});
 	}

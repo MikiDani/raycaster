@@ -17,9 +17,11 @@ const player = {
 	z: 0,
 	inX: null,
 	inY: null,
+	move: true,
 	angle: 0,
 	speed: 0,
 	score: 0,
+	weapon: 1,
 }
 
 const menu = {
@@ -28,7 +30,7 @@ const menu = {
 	optionsActive: false,
 	clearGameSwitch: false,
 	infoSwitch: false,
-	mapSwitch: false,
+	mapSwitch: true,
 	shadowsSwitch: true,
 	spriteShadowsSwitch: true,
 	mouseSwitch: true,
@@ -42,6 +44,7 @@ var gamePlay = {
 	timeStart: null,
 }
 
+// DOOR CHECK ??
 var check = {
 	playerCheckX: 0,
 	playerCheckY: 0,
@@ -77,73 +80,69 @@ function checkDirection(angle, speed) {
     }
 }
 
-function spritesCheck() {
-	// ARRANGE SPRITES
-	spritesClass.nearSprites.forEach((nearIndex, index) => {
-		let sprite = spritesClass.sprites[nearIndex]
-		if (sprite.active) {
-			let getActualTexture = sprite.dirConstruction[1]
-			// IF CREATURES
-			if (sprite.type == 'creature') {
-				
-				if(sprite.animation != false) {
-					if(!sprite.animationFunction) {
-						sprite.actAnimationFrame = sprite.animationFrames[0]
-						sprite.animationFunction = setInterval(() => {
-							sprite.actAnimationFrame++
-							if (sprite.actAnimationFrame>sprite.animationFrames.length)
-								sprite.actAnimationFrame = sprite.animationFrames[0]
-						}, sprite.animationSpeed)
-					}
-				}
+function spriteDistanceCalc(sprite) {
+	return Math.sqrt(Math.pow(player.y - sprite.y, 2) + Math.pow(player.x - sprite.x, 2));
+}
 
-				if(sprite.moveType == 'mode1') {
-					getActualTexture = creatureSpriteSelect(sprite)
-					moveCreature(sprite)
-				}
+function playerWalk() {
+	const amplitude = (Math.abs(graphicsClass.WALKINTERVAL) - graphicsClass.WALKINTERVAL) / 2;
+	const offset = (Math.abs(graphicsClass.WALKINTERVAL) + graphicsClass.WALKINTERVAL) / 2;
+	const frequency = 10;
 
-				if(sprite.moveType == 'levitation') {
-					sprite.z = playerWalk()
-				}
-			}
-			
-			let actualTexture = texturesClass.spriteTextures[sprite.dirConstruction[0]][getActualTexture];
+	const value = Math.sin(frequency * Date.now() * 0.001) * amplitude + offset;
+	return Math.floor(value);
+}
 
-			graphicsClass.renderScreenSprites(sprite, index, actualTexture)
-		}
-	});
+function checkMoveSprite(spriteObj) {
+	let actX = Math.floor(spriteObj.x / CELL_SIZE)
+	let actY = Math.floor(spriteObj.y / CELL_SIZE)
+	spriteObj.inX =  Math.floor(spriteObj.x - (actX * CELL_SIZE))
+	spriteObj.inY =  Math.floor(spriteObj.y - (actY * CELL_SIZE))
+	
+	let moveX = true
+	let moveY = true
 
+	if (spriteObj.x < spriteObj.x + (Math.cos(spriteObj.angle) * spriteObj.speed)) {
+		// RIGHT
+		if (mapDataClass.map[actY][actX+1] && spriteObj.inX >= CELL_SIZE - inputClass.WALL_DISTANCE) moveX = false;
+	} else {
+		// LEFT
+		if (mapDataClass.map[actY][actX-1] && spriteObj.inX <= inputClass.WALL_DISTANCE) moveX = false;
+	}
+	
+	if (spriteObj.y < spriteObj.y + (Math.sin(spriteObj.angle) * spriteObj.speed)) {
+		// DOWN
+		if (mapDataClass.map[actY+1][actX] && spriteObj.inY >= CELL_SIZE - inputClass.WALL_DISTANCE) moveY = false;
+	} else {
+		// UP
+		if (mapDataClass.map[actY-1][actX] && spriteObj.inY <= inputClass.WALL_DISTANCE) moveY = false;
+	}
+	let spriteObjAngleDirection = checkDirection(graphicsClass.toAngle(spriteObj.angle), spriteObj.speed)
+
+	let checkX = check.spriteObjCheckX = actX + spriteObjAngleDirection.x
+	let checkY = check.spriteObjCheckY = actY + spriteObjAngleDirection.y
+
+	if (spriteObj.move) {
+		(moveX) ? spriteObj.x += Math.cos(spriteObj.angle) * spriteObj.speed : false;
+		(moveY) ? spriteObj.y += Math.sin(spriteObj.angle) * spriteObj.speed : false;
+	}
+
+	return {
+		moveX: moveX,
+		moveY: moveY,
+		checkX: checkX,
+		checkY: checkY,
+	}
 }
 
 function movePlayer() {
 	if (player.speed != 0) {
-		let actX = Math.floor(player.x / CELL_SIZE)
-		let actY = Math.floor(player.y / CELL_SIZE)
-		player.inX =  Math.floor(player.x - (actX * CELL_SIZE))
-		player.inY =  Math.floor(player.y - (actY * CELL_SIZE))
-		
-		let moveX = true
-		let moveY = true
 
-		if (player.x < player.x + (Math.cos(player.angle) * player.speed)) {
-			// RIGHT
-			if (mapDataClass.map[actY][actX+1] && player.inX >= CELL_SIZE - inputClass.WALL_DISTANCE) moveX = false;
-		} else {
-			// LEFT
-			if (mapDataClass.map[actY][actX-1] && player.inX <= inputClass.WALL_DISTANCE) moveX = false;
-		}
-		
-		if (player.y < player.y + (Math.sin(player.angle) * player.speed)) {
-			// DOWN
-			if (mapDataClass.map[actY+1][actX] && player.inY >= CELL_SIZE - inputClass.WALL_DISTANCE) moveY = false;
-		} else {
-			// UP
-			if (mapDataClass.map[actY-1][actX] && player.inY <= inputClass.WALL_DISTANCE) moveY = false;
-		}
-		let playerAngleDirection = checkDirection(graphicsClass.toAngle(player.angle), player.speed)
+		let pCheck = checkMoveSprite(player)
 
-		let checkX = check.playerCheckX = actX + playerAngleDirection.x	 //ideiglenes check-hez
-		let checkY = check.playerCheckY = actY + playerAngleDirection.y  //ideiglenes check-hez
+		// DOOR check
+		check.playerCheckX = pCheck.checkX
+		check.playerCheckY = pCheck.checkY
 
 		// Controlling the sprite relative to the player's movement.
 		spritesClass.sprites.forEach((sprite,i) => {
@@ -170,84 +169,36 @@ function movePlayer() {
 				}
 			}
 			
-			if ((spriteActX == checkX) && (spriteActY == checkY)) {
+			if ((spriteActX == pCheck.checkX) && (spriteActY == pCheck.checkY)) {
 				console.log('SPRITE A KÖVETKEZŐ!!!')
 				if (sprite.type == 'pickup') return;
-				moveX = false
-				moveY = false
+				pCheck.moveX = false
+				pCheck.moveY = false
 			}
 		})
 
 		// 45° CHECK
 		let psPlayerX = Math.floor((player.x + Math.cos(player.angle) * player.speed) / CELL_SIZE)
 		let psPlayerY = Math.floor((player.y + Math.sin(player.angle) * player.speed) / CELL_SIZE)
-		if (mapDataClass.map[psPlayerY][psPlayerX]) { moveX = false; moveY = false; }
-
-		(moveX) ? player.x += Math.cos(player.angle) * player.speed : false;
-		(moveY) ? player.y += Math.sin(player.angle) * player.speed : false;
+		if (mapDataClass.map[psPlayerY][psPlayerX]) { pCheck.moveX = false; pCheck.moveY = false; }
 
 		player.z = playerWalk()
 	}
 }
 
-function playerWalk() {
-	const amplitude = (Math.abs(graphicsClass.WALKINTERVAL) - graphicsClass.WALKINTERVAL) / 2;
-	const offset = (Math.abs(graphicsClass.WALKINTERVAL) + graphicsClass.WALKINTERVAL) / 2;
-	const frequency = 10;
-
-	const value = Math.sin(frequency * Date.now() * 0.001) * amplitude + offset;
-	return Math.floor(value);
-}
-
 function moveCreature(creature) {
 	if (typeof creature.speed != 'undefined' && creature.speed != 0) {
 
-		let actX = Math.floor(creature.x / CELL_SIZE)
-		let actY = Math.floor(creature.y / CELL_SIZE)
-		creature.inX =  Math.floor(creature.x - (actX * CELL_SIZE))
-		creature.inY =  Math.floor(creature.y - (actY * CELL_SIZE))
-		
-		let moveX = true
-		let moveY = true
-		
-		function checkIndex(arr, y, x) {
-			if (arr[y] && arr[y][x]) return arr[y][x]; else return false;
-		}
+		let cCheck = checkMoveSprite(creature)
 
-		if (creature.x < creature.x + (Math.cos(creature.angle) * creature.speed)) {
-			// RIGHT
-			if(checkIndex(mapDataClass.map, actY, actX+1))
-				if (mapDataClass.map[actY][actX+1] && creature.inX >= CELL_SIZE - inputClass.WALL_DISTANCE) moveX = false;
-		} else {
-			// LEFT
-			if(checkIndex(mapDataClass.map, actY, actX-1))
-				if (mapDataClass.map[actY][actX-1] && creature.inX <= inputClass.WALL_DISTANCE) moveX = false;
-		}
-		
-		if (creature.y < creature.y + (Math.sin(creature.angle) * creature.speed)) {
-			// DOWN
-			if(checkIndex(mapDataClass.map, actY+1, actX))
-				if (mapDataClass.map[actY+1][actX] && creature.inY >= CELL_SIZE - inputClass.WALL_DISTANCE) moveY = false;
-		} else {
-			// UP
-			if(checkIndex(mapDataClass.map, actY-1, actX))
-				if (mapDataClass.map[actY-1][actX] && creature.inY <= inputClass.WALL_DISTANCE) moveY = false;
-		}
-
-		if (creature.move) {
-			(moveX) ? creature.x += Math.cos(creature.angle) * creature.speed : false;
-			(moveY) ? creature.y += Math.sin(creature.angle) * creature.speed : false;
-		}
-
-		let creatureAngleDirection = checkDirection(graphicsClass.toAngle(creature.angle), creature.speed)
-
-		let checkX = check.creatureCheckX = actX + creatureAngleDirection.x
-		let checkY = check.creatureCheckY = actY + creatureAngleDirection.y
+		check.creatureCheckX = cCheck.checkX
+		check.creatureCheckY = cCheck.checkY
 
 		let playerActX = Math.floor(player.x / CELL_SIZE)
 		let playerActY = Math.floor(player.y / CELL_SIZE)
 
-		if ((playerActX == checkX) && (playerActY == checkY)) {
+		if ((playerActX == cCheck.checkX) && (playerActY == cCheck.checkY)) {
+
 			console.log('PLAYER TALÁLAT!!!')
 			creature.move = false
 			creature.animation = false
@@ -261,9 +212,89 @@ function moveCreature(creature) {
 			creature.animation = true
 			creature.angle += 0.03
 		}
-
-		
 	}
+}
+
+function moveAmmo(ammoSprite, nearData) {
+	if (ammoSprite.speed != 0) {
+		let ammoCheck = checkMoveSprite(ammoSprite)
+
+		if (ammoCheck.moveX == false || ammoCheck.moveY == false) {
+			
+			// 1. csak megáll
+			if (true) ammoSprite.move = false
+
+			// 2. hide
+			if (true) ammoSprite.active = false
+			
+			// 2. töröl
+			if (false) {
+				console.log('lehet törölni!!!')
+				// console.log(nearData)
+				// let nearIndex = spritesClass.nearSprites.indexOf(nearData)
+				// console.log(nearIndex)
+				// if (nearIndex !== -1) spritesClass.nearSprites.splice(nearIndex, 1);
+	
+				let spriteIndex = spritesClass.sprites.indexOf(ammoSprite);
+				if (spriteIndex !== -1) spritesClass.sprites.splice(spriteIndex, 1);
+				
+				console.log(spritesClass.nearSprites)
+				console.log(spritesClass.sprites)
+			}
+		}
+	}
+	return true
+}
+
+function spritesCheck() {
+	// ARRANGE SPRITES
+	spritesClass.nearSprites.forEach((nearData) => {
+				
+		let sprite = spritesClass.sprites[nearData]
+		sprite.distance = spriteDistanceCalc(sprite)
+
+		if (sprite.active) {
+			let getActualTexture = sprite.dirConstruction[1]	// Standard texture
+			// IF CREATURES
+			if (sprite.type == 'creature') {
+				
+				if(sprite.animation != false) {
+					if(!sprite.animationFunction) {
+						sprite.actAnimationFrame = sprite.animationFrames[0]
+						sprite.animationFunction = setInterval(() => {
+							sprite.actAnimationFrame++
+							if (sprite.actAnimationFrame>sprite.animationFrames.length)
+								sprite.actAnimationFrame = sprite.animationFrames[0]
+						}, sprite.animationSpeed)
+					}
+				}
+
+				if(sprite.moveType == 'mode1') {
+					getActualTexture = creatureSpriteSelect(sprite)
+					moveCreature(sprite)
+				}
+
+				if(sprite.moveType == 'levitation') {
+					sprite.z = playerWalk()
+				}
+			}
+
+			// IF AMMO
+			if (sprite.type == 'ammo') {
+				if(sprite.active) {
+					//console.log('ACTIVE AMMO !!!');
+					moveAmmo(sprite, nearData)
+					sprite.z = playerWalk()
+				}
+			}
+			
+			let actualTexture = (sprite.type == 'ammo') 
+			? texturesClass.weaponsTextures[sprite.dirConstruction[0]][getActualTexture]
+			: texturesClass.spriteTextures[sprite.dirConstruction[0]][getActualTexture];
+			
+			graphicsClass.renderScreenSprites(sprite, actualTexture)
+		}
+	});
 }
 
 function creatureSpriteSelect(creature) {
@@ -296,14 +327,27 @@ function creatureSpriteSelect(creature) {
 }
 
 async function loadindDatas() {
-	const response = await fetch('./js/maps/e1m1.JSON');
-    const mapData = await response.json();
+	const weaponDataResponse = await fetch('./js/weapons/weapons.JSON')
+	const weaponsData = await weaponDataResponse.json()
+
+	// Load Wepon Textures
+	for (let n = 0; n < weaponsData.weapons.length; n++) {
+		let weapon = weaponsData.weapons[n]
+		let dirConstruction = await texturesClass.loadTextureToArray(weapon.textures, 'weapons', texturesClass.weaponsTextures)
+		spritesClass.createSprite(weapon, dirConstruction, spritesClass.weponsSprites)
+	}
+	for (let n = 0; n < weaponsData.ammos.length; n++) {
+		let ammo = weaponsData.ammos[n]
+		let dirConstruction = await texturesClass.loadTextureToArray(ammo.textures, 'weapons', texturesClass.weaponsTextures)
+		spritesClass.createSprite(ammo, dirConstruction, spritesClass.weponsSprites)
+	}
+	
+	const mapDataResponse = await fetch('./js/maps/e1m1.JSON');
+    const mapData = await mapDataResponse.json();
 	
 	player.x = mapData.player.x * CELL_SIZE
 	player.y = mapData.player.y * CELL_SIZE
 	player.angle = graphicsClass.toRadians(mapData.player.angle)
-
-	//texturesClass.errorTextures = await texturesClass.loadTexturesToArray(texturesClass.errorTextures, texturesClass.errorFileNames, 'errors')
 
 	// Load Error Texture
 	let error = mapData.error[0]
@@ -330,7 +374,7 @@ async function loadindDatas() {
 	for (let i = 0; i < mapData.sprites.length; i++) {
         let sprite = mapData.sprites[i]
 		let dirConstruction = await texturesClass.loadTextureToArray(sprite.textures, 'sprites', texturesClass.spriteTextures)		
-		spritesClass.createSprite(sprite, dirConstruction)
+		spritesClass.createSprite(sprite, dirConstruction, spritesClass.sprites)
     }
 }
 
@@ -370,6 +414,8 @@ async function gameMenu() {
 	return;
 }
 
+var szamol = 0;
+
 function gameLoop() {
 	gamePlay.timeStart = Date.now()
 
@@ -385,7 +431,8 @@ function gameLoop() {
 	if (menu.infoSwitch) graphicsClass.infoPanel()
 	if (menu.clearGameSwitch) clearInterval(gamePlay.game)
 
-	//clearInterval(gamePlay.game)
+	szamol++;
+	//if (szamol == 3) clearInterval(gamePlay.game)
 }
 
 //-------------------
@@ -395,7 +442,7 @@ const texturesClass = new TexturesClass ()
 const mapDataClass 	= new MapDataClass  ({texturesClass: texturesClass})
 const spritesClass 	= new SpritesClass  ({CELL_SIZE: CELL_SIZE, player: player, texturesClass: texturesClass, mapDataClass: mapDataClass})
 const graphicsClass = new GaphicsClass  ({mapDataClass: mapDataClass, spritesClass: spritesClass, texturesClass: texturesClass, CELL_SIZE: CELL_SIZE, player: player, menu: menu, gamePlay: gamePlay, check: check})
-const inputClass 	= new InputsClass   ({mapDataClass: mapDataClass, graphicsClass: graphicsClass, menu: menu, gameMenu: gameMenu, player: player, keyPressed: keyPressed, gamePlay: gamePlay, check: check})
+const inputClass 	= new InputsClass   ({mapDataClass: mapDataClass, spritesClass: spritesClass, graphicsClass: graphicsClass, menu: menu, gameMenu: gameMenu, player: player, keyPressed: keyPressed, gamePlay: gamePlay, check: check})
 
 window.onload = async () => {
 	gameMenu()
