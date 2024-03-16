@@ -1,3 +1,5 @@
+import MapDataClass from "./mapdata-class"
+
 export default class TexturesClass {
 	constructor() {		
 		this.errorTexture = []
@@ -108,5 +110,31 @@ export default class TexturesClass {
 				// console.log('A ' + filename + ' betöltődött...');
 			}  
 		});
+	}
+
+	loadAnimationTexture(obj) {
+		if(obj.anim_switch) {
+			if(!obj.anim_function) {
+				obj.anim_function = setInterval(() => {
+					obj.anim_actFrame++
+					obj.anim_actFrame = (obj.anim_actFrame >= obj.anim_maxFrame + 1)
+					? obj.anim_startFrame
+					: obj.anim_actFrame
+					// console.log(obj.anim_actFrame)
+					if (obj.anim_repeat != true) {
+						obj.anim_repeatCount++
+						//console.log(obj.anim_repeatCount)
+						if (obj.anim_repeatCount >= obj.anim_repeat) {
+							clearInterval(obj.anim_function)
+							obj.anim_function = null
+							obj.anim_switch = false
+							obj.anim_repeatCount = 0
+						}
+					}
+				}, obj.anim_speed)
+			}
+			return [obj.dirConstruction[0], obj.dirConstruction[obj.anim_actFrame]];
+		}
+		return false;
 	}
 }

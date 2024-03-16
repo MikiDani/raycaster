@@ -27,8 +27,8 @@
         [1, 5, 1, 5, 1, 5, 1, 5, 1, 5, 1, 5, 1, 5, 1, 5, 6, 5, 6, 5, 6, 5, 6, 1]
     ],
     "player": {
-        "x": 3.5,
-        "y": 3.5,
+        "x": 4.5,
+        "y": 15.5,
         "angle": 15
     },
     "error": [
@@ -122,8 +122,7 @@
             "y": 2.5,
             "z": -15,
             "angle": 0,
-            "distance": null,
-            "animation": false
+            "distance": null
         },
         {
             "textures": {
@@ -136,8 +135,7 @@
             "y": 22.5,
             "z": -15,
             "angle": 0,
-            "distance": null,
-            "animation": false
+            "distance": null
         },
         {
             "textures": {
@@ -151,8 +149,7 @@
             "y": 4.5,
             "z": -15,
             "angle": 0,
-            "distance": null,
-            "animation": false
+            "distance": null
         },
         {
             "textures": {
@@ -166,8 +163,7 @@
             "y": 4.5,
             "z": -15,
             "angle": 0,
-            "distance": null,
-            "animation": false
+            "distance": null
         },
         {
             "textures": {
@@ -181,8 +177,7 @@
             "y": 4.5,
             "z": -15,
             "angle": 0,
-            "distance": null,
-            "animation": false
+            "distance": null
         },
         {
             "textures": {

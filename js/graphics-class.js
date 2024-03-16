@@ -495,7 +495,7 @@ export default class GaphicsClass {
 		// SPRITES DRAW
 		this.spritesClass.nearSprites.forEach(nearIndex => {
 			let sprite = this.spritesClass.sprites[nearIndex]
-			if (sprite.active) {
+			if (typeof sprite != 'undefined' && sprite.active) {
 				this.context.fillStyle = 'red';
 				this.context.fillRect(
 					this.MINIMAP_X + (sprite.x * this.MINIMAP_SCALE) - (this.SPRITE_SIZE/2),
@@ -646,10 +646,10 @@ export default class GaphicsClass {
 			const BRICK_SIZE = wallHeight / this.CELL_SIZE
 	
 			// Wall
-			let nowTexture = this.mapDataClass.returnActualTexture(ray.wallY, ray.wallX)
+			let nowTexture = this.mapDataClass.returnActualWallTexture(ray.wallY, ray.wallX)
 			let actualTexture = this.loadTexture('wallTextures', nowTexture)
 
-			for(let n=0; n<this.CELL_SIZE; n++) {
+			for(let n = 0; n < this.CELL_SIZE; n++) {
 				if (typeof ray.vertical !== 'undefined') {
 					this.context.fillStyle = (ray.vertical) ? this.colorDarkening(actualTexture.data[n][ray.start], 0.4) : actualTexture.data[n][ray.start];
 					

@@ -228,18 +228,13 @@ function moveAmmo(ammoSprite, nearData) {
 			if (true) ammoSprite.active = false
 			
 			// 2. töröl
-			if (false) {
-				console.log('lehet törölni!!!')
-				// console.log(nearData)
-				// let nearIndex = spritesClass.nearSprites.indexOf(nearData)
-				// console.log(nearIndex)
-				// if (nearIndex !== -1) spritesClass.nearSprites.splice(nearIndex, 1);
-	
-				let spriteIndex = spritesClass.sprites.indexOf(ammoSprite);
-				if (spriteIndex !== -1) spritesClass.sprites.splice(spriteIndex, 1);
+			if (true) {
+				// DELETE SPRITE
+				let nearIndex = spritesClass.nearSprites.indexOf(nearData)
+				if (nearIndex != -1) spritesClass.nearSprites.splice(nearIndex, 1)
 				
-				console.log(spritesClass.nearSprites)
-				console.log(spritesClass.sprites)
+				let spriteIndex = spritesClass.sprites.indexOf(ammoSprite);				
+				if (spriteIndex !== -1) spritesClass.sprites.splice(spriteIndex, 1)
 			}
 		}
 	}
@@ -250,7 +245,9 @@ function spritesCheck() {
 	// ARRANGE SPRITES
 	spritesClass.nearSprites.forEach((nearData) => {
 				
-		let sprite = spritesClass.sprites[nearData]
+		let sprite = spritesClass.sprites[nearData]		
+		if (typeof sprite == 'undefined') return;
+
 		sprite.distance = spriteDistanceCalc(sprite)
 
 		if (sprite.active) {

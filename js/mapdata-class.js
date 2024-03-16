@@ -6,34 +6,17 @@ export default class MapDataClass {
         this.walls = []; this.walls[0] = null;
     }
 
-    returnActualTexture(wallY, wallX) {
-        // console.log(wallY, wallX)
-        // console.log(this.map[wallY][wallX])
+    returnActualWallTexture(wallY, wallX) {
         let wall = this.map[wallY][wallX]
         if (wall.type == 'animated' || wall.type == 'door') {
-            if(wall.anim_switch) {
-                if(!wall.anim_function) {
-                    wall.anim_function = setInterval(() => {
-                        wall.anim_actFrame++
-                        wall.anim_actFrame = (wall.anim_actFrame >= wall.anim_maxFrame+1)
-                        ? wall.anim_startFrame
-                        : wall.anim_actFrame
-                        // console.log(wall.anim_actFrame)
-                        if (wall.anim_repeat != true) {
-                            wall.anim_repeatCount++
-                            //console.log(wall.anim_repeatCount)
-                            if (wall.anim_repeatCount >= wall.anim_repeat) {
-                                clearInterval(wall.anim_function)
-                                wall.anim_switch = false
-                                wall.anim_function = null
-                                wall.anim_repeatCount = 0
-                                if (wall.type == 'door') this.map[wallY][wallX] = 0
-                            }
-                        }
-                    }, wall.anim_speed)
-                }
-                return [wall.dirConstruction[0], wall.dirConstruction[wall.anim_actFrame]];
-            }
+            let checkActAnim = this.texturesClass.loadAnimationTexture(wall)
+
+            // IF DOOR ANIMATION END THEN CLEAR THE DOOR
+            // if (wall.type == 'door' && !wall.anim_function) {
+            //     this.map[wallY][wallX] = 0
+            // }
+            
+            if (checkActAnim) return checkActAnim;
         }
         return [wall.dirConstruction[0], wall.dirConstruction[1]]
     }
