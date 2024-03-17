@@ -157,7 +157,7 @@ function movePlayer() {
 				pCheck.moveX = false
 				pCheck.moveY = false
 
-				let colorizeOption = { color: "0, 255, 0", alpha: 0.5, time: 200 }
+				let colorizeOption = { color: "0, 255, 0", alpha: 0.1, time: 100 }
 				graphicsClass.screenColorizeOptions(colorizeOption);
 			}
 
@@ -252,6 +252,7 @@ function spritesCheck() {
 
 		if (sprite.active) {
 			let getActualTexture = sprite.dirConstruction[1]	// Standard texture
+
 			// IF CREATURES
 			if (sprite.type == 'creature') {
 				
@@ -279,12 +280,9 @@ function spritesCheck() {
 			// IF AMMO
 			if (sprite.type == 'ammo') {
 				if(sprite.active) {
-					//console.log('ACTIVE AMMO !!!');
 					moveAmmo(sprite, nearData)
-
 					let checkActAnim = texturesClass.loadAnimationTexture(sprite)
 					if (checkActAnim) getActualTexture = checkActAnim[1]
-					
 					sprite.z = playerWalk()
 				}
 			}

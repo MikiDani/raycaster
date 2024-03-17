@@ -109,32 +109,4 @@ export default class TexturesClass {
 			}  
 		});
 	}
-
-	loadAnimationTexture(obj) {
-		//console.log(obj)
-		if(obj.anim_switch) {
-			if(!obj.anim_function) {
-				obj.anim_function = setInterval(() => {
-					obj.anim_actFrame++
-					obj.anim_actFrame = (obj.anim_actFrame >= obj.anim_maxFrame + 1)
-					? obj.anim_startFrame
-					: obj.anim_actFrame
-					// console.log(obj.anim_actFrame)
-					if (obj.anim_repeat != true) {
-						obj.anim_repeatCount++
-						//console.log(obj.anim_repeatCount)
-						if (obj.anim_repeatCount >= obj.anim_repeat) {
-							clearInterval(obj.anim_function)
-							obj.anim_function = null
-							obj.anim_repeatCount = 0
-							// if DOOR expiration deleting in map.
-							if (obj.type == 'door') obj.active = false
-						}
-					}
-				}, obj.anim_speed)
-			}
-			return [obj.dirConstruction[0], obj.dirConstruction[obj.anim_actFrame]];
-		}
-		return false;
-	}
 }

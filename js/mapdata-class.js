@@ -10,16 +10,11 @@ export default class MapDataClass {
         let wall = this.map[wallY][wallX]
 
         if (wall.type == 'animated' || wall.type == 'door') {
-
-            // IF DOOR ANIMATION END THEN CLEAR THE DOOR
-            if (wall.type == 'door' && (!wall.active)) {
-                this.map[wallY][wallX] = 0
-                return null;
+            if (wall.anim_switch) {
+                let checkActAnim = this.loadAnimationTexture(wall, wallY, wallX)                
+                if (checkActAnim) return checkActAnim;
             }
-            let checkActAnim = this.texturesClass.loadAnimationTexture(wall)
-            if (checkActAnim) return checkActAnim;
         }
-
 
         return [wall.dirConstruction[0], wall.dirConstruction[1]]
     }
@@ -65,4 +60,33 @@ export default class MapDataClass {
             }
         }
     }
+
+    loadAnimationTexture(obj, wallY, wallX) {
+		if(obj.anim_switch) {
+			if(!obj.anim_function) {
+				obj.anim_function = setInterval(() => {
+					obj.anim_actFrame++
+					obj.anim_actFrame = (obj.anim_actFrame >= obj.anim_maxFrame + 1)
+					? obj.anim_startFrame
+					: obj.anim_actFrame
+					// console.log(obj.anim_actFrame)
+					if (obj.anim_repeat != true) {
+						obj.anim_repeatCount++
+						//console.log(obj.anim_repeatCount)
+						if (obj.anim_repeatCount >= obj.anim_repeat) {
+							clearInterval(obj.anim_function)
+							obj.anim_switch = false
+							obj.anim_function = null
+							obj.anim_repeatCount = 0
+							// if DOOR expiration deleting in map.
+							if (obj.type == 'door') {
+                                this.map[wallY][wallX] = 0
+							}
+						}
+					}
+				}, obj.anim_speed)
+			}
+			return [obj.dirConstruction[0], obj.dirConstruction[obj.anim_actFrame]]
+		}
+	}
 }
