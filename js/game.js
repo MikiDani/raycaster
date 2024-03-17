@@ -117,15 +117,11 @@ function checkMoveSprite(spriteObj) {
 		// UP
 		if (mapDataClass.map[actY-1][actX] && spriteObj.inY <= inputClass.WALL_DISTANCE) moveY = false;
 	}
+
 	let spriteObjAngleDirection = checkDirection(graphicsClass.toAngle(spriteObj.angle), spriteObj.speed)
 
 	let checkX = check.spriteObjCheckX = actX + spriteObjAngleDirection.x
 	let checkY = check.spriteObjCheckY = actY + spriteObjAngleDirection.y
-
-	if (spriteObj.move) {
-		(moveX) ? spriteObj.x += Math.cos(spriteObj.angle) * spriteObj.speed : false;
-		(moveY) ? spriteObj.y += Math.sin(spriteObj.angle) * spriteObj.speed : false;
-	}
 
 	return {
 		moveX: moveX,
@@ -137,20 +133,33 @@ function checkMoveSprite(spriteObj) {
 
 function movePlayer() {
 	if (player.speed != 0) {
+		let playerActX = Math.floor(player.x / CELL_SIZE)
+		let playerActY = Math.floor(player.y / CELL_SIZE)
 
 		let pCheck = checkMoveSprite(player)
 
-		// DOOR check
+		// PLAYER WAY ATMOSPHERE (DOOR)
 		check.playerCheckX = pCheck.checkX
 		check.playerCheckY = pCheck.checkY
 
 		// Controlling the sprite relative to the player's movement.
 		spritesClass.sprites.forEach((sprite,i) => {
-			let playerActX = Math.floor(player.x / CELL_SIZE)
-			let playerActY = Math.floor(player.y / CELL_SIZE)
 
 			let spriteActX = Math.floor(sprite.x / CELL_SIZE)
 			let spriteActY = Math.floor(sprite.y / CELL_SIZE)
+
+			// WAY PLAYER BRICK
+			if ((pCheck.checkX == spriteActX) && (pCheck.checkY == spriteActY)) {
+				console.log('SPRITE A KÖVETKEZŐ!!!')
+				if (sprite.type == 'pickup') return;
+				
+				// CRASH AND STOP PLAYAER
+				pCheck.moveX = false
+				pCheck.moveY = false
+
+				let colorizeOption = { color: "0, 255, 0", alpha: 0.5, time: 200 }
+				graphicsClass.screenColorizeOptions(colorizeOption);
+			}
 
 			// ACTUAL PLAYER BRICK
 			if ((spriteActX == playerActX) && (spriteActY == playerActY)) {
@@ -166,14 +175,9 @@ function movePlayer() {
 					if (sprite.mode=='coin2') colorizeOption = { color: "255, 255, 255", alpha: 0.5, time: 200 }
 					if (sprite.mode=='coin3') colorizeOption = { color: "200, 100, 0", alpha: 0.5, time: 200 }
 					graphicsClass.screenColorizeOptions(colorizeOption);
+	
+					return;
 				}
-			}
-			
-			if ((spriteActX == pCheck.checkX) && (spriteActY == pCheck.checkY)) {
-				console.log('SPRITE A KÖVETKEZŐ!!!')
-				if (sprite.type == 'pickup') return;
-				pCheck.moveX = false
-				pCheck.moveY = false
 			}
 		})
 
@@ -182,6 +186,8 @@ function movePlayer() {
 		let psPlayerY = Math.floor((player.y + Math.sin(player.angle) * player.speed) / CELL_SIZE)
 		if (mapDataClass.map[psPlayerY][psPlayerX]) { pCheck.moveX = false; pCheck.moveY = false; }
 
+		moveAction(player, pCheck)
+		
 		player.z = playerWalk()
 	}
 }
@@ -206,12 +212,14 @@ function moveCreature(creature) {
 			let colorizeOption = { color: "255, 0, 0", alpha: 0.5, time: 200 }
 			graphicsClass.screenColorizeOptions(colorizeOption);
 
-			// clearInterval(creature.animationFunction)
+			// clearInterval(creature.anim_function)
 		} else {
 			creature.move = true
 			creature.animation = true
 			creature.angle += 0.03
 		}
+
+		moveAction(creature, cCheck)
 	}
 }
 
@@ -219,26 +227,18 @@ function moveAmmo(ammoSprite, nearData) {
 	if (ammoSprite.speed != 0) {
 		let ammoCheck = checkMoveSprite(ammoSprite)
 
-		if (ammoCheck.moveX == false || ammoCheck.moveY == false) {
-			
-			// 1. csak megáll
-			if (true) ammoSprite.move = false
+		if (ammoCheck.moveX == false || ammoCheck.moveY == false) ammoSprite.active = false
 
-			// 2. hide
-			if (true) ammoSprite.active = false
-			
-			// 2. töröl
-			if (true) {
-				// DELETE SPRITE
-				let nearIndex = spritesClass.nearSprites.indexOf(nearData)
-				if (nearIndex != -1) spritesClass.nearSprites.splice(nearIndex, 1)
-				
-				let spriteIndex = spritesClass.sprites.indexOf(ammoSprite);				
-				if (spriteIndex !== -1) spritesClass.sprites.splice(spriteIndex, 1)
-			}
-		}
+		moveAction(ammoSprite, ammoCheck)
 	}
 	return true
+}
+
+function moveAction(sprite, check) {
+	if (sprite.move) {
+		(check.moveX) ? sprite.x += Math.cos(sprite.angle) * sprite.speed : false;
+		(check.moveY) ? sprite.y += Math.sin(sprite.angle) * sprite.speed : false;
+	}
 }
 
 function spritesCheck() {
@@ -256,13 +256,13 @@ function spritesCheck() {
 			if (sprite.type == 'creature') {
 				
 				if(sprite.animation != false) {
-					if(!sprite.animationFunction) {
-						sprite.actAnimationFrame = sprite.animationFrames[0]
-						sprite.animationFunction = setInterval(() => {
-							sprite.actAnimationFrame++
-							if (sprite.actAnimationFrame>sprite.animationFrames.length)
-								sprite.actAnimationFrame = sprite.animationFrames[0]
-						}, sprite.animationSpeed)
+					if(!sprite.anim_function) {
+						sprite.anim_actFrame = sprite.anim_frames[0]
+						sprite.anim_function = setInterval(() => {
+							sprite.anim_actFrame++
+							if (sprite.anim_actFrame>sprite.anim_frames.length)
+								sprite.anim_actFrame = sprite.anim_frames[0]
+						}, sprite.anim_speed)
 					}
 				}
 
@@ -281,6 +281,10 @@ function spritesCheck() {
 				if(sprite.active) {
 					//console.log('ACTIVE AMMO !!!');
 					moveAmmo(sprite, nearData)
+
+					let checkActAnim = texturesClass.loadAnimationTexture(sprite)
+					if (checkActAnim) getActualTexture = checkActAnim[1]
+					
 					sprite.z = playerWalk()
 				}
 			}
@@ -292,10 +296,17 @@ function spritesCheck() {
 			graphicsClass.renderScreenSprites(sprite, actualTexture)
 		}
 	});
+
+	// DELETE AMMOS
+	let delAmmos = spritesClass.sprites.filter(obj => obj.type == "ammo" && obj.active == false)
+	delAmmos.forEach((ammoSprite) => {
+		let ammoIndex = spritesClass.sprites.indexOf(ammoSprite);
+		if (ammoIndex !== -1) spritesClass.sprites.splice(ammoIndex, 1)
+	});	
 }
 
 function creatureSpriteSelect(creature) {
-	creature.actAnimationFrame = (creature.actAnimationFrame) ? creature.actAnimationFrame : 2;
+	creature.anim_actFrame = (creature.anim_actFrame) ? creature.anim_actFrame : 2;
 
 	let angDif = graphicsClass.toAngle(creature.angle - player.angle);
 
@@ -311,13 +322,13 @@ function creatureSpriteSelect(creature) {
 
 	// ANIMATIONFRAME
 	if (angDif >= 135 && angDif < 225) {
-		texturename = `${creature.dirConstruction[0]}_${rot_a}${creature.actAnimationFrame}`
+		texturename = `${creature.dirConstruction[0]}_${rot_a}${creature.anim_actFrame}`
 	} else if (angDif >= 315 && angDif <= 360 || angDif >= 0 && angDif < 45) {
-		texturename = `${creature.dirConstruction[0]}_${rot_b}${creature.actAnimationFrame}`
+		texturename = `${creature.dirConstruction[0]}_${rot_b}${creature.anim_actFrame}`
 	} else if (angDif >= 225 && angDif < 315) {
-		texturename = `${creature.dirConstruction[0]}_${rot_c}${creature.actAnimationFrame}`
+		texturename = `${creature.dirConstruction[0]}_${rot_c}${creature.anim_actFrame}`
 	} else if (angDif >= 45 && angDif < 135) {
-		texturename = `${creature.dirConstruction[0]}_${rot_d}${creature.actAnimationFrame}`
+		texturename = `${creature.dirConstruction[0]}_${rot_d}${creature.anim_actFrame}`
 	}
 	
 	return texturename;

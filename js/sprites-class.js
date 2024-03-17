@@ -34,14 +34,20 @@ export default class SpritesClass {
         if (typeof spriteData.distance !== 'undefined')             spriteArray.distance = spriteData.distance;
         if (typeof spriteData.value !== 'undefined')                spriteArray.value = spriteData.value;
         if (typeof spriteData.value !== 'undefined')                spriteArray.value = spriteData.value;
-        if (typeof spriteData.animation !== 'undefined')            spriteArray.animation = spriteData.animation;
-        if (typeof spriteData.animationFrames !== 'undefined')      spriteArray.animationFrames = spriteData.animationFrames;
-        if (typeof spriteData.actAnimationFrame !== 'undefined')    spriteArray.actAnimationFrame = spriteData.actAnimationFrame;
+
+        if (typeof spriteData.anim_switch !== 'undefined')          spriteArray.anim_switch = spriteData.anim_switch;
+        if (typeof spriteData.anim_frames !== 'undefined')          spriteArray.anim_frames = spriteData.anim_frames;
+        if (typeof spriteData.anim_speed !== 'undefined')           spriteArray.anim_speed = spriteData.anim_speed;
+        if (typeof spriteData.anim_function !== 'undefined')        spriteArray.anim_function = spriteData.anim_function;
+        if (typeof spriteData.anim_repeat !== 'undefined')          spriteArray.anim_repeat = spriteData.anim_repeat;
+        if (typeof spriteData.anim_repeatCount !== 'undefined')     spriteArray.anim_repeatCount = spriteData.anim_repeatCount;
+        if (typeof spriteData.anim_startFrame !== 'undefined')      spriteArray.anim_startFrame = spriteData.anim_startFrame;
+        if (typeof spriteData.anim_maxFrame !== 'undefined')        spriteArray.anim_maxFrame = spriteData.anim_maxFrame;
+        if (typeof spriteData.anim_actFrame !== 'undefined')        spriteArray.anim_actFrame = spriteData.anim_actFrame;
+        
         if (typeof spriteData.rotation !== 'undefined')             spriteArray.rotation = spriteData.rotation;
         if (typeof spriteData.rotationFrames !== 'undefined')       spriteArray.rotationFrames = spriteData.rotationFrames;
-        if (typeof spriteData.animationSpeed !== 'undefined')       spriteArray.animationSpeed = spriteData.animationSpeed;
-        if (typeof spriteData.animationFunction !== 'undefined')    spriteArray.animationFunction = spriteData.animationFunction;
-        
+
         thisArray.push(spriteArray)
     }
 
@@ -82,8 +88,6 @@ export default class SpritesClass {
     startShot() {
         // console.log(this.texturesClass.weaponsTextures)
         // console.log(this.player.weapon)
-
-        console.log(this.sprites)
         
         var findAmmo = this.weponsSprites.find(objektum => objektum.name == `ammo_weapon${this.player.weapon}`);
 

@@ -27,7 +27,7 @@
     "ammos": [
         {
             "textures": {
-                "ammo_weapon1": ["ammo_weapon1"]
+                "ammo_weapon1": ["ammo_weapon1-1", "ammo_weapon1-2"]
             },
             "name": "ammo_weapon1",
             "type": "ammo",
@@ -35,20 +35,20 @@
             "active": false,
             "move": true,
             "demage": 1,
-            "speed": 20,
+            "speed": 7,
             "x": null,
             "y": null,
             "z": 0,
             "angle": null,
             "distance": null,
             "anim_switch": true,
-            "anim_function": null,
             "anim_speed": 80,
             "anim_repeat": true,
             "anim_repeatCount": 0,
-            "anim_startFrame": 2,
-            "anim_maxFrame": 9,
-            "anim_actFrame": 1
+            "anim_startFrame": 1,
+            "anim_maxFrame": 2,
+            "anim_actFrame": 1,
+            "anim_function": null
         }
     ]
 }

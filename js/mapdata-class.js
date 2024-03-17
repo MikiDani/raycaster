@@ -8,16 +8,19 @@ export default class MapDataClass {
 
     returnActualWallTexture(wallY, wallX) {
         let wall = this.map[wallY][wallX]
+
         if (wall.type == 'animated' || wall.type == 'door') {
-            let checkActAnim = this.texturesClass.loadAnimationTexture(wall)
 
             // IF DOOR ANIMATION END THEN CLEAR THE DOOR
-            // if (wall.type == 'door' && !wall.anim_function) {
-            //     this.map[wallY][wallX] = 0
-            // }
-            
+            if (wall.type == 'door' && (!wall.active)) {
+                this.map[wallY][wallX] = 0
+                return null;
+            }
+            let checkActAnim = this.texturesClass.loadAnimationTexture(wall)
             if (checkActAnim) return checkActAnim;
         }
+
+
         return [wall.dirConstruction[0], wall.dirConstruction[1]]
     }
 
@@ -27,6 +30,7 @@ export default class MapDataClass {
         if (typeof wallData.type !== 'undefined') {
             wallArray.type = wallData.type
             if (wallData.type == 'animated' || wallData.type == 'door') {
+                wallArray.active = wallData.active
                 wallArray.anim_switch = wallData.anim_switch
                 wallArray.anim_function = wallData.anim_function
                 wallArray.anim_speed = wallData.anim_speed

@@ -55,7 +55,6 @@
             "type": "basic"
         }
     ],
-    
     "walls": [
         {
             "textures": {
@@ -88,15 +87,17 @@
                 "style01": ["door1-1", "door1-2", "door1-3", "door1-4", "door1-5", "door1-6", "door1-7", "door1-8", "door1-9"]
             },
             "type": "door",
+            "active": true,
             "anim_switch": false,
             "anim_function": null,
             "anim_speed": 80,
             "anim_repeat": 10,
             "anim_repeatCount": 0,
-            "anim_startFrame": 2,
+            "anim_startFrame": 1,
             "anim_maxFrame": 9,
             "anim_actFrame": 1
         },
+        
         {
             "textures": {
                 "style01": ["wall4"]
@@ -197,13 +198,16 @@
             "move": true,
             "moveType": "mode1",
             "distance": null,
-            "animation": true,
-            "animationFrames": [1, 2, 3, 4],
-            "actAnimationFrame": 0,
+            "anim_switch": true,
+            "anim_frames": [1, 2, 3, 4],
+            "anim_actFrame": 0,
+            "anim_speed": 100,
+            "anim_repeat": false,
+            "anim_repeatCount": 0,
+            "anim_startFrame": 1,
+            "anim_function": null,
             "rotation": true,
-            "rotationFrames": ["B", "D", "A", "C"],
-            "animationSpeed": 100,
-            "animationFunction": null
+            "rotationFrames": ["B", "D", "A", "C"]
         },
         {
             "textures": {
@@ -221,15 +225,18 @@
             "angle": 0,
             "speed": 3,
             "move": true,
-            "moveType": "mode11",
+            "moveType": "mode1",
             "distance": null,
-            "animation": true,
-            "animationFrames": [1, 2, 3, 4],
-            "actAnimationFrame": 0,
+            "anim_switch": true,
+            "anim_frames": [1, 2, 3, 4],
+            "anim_actFrame": 0,
+            "anim_speed": 100,
+            "anim_repeat": false,
+            "anim_repeatCount": 0,
+            "anim_startFrame": 1,
+            "anim_function": null,
             "rotation": true,
-            "rotationFrames": ["B", "D", "A", "C"],
-            "animationSpeed": 100,
-            "animationFunction": null
+            "rotationFrames": ["B", "D", "A", "C"]
         }
     ]
 }

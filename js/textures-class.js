@@ -1,5 +1,3 @@
-import MapDataClass from "./mapdata-class"
-
 export default class TexturesClass {
 	constructor() {		
 		this.errorTexture = []
@@ -113,6 +111,7 @@ export default class TexturesClass {
 	}
 
 	loadAnimationTexture(obj) {
+		//console.log(obj)
 		if(obj.anim_switch) {
 			if(!obj.anim_function) {
 				obj.anim_function = setInterval(() => {
@@ -127,8 +126,9 @@ export default class TexturesClass {
 						if (obj.anim_repeatCount >= obj.anim_repeat) {
 							clearInterval(obj.anim_function)
 							obj.anim_function = null
-							obj.anim_switch = false
 							obj.anim_repeatCount = 0
+							// if DOOR expiration deleting in map.
+							if (obj.type == 'door') obj.active = false
 						}
 					}
 				}, obj.anim_speed)
