@@ -1,0 +1,83 @@
+$color-menu: #ff000099;
+$color-primary: #c6280f99;
+$color-text1: lightgray;
+
+$bordersize: 4mm; // Idézőjelek nélkül
+
+body {
+    overflow-x: hidden;
+}
+
+.container-box {
+    display: block;
+    width: 100vw;
+    border: thick double #828282;
+    overflow-x: hidden;
+}
+
+.map-container {
+    display: inline-block;
+    width: 80%;
+    height: calc(100vh - 0px);
+    user-select: none;
+    padding: 0;
+    overflow: auto;
+}
+
+.tools-container {
+    display: inline-block;
+    width: 19.6%;
+    height: calc(100vh - 0px);
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+.tools-title {
+    margin: 0;
+    padding: 0;
+    border: $bordersize ridge $color-primary;
+    background-color: #313131;
+    color: $color-text1;
+    text-align: center;
+}
+
+.tools-menu {
+    margin: 0;
+    padding: 0;
+    margin-bottom: 2rem;
+    border: 10px solid $color-menu;
+    background-color: #313131;
+    color: lightgray;
+    text-align: center;
+}
+
+.menu-link {
+    display: inline !important;
+    text-decoration: none;
+    color: $color-text1;
+    letter-spacing: 2px;
+    &:hover {
+        letter-spacing: 1.5px;
+        color: #ebce0d;
+        font-weight: bold;
+    }
+}
+
+.brick {
+    display:inline-block;
+    background-color: deepskyblue;
+    //border: 1px solid red;
+    margin: 0px;
+    padding: 0px;
+    line-height: 0;
+    letter-spacing: 0;
+}
+
+.map-row {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+

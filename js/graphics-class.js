@@ -5,12 +5,17 @@ export default class GaphicsClass {
 		this.spritesClass = spritesClass
 		this.mapDataClass = mapDataClass
 		//--------------------------------------------------------------------
+		this.SCREEN_WIDTH = window.innerWidth
+		this.SCREEN_HEIGHT = window.innerHeight
+		this.GAME_WIDTH = 1250
+		this.GAME_HEIGHT = 700
+
 		this.CELL_SIZE = CELL_SIZE
 		this.WALKINTERVAL = -7
 		this.FOV = this.toRadians(60)
-		this.MINIMAP_SCALE = 0.1333
-		this.MINIMAP_X = 10
-		this.MINIMAP_Y = 10
+		this.MINIMAP_SCALE = 0.25
+		this.MINIMAP_X = (this.GAME_WIDTH / 2) - (this.MINIMAP_SCALE * CELL_SIZE) * 30
+		this.MINIMAP_Y = (this.GAME_HEIGHT / 2) - (this.GAME_HEIGHT / 2.5)
 		this.PLAYER_SIZE = 6
 		this.SPRITE_SIZE = 6
 		//--------------------------------------------------------------------
@@ -45,8 +50,6 @@ export default class GaphicsClass {
 	gameResize() {
 		this.SCREEN_WIDTH = window.innerWidth
 		this.SCREEN_HEIGHT = window.innerHeight
-		this.GAME_WIDTH = 1250
-		this.GAME_HEIGHT = 700
 
 		this.SLIP_WIDTH = Math.floor(-(this.GAME_WIDTH/100) * 10)
 		this.GAME_WIDTH3D = this.GAME_WIDTH + (2 * Math.abs(this.SLIP_WIDTH))

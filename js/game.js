@@ -281,7 +281,7 @@ function spritesCheck() {
 			if (sprite.type == 'ammo') {
 				if(sprite.active) {
 					moveAmmo(sprite, nearData)
-					let checkActAnim = texturesClass.loadAnimationTexture(sprite)
+					let checkActAnim = mapDataClass.loadAnimationTexture(sprite)
 					if (checkActAnim) getActualTexture = checkActAnim[1]
 					sprite.z = playerWalk()
 				}
