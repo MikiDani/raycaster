@@ -9,7 +9,9 @@
         "textures": {
             "style01": ["wall2"]
         },
-        "type": "basic"
+        "type": "basic",
+        "anim_frames": [1,2],
+        "rotate_frames": [3,4]
     },
     {
         "textures": {

@@ -42,7 +42,7 @@
     "sky": [
         {
             "texture": {
-                "skys1": ["sky4"]
+                "skys1": ["sky1"]
             },
             "type": "sky"
         }
@@ -206,8 +206,8 @@
             "anim_repeatCount": 0,
             "anim_startFrame": 1,
             "anim_function": null,
-            "rotation": true,
-            "rotationFrames": ["B", "D", "A", "C"]
+            "rotate_switch": true,
+            "rotate_frames": ["B", "D", "A", "C"]
         },
         {
             "textures": {
@@ -235,8 +235,8 @@
             "anim_repeatCount": 0,
             "anim_startFrame": 1,
             "anim_function": null,
-            "rotation": true,
-            "rotationFrames": ["B", "D", "A", "C"]
+            "rotate_switch": true,
+            "rotate_frames": ["B", "D", "A", "C"]
         }
     ]
 }

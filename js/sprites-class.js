@@ -1,6 +1,11 @@
 // import MapDataClass from "./mapdata-class"
 
 export default class SpritesClass {
+    lookDistance;
+    sprites;
+    nearSprites;
+    weponsSprites;
+    objectDataTypes;
     constructor({CELL_SIZE: CELL_SIZE, player: player, texturesClass: texturesClass, mapDataClass: mapDataClass}) {
         this.texturesClass = texturesClass
         this.mapDataClass = mapDataClass
@@ -10,43 +15,29 @@ export default class SpritesClass {
         this.lookDistance = 25
         this.sprites = []
         this.nearSprites = []
-
         this.weponsSprites = []
+
+        this.loadObjectDataTypes()
+    }
+
+    async loadObjectDataTypes() {
+        const loadData = await fetch("/data/objectdatatypes.JSON");
+        this.objectDataTypes = await loadData.json()
     }
 
     createSprite(spriteData, dirConstruction, thisArray) {
         let spriteArray = [];
         
         spriteArray.dirConstruction = dirConstruction;
-
-        if (typeof spriteData.name !== 'undefined')                 spriteArray.name = spriteData.name;
-        if (typeof spriteData.active !== 'undefined')               spriteArray.active = spriteData.active;
-        if (typeof spriteData.type !== 'undefined')                 spriteArray.type = spriteData.type;
-        if (typeof spriteData.mode !== 'undefined')                 spriteArray.mode = spriteData.mode;
-        if (typeof spriteData.animation !== 'undefined')            spriteArray.animation = spriteData.animation;
-        if (typeof spriteData.x !== 'undefined')                    spriteArray.x = this.CELL_SIZE * spriteData.x
-        if (typeof spriteData.y !== 'undefined')                    spriteArray.y = this.CELL_SIZE * spriteData.y
-        if (typeof spriteData.z !== 'undefined')                    spriteArray.z = spriteData.z;
-        if (typeof spriteData.angle !== 'undefined')                spriteArray.angle = spriteData.angle;
-        if (typeof spriteData.speed !== 'undefined')                spriteArray.speed = spriteData.speed;
-        if (typeof spriteData.move !== 'undefined')                 spriteArray.move = spriteData.move;
-        if (typeof spriteData.moveType !== 'undefined')             spriteArray.moveType = spriteData.moveType;
-        if (typeof spriteData.distance !== 'undefined')             spriteArray.distance = spriteData.distance;
-        if (typeof spriteData.value !== 'undefined')                spriteArray.value = spriteData.value;
-        if (typeof spriteData.value !== 'undefined')                spriteArray.value = spriteData.value;
-
-        if (typeof spriteData.anim_switch !== 'undefined')          spriteArray.anim_switch = spriteData.anim_switch;
-        if (typeof spriteData.anim_frames !== 'undefined')          spriteArray.anim_frames = spriteData.anim_frames;
-        if (typeof spriteData.anim_speed !== 'undefined')           spriteArray.anim_speed = spriteData.anim_speed;
-        if (typeof spriteData.anim_function !== 'undefined')        spriteArray.anim_function = spriteData.anim_function;
-        if (typeof spriteData.anim_repeat !== 'undefined')          spriteArray.anim_repeat = spriteData.anim_repeat;
-        if (typeof spriteData.anim_repeatCount !== 'undefined')     spriteArray.anim_repeatCount = spriteData.anim_repeatCount;
-        if (typeof spriteData.anim_startFrame !== 'undefined')      spriteArray.anim_startFrame = spriteData.anim_startFrame;
-        if (typeof spriteData.anim_maxFrame !== 'undefined')        spriteArray.anim_maxFrame = spriteData.anim_maxFrame;
-        if (typeof spriteData.anim_actFrame !== 'undefined')        spriteArray.anim_actFrame = spriteData.anim_actFrame;
-        
-        if (typeof spriteData.rotation !== 'undefined')             spriteArray.rotation = spriteData.rotation;
-        if (typeof spriteData.rotationFrames !== 'undefined')       spriteArray.rotationFrames = spriteData.rotationFrames;
+                
+        for (let key in spriteData) {
+            const isset = this.objectDataTypes.some(item => item.name == key);
+            if (isset) {
+                (key == "x" || key == "y") 
+                ? spriteArray[key] = this.CELL_SIZE * spriteData[key]
+                : spriteArray[key] = spriteData[key]
+            } 
+        }
 
         thisArray.push(spriteArray)
     }

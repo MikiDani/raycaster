@@ -309,8 +309,8 @@ function creatureSpriteSelect(creature) {
 	let angDif = graphicsClass.toAngle(creature.angle - player.angle);
 
 	// ROTATION
-	if (creature.rotation) {
-		var rot_b = creature.rotationFrames[0]; var rot_d = creature.rotationFrames[1]; var rot_a = creature.rotationFrames[2]; var rot_c = creature.rotationFrames[3];
+	if (creature.rotate_switch) {
+		var rot_b = creature.rotate_frames[0]; var rot_d = creature.rotate_frames[1]; var rot_a = creature.rotate_frames[2]; var rot_c = creature.rotate_frames[3];
 	} else {
 		var rot_b = 'a'; var rot_d = 'a';
 		var rot_a = 'a'; var rot_c = 'a';
@@ -333,7 +333,7 @@ function creatureSpriteSelect(creature) {
 }
 
 async function loadindDatas() {
-	const weaponDataResponse = await fetch('./js/weapons/weapons.JSON')
+	const weaponDataResponse = await fetch('./data/weapons/weapons.JSON')
 	const weaponsData = await weaponDataResponse.json()
 
 	// Load Wepon Textures
@@ -348,7 +348,7 @@ async function loadindDatas() {
 		spritesClass.createSprite(ammo, dirConstruction, spritesClass.weponsSprites)
 	}
 	
-	const mapDataResponse = await fetch('./js/maps/e1m1.JSON');
+	const mapDataResponse = await fetch('./data/maps/e1m1.JSON');
     const mapData = await mapDataResponse.json();
 	
 	player.x = mapData.player.x * CELL_SIZE

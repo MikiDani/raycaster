@@ -1,4 +1,5 @@
 class Editor {
+	objectDataTypes;
 	walls;
 	constructor () {
 		this.mapSize = 64
@@ -61,17 +62,90 @@ class Editor {
 		});
 	}
 
+	loadInput(fileKey, fileValue) {
+
+		function elementCreator(type, fileKey, fileValue) {
+			console.log(fileKey + ' = ' + type)
+			console.log('Value:')
+			console.log(fileValue)
+
+			let returnElement = `<div>Még nincsen megcsinálva! ${type} ${fileKey}</div>`;
+
+			if (type == 'number') {
+				returnElement = `
+				<div class="data-title col-6 p-0 m-0"><span class="align-middle">${fileKey}:</span></div>
+				<div class="data-data col-6 p-0 m-0"><input type="number" value="${fileValue}" id="number_${fileKey}" min="0" max="5000" step="1" class="form-control form-control-sm"></div>`;
+			}
+
+			if (type == 'text') {
+				returnElement = `
+				<div class="data-title col-6 p-0 m-0"><span class="align-middle">${fileKey}:</span></div>
+				<div class="data-data col-6 p-0 m-0"><input type="text" value="${fileValue}" id="text_${fileKey}" maxlength="50" class="form-control form-control-sm"></div>`;
+			}
+
+			if (type == 'array') {
+				returnElement = `
+				<div class="data-title col-6 p-0 m-0"><span class="align-middle">${fileKey}:</span></div>
+				<div class="data-data col-6 p-0 m-0">${fileValue}</div>`;
+			}
+
+			if (type == 'boolean') {
+				function checkChecked(value) {
+					console.log('poeriewpirpweor: ')
+					console.log(fileValue)
+					if (fileValue == value) return ' selected'; else return '';
+				}
+
+				returnElement = `
+				<div class="data-title col-6 p-0 m-0"><span class="align-middle">${fileKey}:</span></div>
+				<div class="data-data col-6 p-0 m-0">
+					<select name="${fileKey}" class="form-control form-control-sm align-middle">
+						<option value="false" ${checkChecked(false)}>false</option>
+						<option value="true" ${checkChecked(true)}>true</option>
+					</select>
+				</div>`;
+			}
+
+			if (type == 'valamika') {
+				returnElement = `
+				<div class="data-title col-6 p-0 m-0"><span class="align-middle">${fileKey}:</span></div>
+				<div class="data-data col-6 p-0 m-0">
+					<select name="type" class="form-control form-control-sm align-middle">
+						<option value="basic" checked>basic</option>
+						<option value="animated">animated</option>
+						<option value="animated">fixed</option>
+						<option value="animated">pickup</option>
+					</select>
+				</div>`;
+			}
+
+			return returnElement;
+		}
+
+		for(const [objKey, object] of Object.entries(this.objectDataTypes)) {
+			console.log(object.inputType +' = '+ object.name)
+			if(fileKey == object.name) 
+				return elementCreator(object.inputType, fileKey, fileValue)
+		}
+		return '';
+	}
+
 	async loadTextures() {
+		var clone = this
+
+		const loadData = await fetch("/data/objectdatatypes.JSON");
+        this.objectDataTypes = await loadData.json()
+
 		// Action function
-		async function loadAction(name) {
-			let connectFile = await fetch(`/js/${name}/${name}.JSON`)
+		async function loadAction(name, objectDataTypes) {
+			let connectFile = await fetch(`/data/${name}/${name}.JSON`)
 			let fileData = await connectFile.json()
 
 			let elements = `
 			<div class="tools-title p-0 m-0">
 				<h4>${name.toUpperCase()} Textures</h4>
 			</div>
-			<div class="p-0 px-2 m-0">
+			<div class="p-0 px-1 m-0">
 				<div class="textures-pic-container p-0 m-0 mt-2">`;
 					fileData.forEach((textureArray, index) => {
 						for(const[key, value] of Object.entries(textureArray.textures)) {
@@ -83,13 +157,14 @@ class Editor {
 			
 			$("#textures-list").append(elements);
 
-			$("[id^='selected-']").on('click', function() {
+			$("[id^='selected-']").on('click', {objectDataTypes: objectDataTypes}, function(event) {
+				let objectDataTypes = event.data.objectDataTypes
 
 				let elementName = $(this).attr('data-name')
 				let elementIndex = $(this).attr('data-index')
 
 				let selectedElements = `
-				<div class="p-0 px-3 m-0">
+				<div class="p-0 m-0 px-1">
 					<div class="p-2 m-0 texture-class_ border border-secondary">
 						<h6 class="text-white text-start"><strong>Name: </strong>${Object.values(fileData[elementIndex].textures)[0]}</h6>
 						<hr class="p-0 my-2 border-white">
@@ -102,22 +177,27 @@ class Editor {
 									selectedElements +=	`<img src="/img/walls/${key}/${textureName}.png" alt="${textureName}" class="list-pic p-0 m-0 me-2 mb-2" data-name="${textureName}" data-index="${elementIndex}" data-key="${key}" data-texturename="${textureName}">`;
 								});
 							}
-
 							selectedElements += `</div>
-						</div>
+						</div>`;
+
+						// console.log(elementName); console.log(elementIndex)
+
+						selectedElements += `
 						<div class="texture-data text-white">
-							<div class="row data-line p-0 m-0">
-								<div class="data-title col-6 p-0 m-0"><span class="align-middle">Type:</span></div>
-								<div class="data-data col-6 p-0 m-0">
-									<select name="type" class="form-control form-control-sm align-middle">
-										<option value="basic" checked>basic</option>
-										<option value="animated">animated</option>
-										<option value="animated">fixed</option>
-										<option value="animated">pickup</option>
-									</select>
-								</div>
-								<div class="data-title col-6 p-0 m-0 text-start"><span class="align-middle">anim_function:</span></div>
-								<div class="data-data col-6 p-0 m-0 text-start text-success"><span class="align-middle">null</span></div>
+							<div class="row data-line p-0 m-0">`;
+								
+								console.log(fileData[elementIndex])	// !!! Kekell rakni a kiválasztott elembe
+
+								for(const [fileKey, fileValue] of Object.entries(fileData[elementIndex])) {
+									console.log(fileKey)
+									console.log(fileValue)
+									let loadInput = clone.loadInput(fileKey, fileValue)
+									
+									console.log(loadInput)
+									selectedElements += loadInput
+								}
+
+								selectedElements += `
 							</div>
 						</div>
 					</div>
@@ -131,7 +211,7 @@ class Editor {
 		}
 
 		// Load textures
-		this.walls = await loadAction('walls')
+		this.walls = await loadAction('walls', this.objectDataTypes)
 
 		console.log(this.walls)
 		
