@@ -30,7 +30,7 @@ const menu = {
 	optionsActive: false,
 	clearGameSwitch: false,
 	infoSwitch: false,
-	mapSwitch: true,
+	mapSwitch: false,
 	shadowsSwitch: true,
 	spriteShadowsSwitch: true,
 	mouseSwitch: true,

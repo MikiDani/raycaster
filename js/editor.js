@@ -1,9 +1,16 @@
 class Editor {
 	objectDataTypes;
 	walls;
+	objects;
+	selectedElementData;
+	objectName;
 	constructor () {
 		this.mapSize = 64
 		this.mapContainerWidth = 4000
+		this.map = []
+		this.walls = null
+		this.objects = null
+		this.objectName = null
 		// ---------------
 		$(window).on('resize', this.resizer(this.mapSize, this.mapContainerWidth));
 		this.mapUpload(this.mapSize)
@@ -11,6 +18,23 @@ class Editor {
 		this.mapIconSize()
 		// ----------------
 		this.loadTextures()
+
+		$("#textures-selected").on('input', () => this.loadElementsDatas(this.selectedElementData.textures))
+
+		var clone = this
+		$("[id^='map_']").on('click', function() {
+			if (clone.selectedElementData) {
+				let y = $(this).attr('map-y')
+				let x = $(this).attr('map-x')
+
+				clone.map[y][x] = clone.selectedElementData;
+
+				for(const [dir, filename] of Object.entries(clone.selectedElementData.textures)) {
+					$(this).css('background-image', `url(/img/${clone.objectName}/${dir}/${filename[0]}.png)`);
+					$(this).css('background-size', 'cover')
+				}
+			}
+		});
 	}
 
 	resizer(mapSize, mapContainerWidth) {
@@ -24,23 +48,29 @@ class Editor {
 	}
 
 	mapUpload(mapSize) {
+		let counter = 0;
 		for (let y = 0; y < mapSize; y++) {
+			this.map[y] = [];
 			let elementRow = document.createElement('div');
 			elementRow.className = 'map-row';
-	
 			for (let x = 0; x < mapSize; x++) {
-				let r = Math.floor(Math.random() * 155)
-				let g = Math.floor(Math.random() * 125)
-				let b = Math.floor(Math.random() * 155)
+				// let r = Math.floor(Math.random() * 155)
+				// let g = Math.floor(Math.random() * 125)
+				// let b = Math.floor(Math.random() * 155)
 	
 				let element = document.createElement('div')
-				// element.innerText= x
 				element.className = 'brick'
-				element.style.backgroundColor = 'rgb(' + r + ',' + g + ',' + b + ')'
+				// element.style.backgroundColor = 'rgb(' + r + ',' + g + ',' + b + ')'
+				//element.innerText= counter
 				element.style.width = this.bricksize + 'px'
 				element.style.height = this.bricksize + 'px'
-	
+				element.setAttribute('map-y', y)
+				element.setAttribute('map-x', x)
+				element.setAttribute('id', 'map_' + counter)
+				
 				elementRow.appendChild(element);
+				this.map[y][x] = null;
+				counter++
 			}
 			document.querySelector(".map-container").appendChild(elementRow);
 		}
@@ -64,70 +94,90 @@ class Editor {
 
 	loadInput(fileKey, fileValue) {
 
-		function elementCreator(type, fileKey, fileValue) {
-			console.log(fileKey + ' = ' + type)
-			console.log('Value:')
-			console.log(fileValue)
+		function elementCreator(objectData, fileKey, fileValue) {
 
-			let returnElement = `<div>Még nincsen megcsinálva! ${type} ${fileKey}</div>`;
+			let returnElement = `<div>Még nincsen megcsinálva! ${fileKey} ${fileKey}</div>`;
 
-			if (type == 'number') {
+			if (objectData.inputType == 'null') returnElement = ``; 
+
+			if (objectData.inputType == 'number') {
 				returnElement = `
 				<div class="data-title col-6 p-0 m-0"><span class="align-middle">${fileKey}:</span></div>
-				<div class="data-data col-6 p-0 m-0"><input type="number" value="${fileValue}" id="number_${fileKey}" min="0" max="5000" step="1" class="form-control form-control-sm"></div>`;
+				<div class="data-data col-6 p-0 m-0"><input id="number_${fileKey}" name="${fileKey}" type="number" value="${fileValue}" min="0" max="5000" step="1" class="form-control form-control-sm"></div>`;
 			}
 
-			if (type == 'text') {
+			if (objectData.inputType == 'text') {
 				returnElement = `
 				<div class="data-title col-6 p-0 m-0"><span class="align-middle">${fileKey}:</span></div>
-				<div class="data-data col-6 p-0 m-0"><input type="text" value="${fileValue}" id="text_${fileKey}" maxlength="50" class="form-control form-control-sm"></div>`;
+				<div class="data-data col-6 p-0 m-0"><input id="text_${fileKey}" name="${fileKey}" type="text" value="${fileValue}" id="text_${fileKey}" maxlength="50" class="form-control form-control-sm"></div>`;
 			}
 
-			if (type == 'array') {
+			if (objectData.inputType == 'array') {	// no modify
 				returnElement = `
 				<div class="data-title col-6 p-0 m-0"><span class="align-middle">${fileKey}:</span></div>
 				<div class="data-data col-6 p-0 m-0">${fileValue}</div>`;
 			}
 
-			if (type == 'boolean') {
+			if (objectData.inputType == 'boolean') {
 				function checkChecked(value) {
-					console.log('poeriewpirpweor: ')
-					console.log(fileValue)
 					if (fileValue == value) return ' selected'; else return '';
 				}
 
 				returnElement = `
 				<div class="data-title col-6 p-0 m-0"><span class="align-middle">${fileKey}:</span></div>
 				<div class="data-data col-6 p-0 m-0">
-					<select name="${fileKey}" class="form-control form-control-sm align-middle">
+					<select id="boolean_${fileKey}" name="${fileKey}" class="form-control form-control-sm align-middle">
 						<option value="false" ${checkChecked(false)}>false</option>
 						<option value="true" ${checkChecked(true)}>true</option>
 					</select>
 				</div>`;
 			}
 
-			if (type == 'valamika') {
+			if (objectData.inputType == 'select') {
+				function checkChecked(value) {
+					if (fileValue == value) return ' selected'; else return '';
+				}
+
 				returnElement = `
 				<div class="data-title col-6 p-0 m-0"><span class="align-middle">${fileKey}:</span></div>
 				<div class="data-data col-6 p-0 m-0">
-					<select name="type" class="form-control form-control-sm align-middle">
-						<option value="basic" checked>basic</option>
-						<option value="animated">animated</option>
-						<option value="animated">fixed</option>
-						<option value="animated">pickup</option>
+					<select id="select_${fileKey}" name="${fileKey}" class="form-control form-control-sm align-middle">`;
+					for (const optionValue of objectData.values) {
+						returnElement += `<option value="${optionValue}" ${checkChecked(optionValue)}>${optionValue}</option>`;
+					}
+					returnElement += `
 					</select>
 				</div>`;
 			}
-
 			return returnElement;
 		}
 
 		for(const [objKey, object] of Object.entries(this.objectDataTypes)) {
-			console.log(object.inputType +' = '+ object.name)
-			if(fileKey == object.name) 
-				return elementCreator(object.inputType, fileKey, fileValue)
+			if(fileKey == object.name) {
+				return elementCreator(object, fileKey, fileValue)
+			}
 		}
 		return '';
+	}
+
+	loadElementsDatas(textures) {
+		let data = {}
+		if (typeof textures !='undefined' || typeof textures != null) data.textures = textures
+		$(`#selected-container`).find("input, select").each(function() {
+			let name = $(this).attr('name')
+			let value = $(this).val()
+
+			data[name] = value
+
+			// console.log(name)
+			// console.log(value)
+		});
+
+		this.selectedElementData = data
+
+		console.log('------------------');
+		console.log(this.selectedElementData)
+		console.log('------------------');
 	}
 
 	async loadTextures() {
@@ -137,7 +187,7 @@ class Editor {
         this.objectDataTypes = await loadData.json()
 
 		// Action function
-		async function loadAction(name, objectDataTypes) {
+		async function loadAction(name) {
 			let connectFile = await fetch(`/data/${name}/${name}.JSON`)
 			let fileData = await connectFile.json()
 
@@ -149,7 +199,7 @@ class Editor {
 				<div class="textures-pic-container p-0 m-0 mt-2">`;
 					fileData.forEach((textureArray, index) => {
 						for(const[key, value] of Object.entries(textureArray.textures)) {
-							elements += `<img src="/img/walls/${key}/${value[0]}.png" alt="${value[0]}" class="list-pic p-0 m-0 me-2 mb-2" data-name="${name}" data-index="${index}" id="selected-${name}_${index}">`;
+							elements += `<img src="/img/${name}/${key}/${value[0]}.png" alt="${value[0]}" class="list-pic p-0 m-0 me-2 mb-2 border border-primary border-0" data-name="${name}" data-index="${index}" id="selected-${name}_${index}">`;
 						}
 					});					
 				elements+= `</div>
@@ -157,46 +207,43 @@ class Editor {
 			
 			$("#textures-list").append(elements);
 
-			$("[id^='selected-']").on('click', {objectDataTypes: objectDataTypes}, function(event) {
-				let objectDataTypes = event.data.objectDataTypes
+			$("[id^='selected-']").on('click', {'clone': clone}, function(event) {
+				var clone = event.data.clone
 
-				let elementName = $(this).attr('data-name')
-				let elementIndex = $(this).attr('data-index')
+				name = $(this).attr('data-name')
+				clone.objectName = name
+
+				$("[id^='selected-']").each(function() { $(this).addClass('border-0'); })
+				$(this).removeClass('border-0').addClass('border-2');
+
+				const elementName = $(this).attr('data-name')
+				const elementIndex = $(this).attr('data-index')
+
+				if (elementName == 'walls') fileData = clone.walls;
+				if (elementName == 'objects') fileData = clone.objects;
 
 				let selectedElements = `
-				<div class="p-0 m-0 px-1">
+				<div id="selected-container" class="p-0 m-0 px-1">
 					<div class="p-2 m-0 texture-class_ border border-secondary">
 						<h6 class="text-white text-start"><strong>Name: </strong>${Object.values(fileData[elementIndex].textures)[0]}</h6>
 						<hr class="p-0 my-2 border-white">
 						<div class="textures-pic-container">
 							<div id="" class="textures-pic">`;
-							// console.log(fileData[elementIndex])
 							for(const[key, value] of Object.entries(fileData[elementIndex].textures)) {
-								// console.log(key); console.log(value)
 								value.forEach(textureName => {
-									selectedElements +=	`<img src="/img/walls/${key}/${textureName}.png" alt="${textureName}" class="list-pic p-0 m-0 me-2 mb-2" data-name="${textureName}" data-index="${elementIndex}" data-key="${key}" data-texturename="${textureName}">`;
+									selectedElements +=	`<img src="/img/${name}/${key}/${textureName}.png" alt="${textureName}" class="list-pic p-0 m-0 me-2 mb-2" data-name="${textureName}" data-index="${elementIndex}" data-key="${key}" data-texturename="${textureName}">`;
 								});
 							}
 							selectedElements += `</div>
 						</div>`;
 
-						// console.log(elementName); console.log(elementIndex)
-
 						selectedElements += `
 						<div class="texture-data text-white">
 							<div class="row data-line p-0 m-0">`;
-								
-								console.log(fileData[elementIndex])	// !!! Kekell rakni a kiválasztott elembe
-
 								for(const [fileKey, fileValue] of Object.entries(fileData[elementIndex])) {
-									console.log(fileKey)
-									console.log(fileValue)
 									let loadInput = clone.loadInput(fileKey, fileValue)
-									
-									console.log(loadInput)
 									selectedElements += loadInput
 								}
-
 								selectedElements += `
 							</div>
 						</div>
@@ -205,15 +252,16 @@ class Editor {
 
 				$(`#textures-selected`).html('')
 				$(`#textures-selected`).append(selectedElements)
+				
+				clone.loadElementsDatas(fileData[elementIndex].textures)
 			});
 
 			return fileData;
 		}
 
 		// Load textures
-		this.walls = await loadAction('walls', this.objectDataTypes)
-
-		console.log(this.walls)
+		this.walls = await loadAction('walls')
+		this.objects = await loadAction('objects')
 		
 	}
 }

@@ -3,43 +3,45 @@
         "textures": {
             "style01": ["wall1"]
         },
-        "type": "basic"
+        "type": "basic",
+        "height": "normal"
     },
     {
         "textures": {
             "style01": ["wall2"]
         },
         "type": "basic",
-        "anim_frames": [1,2],
-        "rotate_frames": [3,4]
+        "height": "big"
     },
     {
         "textures": {
             "style01": ["wall3-1", "wall3-2", "wall3-3", "wall3-4"]
         },
         "type": "animated",
+        "height": "normal",
         "anim_switch": true,
+        "anim_action": "start",
         "anim_function": null,
-        "anim_speed": 80,
         "anim_repeat": true,
         "anim_repeatCount": 0,
         "anim_startFrame": 1,
-        "anim_maxFrame": 4,
-        "anim_actFrame": 1
+        "anim_actFrame": 1,
+        "anim_speed": 80
     },
     {
         "textures": {
             "style01": ["door1-1", "door1-2", "door1-3", "door1-4", "door1-5", "door1-6", "door1-7", "door1-8", "door1-9"]
         },
         "type": "door",
+        "height": "normal",
         "active": true,
         "anim_switch": false,
+        "anim_action": "push",
         "anim_function": null,
-        "anim_speed": 80,
         "anim_repeat": 10,
         "anim_repeatCount": 0,
         "anim_startFrame": 1,
-        "anim_maxFrame": 9,
-        "anim_actFrame": 1
+        "anim_actFrame": 1,
+        "anim_speed": 80
     }
 ]

@@ -6,9 +6,7 @@ export default class MapDataClass {
         this.walls = []; this.walls[0] = null;
     }
 
-    returnActualWallTexture(wallY, wallX) {
-        let wall = this.map[wallY][wallX]
-
+    returnActualWallTexture(wall, wallY, wallX) {
         if (wall.type == 'animated' || wall.type == 'door') {
             if (wall.anim_switch) {
                 let checkActAnim = this.loadAnimationTexture(wall, wallY, wallX)                
@@ -24,15 +22,15 @@ export default class MapDataClass {
         wallArray.dirConstruction = dirConstruction
         if (typeof wallData.type !== 'undefined') {
             wallArray.type = wallData.type
+            wallArray.height = wallData.height
             if (wallData.type == 'animated' || wallData.type == 'door') {
-                wallArray.active = wallData.active
                 wallArray.anim_switch = wallData.anim_switch
                 wallArray.anim_function = wallData.anim_function
                 wallArray.anim_speed = wallData.anim_speed
                 wallArray.anim_repeat = wallData.anim_repeat
                 wallArray.anim_repeatCount = wallData.anim_repeatCount
                 wallArray.anim_startFrame = wallData.anim_startFrame
-                wallArray.anim_maxFrame = wallData.anim_maxFrame
+                wallArray.anim_maxFrame = dirConstruction.length-1
                 wallArray.anim_actFrame = wallData.anim_actFrame
             }
         }
@@ -66,7 +64,7 @@ export default class MapDataClass {
 			if(!obj.anim_function) {
 				obj.anim_function = setInterval(() => {
 					obj.anim_actFrame++
-					obj.anim_actFrame = (obj.anim_actFrame >= obj.anim_maxFrame + 1)
+					obj.anim_actFrame = (obj.anim_actFrame >= obj.dirConstruction.length) // obj.dirConstruction.length = anim_max frames
 					? obj.anim_startFrame
 					: obj.anim_actFrame
 					// console.log(obj.anim_actFrame)

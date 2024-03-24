@@ -1,4 +1,10 @@
 export default class GaphicsClass {
+	map;
+	menuElement;
+	floorTexture;
+	context;
+	rays;
+	screenColorize;
 	constructor ({mapDataClass: mapDataClass, spritesClass: spritesClass, texturesClass: texturesClass, CELL_SIZE: CELL_SIZE, player: player, menu: menu, gamePlay: gamePlay, check: check})
 	{
 		this.texturesClass = texturesClass
@@ -649,18 +655,37 @@ export default class GaphicsClass {
 			const BRICK_SIZE = wallHeight / this.CELL_SIZE
 	
 			// Wall
-			let nowTexture = this.mapDataClass.returnActualWallTexture(ray.wallY, ray.wallX)
+			let wall = this.mapDataClass.map[ray.wallY][ray.wallX]
+			
+			let mod = 0
+
+			let wallHeightNum; let wallHeightPos;
+			if (wall.height == 'big') {
+				wallHeightNum = this.CELL_SIZE * 1.5
+				wallHeightPos = (wallHeight/2) + (wallHeight / 2)
+				mod = this.CELL_SIZE / 2
+			} else {
+				wallHeightNum = this.CELL_SIZE
+				wallHeightPos = wallHeight / 2
+			}
+			
+			let nowTexture = this.mapDataClass.returnActualWallTexture(wall, ray.wallY, ray.wallX)
 			let actualTexture = this.loadTexture('wallTextures', nowTexture)
 
-			for(let n = 0; n < this.CELL_SIZE; n++) {
+			for(let n = 0; n < wallHeightNum; n++) {
 				if (typeof ray.vertical !== 'undefined') {
-					this.context.fillStyle = (ray.vertical) ? this.colorDarkening(actualTexture.data[n][ray.start], 0.4) : actualTexture.data[n][ray.start];
+
+					let actPixel = ((n + mod) % this.CELL_SIZE)
+
+					this.context.fillStyle = (ray.vertical)
+					? this.colorDarkening(actualTexture.data[actPixel][ray.start], 0.4)
+					: actualTexture.data[actPixel][ray.start];
 					
 					if (this.SLIP_WIDTH + (i * this.GRID_SIZE) + this.GRID_SIZE > 0) {
 
 						this.context.fillRect(
 							this.cutOutX(this.SLIP_WIDTH + (i * this.GRID_SIZE)),
-							this.cutOutY(this.player.z + Math.floor((((this.GAME_HEIGHT / 2)) - (wallHeight / 2)) + (Math.ceil(n * BRICK_SIZE)))),
+							this.cutOutY(this.player.z + Math.floor((((this.GAME_HEIGHT / 2)) - wallHeightPos) + (Math.ceil(n * BRICK_SIZE)))),
 							this.GRID_SIZE,
 							this.cutOutY(Math.ceil(BRICK_SIZE))
 						);
@@ -671,7 +696,7 @@ export default class GaphicsClass {
 							this.context.fillStyle = `rgba(0, 0, 0, ${shadowDistance})`;
 							this.context.fillRect(
 								this.cutOutX(this.SLIP_WIDTH + (i * this.GRID_SIZE)),
-								this.cutOutY(this.player.z + Math.floor(((this.GAME_HEIGHT / 2) - (wallHeight / 2)) + (Math.ceil(n * BRICK_SIZE)))),
+								this.cutOutY(this.player.z + Math.floor(((this.GAME_HEIGHT / 2) - wallHeightPos) + (Math.ceil(n * BRICK_SIZE)))),
 								this.GRID_SIZE,
 								this.cutOutY(Math.ceil(BRICK_SIZE))
 							);

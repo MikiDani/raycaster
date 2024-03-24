@@ -1,0 +1,45 @@
+[
+    {
+        "textures": {
+            "plant": ["plant1"]
+        },
+        "active": true,
+        "type": "fix",
+        "mode": "object",
+        "z": -15,
+        "angle": 0
+    },
+    {
+        "textures": {
+            "coins": ["coin1"]
+        },
+        "active": true,
+        "type": "pickup",
+        "mode": "coin1",
+        "value": 100,
+        "z": -15,
+        "angle": 0
+    },
+    {
+        "textures": {
+            "coins": ["coin2"]
+        },
+        "active": true,
+        "type": "pickup",
+        "mode": "coin2",
+        "value": 50,
+        "z": -15,
+        "angle": 0
+    },
+    {
+        "textures": {
+            "coins": ["coin3"]
+        },
+        "active": true,
+        "type": "pickup",
+        "mode": "coin3",
+        "value": 10,
+        "z": -15,
+        "angle": 0
+    }
+]
