@@ -12,9 +12,9 @@ class Editor {
 		this.objects = null
 		this.objectName = null
 		// ---------------
-		$(window).on('resize', this.resizer(this.mapSize, this.mapContainerWidth));
+		$(window).on('resize', this.resizer(this.mapSize, this.mapContainerWidth))
 		this.mapUpload(this.mapSize)
-		this.resizer(this.mapSize, this.mapContainerWidth);
+		this.resizer(this.mapSize, this.mapContainerWidth)
 		this.mapIconSize()
 		// ----------------
 		this.loadTextures()
@@ -27,7 +27,7 @@ class Editor {
 				let y = $(this).attr('map-y')
 				let x = $(this).attr('map-x')
 
-				clone.map[y][x] = clone.selectedElementData;
+				clone.map[y][x] = clone.selectedElementData
 
 				for(const [dir, filename] of Object.entries(clone.selectedElementData.textures)) {
 					$(this).css('background-image', `url(/img/${clone.objectName}/${dir}/${filename[0]}.png)`);
@@ -60,19 +60,19 @@ class Editor {
 	
 				let element = document.createElement('div')
 				element.className = 'brick'
-				// element.style.backgroundColor = 'rgb(' + r + ',' + g + ',' + b + ')'
-				//element.innerText= counter
+				// element.style.backgroundColor = 'rgb('+r+','+g+','+b+')'
+				// element.innerText= counter
 				element.style.width = this.bricksize + 'px'
 				element.style.height = this.bricksize + 'px'
 				element.setAttribute('map-y', y)
 				element.setAttribute('map-x', x)
 				element.setAttribute('id', 'map_' + counter)
 				
-				elementRow.appendChild(element);
-				this.map[y][x] = null;
+				elementRow.appendChild(element)
+				this.map[y][x] = null
 				counter++
 			}
-			document.querySelector(".map-container").appendChild(elementRow);
+			document.querySelector(".map-container").appendChild(elementRow)
 		}
 	}
 

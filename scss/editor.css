@@ -50,6 +50,11 @@ body {
   font-weight: bold;
 }
 
+.button-bg-none {
+  background-color: transparent;
+  border: none;
+}
+
 .brick {
   width: 100%;
   display: inline-block;

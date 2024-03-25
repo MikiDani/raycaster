@@ -1,5 +1,3 @@
-// import MapDataClass from "./mapdata-class"
-
 export default class SpritesClass {
     lookDistance;
     sprites;

@@ -15,6 +15,13 @@
     },
     {
         "textures": {
+            "style01": ["wall4"]
+        },
+        "type": "secret",
+        "height": "normal"
+    },
+    {
+        "textures": {
             "style01": ["wall3-1", "wall3-2", "wall3-3", "wall3-4"]
         },
         "type": "animated",

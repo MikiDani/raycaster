@@ -1,7 +1,7 @@
 [
     { "name": "name",               "inputType": "text" },
     { "name": "active",             "inputType": "boolean" },
-    { "name": "type",               "inputType": "select", "values": ["basic", "animated"] },
+    { "name": "type",               "inputType": "select", "values": ["basic", "secret", "animated"] },
     { "name": "height",             "inputType": "select", "values": ["normal", "big"] },
     { "name": "mode",               "inputType": "select", "values": ["mode1", "mode2"] },
     { "name": "animation",          "inputType": "boolean" },
