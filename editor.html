@@ -3,48 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/scss/editor.css">
-    <link rel="stylesheet" href="/modules/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="./scss/editor.css">
+    <link rel="stylesheet" href="./modules/bootstrap/bootstrap.min.css">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&display=swap" rel="stylesheet">
     
-    <link rel="shortcut icon" href="/editor/favicon-editor.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="./favicon-editor.ico" type="image/x-icon">
     <title>MikiDani - RayEngine Editor</title>
 </head>
 <body class="bg-dark p-0 m-0 overflow-hidden">
     <div class="container-fluid h-100 p-0 m-0">
-        <form method="POST" action="/editor/save.php" target="_blank" class="p-0 m-0" enctype="multipart/form-data">
-            <input type="hidden" name="mapdata" value="loremdata">
-            <div class="row h-75 p-0 m-0">
-              <div class="col-lg-8 p-3 m-0 map-container">
-              </div>
-              <div class="col-lg-4 p-0 m-0 tools-container">
-                <div class="row tools-title m-3">
-                    <div class="row p-0 m-0">
-                        <button type="submit" class="btn btn-sm btn-primary col-4">Save</button>
-                        <button type="button" class="btn btn-sm btn-primary col-4">Load</button>
-                        <button href="#" class="btn btn-sm btn-primary col-4">Options</button>
-                    </div>
-                    <div class="px-3 py-0">
-                        <input type="text" name="filename" value="testmap.json" placeholder="filename.json" class="form-control my-3">
-                    </div>
-                </div>
-                <div class="mx-3 d-flex justify-content-between align-items-center">
-                    <button id="map-icon-size-button" class="btn btn-sm btn-minw1 btn-primary" data-size="big">Small Icons</button>
-                    <button id="" class="btn btn-sm btn-minw1 btn-primary" data-size="big">A</button>
-                    <button id="" class="btn btn-sm btn-minw1 btn-primary" data-size="big">B</button>
-                    <button id="" class="btn btn-sm btn-minw1 btn-primary" data-size="big">C</button>
-                </div>
-                <div id="textures-list" class="row p-0 m-3 mb-0"><!-- javascript generated --></div>
-                <div id="textures-selected" class="row p-0 m-3 mt-0"><!-- javascript generated --></div>
-                
-              </div>
+        <input type="hidden" name="mapdata" value="loremdata">
+        <div class="row h-75 p-0 m-0">
+            <div class="col-lg-8 p-3 m-0 map-container">
             </div>
-        </form>
+            <div class="col-lg-4 p-0 m-0 tools-container">
+            <div class="row tools-title m-3">
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <button id="save-button" class="btn btn-sm btn-minw1 btn-primary" data-size="big">Save</button>
+                    <button id="load-button" class="btn btn-sm btn-minw1 btn-primary" data-size="big">Load</button>
+                    <button id="options-button" class="btn btn-sm btn-minw1 btn-primary" data-size="big">Options</button>
+                </div>
+                <div class="px-3 py-0">
+                    <input type="text" name="filename" value="testmap.json" placeholder="filename.json" class="form-control my-3">
+                </div>
+            </div>
+            <div class="mx-3 d-flex justify-content-between align-items-center">
+                <button id="map-icon-size-button" class="btn btn-sm btn-minw1 btn-primary" data-size="big">Small Icons</button>
+                <button id="fill-map-button" class="btn btn-sm btn-minw1 btn-primary" data-size="big">Fill Map</button>
+                <button id="b2" class="btn btn-sm btn-minw1 btn-primary" data-size="big">B</button>
+                <button id="c3" class="btn btn-sm btn-minw1 btn-primary" data-size="big">C</button>
+            </div>
+            <div id="textures-list" class="row p-0 m-3 mb-0"><!-- javascript generated --></div>
+            <div id="textures-selected" class="row p-0 m-3 mt-0"><!-- javascript generated --></div>
+            
+            </div>
+        </div>
     </div>
-    <script src="/modules/jquery/jquery.min.js" defer></script>
-    <script type="module" src="/js/editor.js" defer></script>
+    <script src="./modules/jquery/jquery.min.js" defer></script>
+    <script type="module" src="./js/editor.js" defer></script>
 </body>
 </html>

@@ -1,4 +1,5 @@
 [
+    { "name": "id",                 "inputType": "hidden" },
     { "name": "name",               "inputType": "text" },
     { "name": "active",             "inputType": "boolean" },
     { "name": "type",               "inputType": "select", "values": ["basic", "secret", "animated"] },

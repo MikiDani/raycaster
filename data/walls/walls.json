@@ -1,5 +1,6 @@
 [
     {
+        "id": 5,
         "textures": {
             "style01": ["wall1"]
         },
@@ -7,6 +8,7 @@
         "height": "normal"
     },
     {
+        "id": 10,
         "textures": {
             "style01": ["wall2"]
         },
@@ -14,6 +16,7 @@
         "height": "big"
     },
     {
+        "id": 15,
         "textures": {
             "style01": ["wall4"]
         },
@@ -21,6 +24,7 @@
         "height": "normal"
     },
     {
+        "id": 20,
         "textures": {
             "style01": ["wall3-1", "wall3-2", "wall3-3", "wall3-4"]
         },
@@ -36,6 +40,7 @@
         "anim_speed": 80
     },
     {
+        "id": 25,
         "textures": {
             "style01": ["door1-1", "door1-2", "door1-3", "door1-4", "door1-5", "door1-6", "door1-7", "door1-8", "door1-9"]
         },

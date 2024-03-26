@@ -19,20 +19,88 @@ class Editor {
 		// ----------------
 		this.loadTextures()
 
+		this.buttonOptions()
+	}
+
+	buttonOptions() {
+		var clone = this
+
+		// LOAD DATAS IN VARIABLE WHEN CLICKED TEXTURE
 		$("#textures-selected").on('input', () => this.loadElementsDatas(this.selectedElementData.textures))
 
-		var clone = this
+		// CLICK MAP
 		$("[id^='map_']").on('click', function() {
 			if (clone.selectedElementData) {
 				let y = $(this).attr('map-y')
 				let x = $(this).attr('map-x')
 
-				clone.map[y][x] = clone.selectedElementData
-
 				for(const [dir, filename] of Object.entries(clone.selectedElementData.textures)) {
-					$(this).css('background-image', `url(/img/${clone.objectName}/${dir}/${filename[0]}.png)`);
+					$(this).css('background-image', `url(./img/${clone.objectName}/${dir}/${filename[0]}.png)`);
 					$(this).css('background-size', 'cover')
+					break;
 				}
+
+				let wallObj = clone.walls.find(obj => parseInt(obj.id) == parseInt(clone.selectedElementData.id))
+				
+				if(typeof wallObj != 'undefined') {
+					let dataInMap = {}
+					dataInMap.id = clone.selectedElementData.id
+
+					for(const [key, value] of Object.entries(wallObj)) {
+						if (key !== 'textures' && key !== 'anim_function') {
+							if (String(value) !== String(clone.selectedElementData[key]))
+								dataInMap[key] = clone.selectedElementData[key]
+						}
+					}
+					clone.map[y][x] = dataInMap
+				}				
+			}
+		});
+
+		// FILL MAP BUTTON
+		$("#fill-map-button").on('click', function () {
+			
+			console.log(clone.selectedElementData);
+			
+			if (clone.selectedElementData) {
+				console.log('ITT!!!');
+				
+				let counter = 0;
+				for (let y = 0; y < clone.mapSize; y++) {
+					for (let x = 0; x < clone.mapSize; x++) {
+						clone.map[y][x] = clone.selectedElementData.id
+						for(const [dir, filename] of Object.entries(clone.selectedElementData.textures)) {
+							$(`#map_${counter}`).css('background-image', `url(./img/${clone.objectName}/${dir}/${filename[0]}.png)`);
+							$(`#map_${counter}`).css('background-size', 'cover')
+							break;
+						}
+						counter++;
+					}
+				}
+			}
+		});
+
+		// CLICK SAVE BUTTON
+		$("#save-button").on('click', function () {
+			console.log('SAVE BUTTON Click:')
+			console.log(clone.map);
+			const mapdata = JSON.stringify(clone.map); // JSON formátumba konvertálás
+
+			if (clone.map.length !== 0) {
+				var xhr = new XMLHttpRequest();
+				xhr.open("POST", "./save.php", true);
+				xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+				xhr.send("mapdata=" + encodeURIComponent(mapdata));
+
+				xhr.onreadystatechange = function() {
+					if (xhr.readyState === 4 && xhr.status === 200) {
+						console.log('A save.php válaszolt!');
+						alert(xhr.responseText)
+					}
+				};
+				console.log('Elküldtem a save.php-nak!');
+			} else {
+				console.log('ÜRES MÉG A MAP!');
 			}
 		});
 	}
@@ -99,6 +167,11 @@ class Editor {
 			let returnElement = `<div>Még nincsen megcsinálva! ${fileKey} ${fileKey}</div>`;
 
 			if (objectData.inputType == 'null') returnElement = ``; 
+
+			if (objectData.inputType == 'hidden') {
+				returnElement = `
+				<input id="number_${fileKey}" name="${fileKey}" type="hidden" value="${fileValue}">`;
+			}
 
 			if (objectData.inputType == 'number') {
 				returnElement = `
@@ -168,10 +241,9 @@ class Editor {
 			let value = $(this).val()
 
 			data[name] = value
-
-			// console.log(name)
-			// console.log(value)
 		});
+
+		if(data.id) data.id = parseInt(data.id)
 
 		this.selectedElementData = data
 
@@ -183,12 +255,12 @@ class Editor {
 	async loadTextures() {
 		var clone = this
 
-		const loadData = await fetch("/data/objectdatatypes.JSON");
+		const loadData = await fetch("./data/objectdatatypes.JSON");
         this.objectDataTypes = await loadData.json()
 
 		// Action function
 		async function loadAction(name) {
-			let connectFile = await fetch(`/data/${name}/${name}.JSON`)
+			let connectFile = await fetch(`./data/${name}/${name}.JSON`)
 			let fileData = await connectFile.json()
 
 			let elements = `
@@ -199,7 +271,7 @@ class Editor {
 				<div class="textures-pic-container p-0 m-0 mt-2">`;
 					fileData.forEach((textureArray, index) => {
 						for(const[key, value] of Object.entries(textureArray.textures)) {
-							elements += `<img src="/img/${name}/${key}/${value[0]}.png" alt="${value[0]}" class="list-pic p-0 m-0 me-2 mb-2 border border-primary border-0" data-name="${name}" data-index="${index}" id="selected-${name}_${index}">`;
+							elements += `<img src="./img/${name}/${key}/${value[0]}.png" alt="${value[0]}" class="list-pic p-0 m-0 me-2 mb-2 border border-primary border-0" data-name="${name}" data-index="${index}" id="selected-${name}_${index}">`;
 						}
 					});					
 				elements+= `</div>
@@ -231,7 +303,7 @@ class Editor {
 							<div id="" class="textures-pic">`;
 							for(const[key, value] of Object.entries(fileData[elementIndex].textures)) {
 								value.forEach(textureName => {
-									selectedElements +=	`<img src="/img/${name}/${key}/${textureName}.png" alt="${textureName}" class="list-pic p-0 m-0 me-2 mb-2" data-name="${textureName}" data-index="${elementIndex}" data-key="${key}" data-texturename="${textureName}">`;
+									selectedElements +=	`<img src="./img/${name}/${key}/${textureName}.png" alt="${textureName}" class="list-pic p-0 m-0 me-2 mb-2" data-name="${textureName}" data-index="${elementIndex}" data-key="${key}" data-texturename="${textureName}">`;
 								});
 							}
 							selectedElements += `</div>
