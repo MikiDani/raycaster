@@ -34,8 +34,8 @@ const menu = {
 	shadowsSwitch: true,
 	spriteShadowsSwitch: true,
 	mouseSwitch: true,
-	floorSwitch: true,
-	skySwitch: true,
+	floorSwitch: false,
+	skySwitch: false,
 }
 
 var gamePlay = {

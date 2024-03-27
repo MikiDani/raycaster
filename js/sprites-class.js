@@ -19,7 +19,7 @@ export default class SpritesClass {
     }
 
     async loadObjectDataTypes() {
-        const loadData = await fetch("/data/objectdatatypes.JSON");
+        const loadData = await fetch("./data/objectdatatypes.JSON");
         this.objectDataTypes = await loadData.json()
     }
 

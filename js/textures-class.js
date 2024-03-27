@@ -22,7 +22,7 @@ export default class TexturesClass {
 				thisVariableArray[nameDir][fileName] = []
 
 				const img = new Image();
-				img.src = `img/${dir}/${nameDir}/${fileName}.png`
+				img.src = `.img/${dir}/${nameDir}/${fileName}.png`
 				img.onload = function () {
 					const imgWidth = Math.floor(this.width)
 					const imgHeight = Math.floor(this.height)
@@ -69,7 +69,7 @@ export default class TexturesClass {
 	async loadTexture(dir, nameDir, filename) {
 		return new Promise((good, fault) => {
 			const img = new Image();
-			img.src = `img/${dir}/${nameDir}/${filename}.png`
+			img.src = `.img/${dir}/${nameDir}/${filename}.png`
 			// Finder
 			let $element = $('body').find("#" + filename)
 			if ($element.length > 0) {
@@ -105,7 +105,7 @@ export default class TexturesClass {
 				img.onerror = function(error) {
 					fault(error);
 				};
-				// console.log('A ' + filename + ' betöltődött...');
+				console.log('A ' + filename + ' betöltődött...');
 			}  
 		});
 	}
