@@ -34,8 +34,8 @@ const menu = {
 	shadowsSwitch: true,
 	spriteShadowsSwitch: true,
 	mouseSwitch: true,
-	floorSwitch: false,
-	skySwitch: false,
+	floorSwitch: true,
+	skySwitch: true,
 }
 
 var gamePlay = {
@@ -348,7 +348,7 @@ async function loadindDatas() {
 		spritesClass.createSprite(ammo, dirConstruction, spritesClass.weponsSprites)
 	}
 	
-	const mapDataResponse = await fetch('./data/maps/e1m1.JSON');
+	const mapDataResponse = await fetch('./data/maps/map.JSON');
     const mapData = await mapDataResponse.json();
 	
 	player.x = mapData.player.x * CELL_SIZE

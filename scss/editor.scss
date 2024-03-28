@@ -92,11 +92,34 @@ body {
     min-height: 40px;
 }
 
-.list-pic {
-    width:48px;
+$listPicSize: 48px;
+
+.list-pic-wall {
+    width: $listPicSize;
     &:hover{
         cursor: pointer;
     }
+}
+
+.list-pic-object {
+    width: $listPicSize;
+    &:hover{
+        cursor: pointer;
+    }
+}
+
+.list-pic-sky {
+    width: $listPicSize * 2.9;
+    &:hover{
+        cursor: pointer;
+    }
+}
+
+.list-pic-ceiling, .list-pic-floor {
+    width: $listPicSize * 2.9;
+    height: 19px;
+    background-size: cover;
+    background-repeat: repeat-x;
 }
 
 .selected-pic {

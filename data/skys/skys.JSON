@@ -1,0 +1,32 @@
+[
+    {
+        "textures": {
+            "skys": ["sky1"]
+        },
+        "type": "sky"
+    },
+    {
+        "textures": {
+            "skys": ["sky2"]
+        },
+        "type": "sky"
+    },
+    {
+        "textures": {
+            "skys": ["sky3"]
+        },
+        "type": "sky"
+    },
+    {
+        "textures": {
+            "skys": ["sky4"]
+        },
+        "type": "sky"
+    },
+    {
+        "textures": {
+            "ceilings": ["ceiling1"]
+        },
+        "type": "ceiling"
+    }
+]

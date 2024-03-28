@@ -1,0 +1,20 @@
+[
+    {
+        "textures": {
+            "floors1": ["floor1"]
+        },
+        "type": "floor"
+    },
+    {
+        "textures": {
+            "floors1": ["floor2"]
+        },
+        "type": "floor"
+    },
+    {
+        "textures": {
+            "floors1": ["floor3"]
+        },
+        "type": "floor"
+    }
+]

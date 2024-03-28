@@ -174,8 +174,8 @@ export default class InputClass {
                     this.menuAction(elementId)
                 }
 
-                if (event.key == 'w' || event.key === 'ArrowUp' || event.key === 'Up') this.moveMenuStar(-1);
-                if (event.key == 's' || event.key === 'ArrowDown' || event.key === 'Down') this.moveMenuStar(1);
+                if (event.key == 'w' || event.key == 'W' || event.key === 'ArrowUp' || event.key === 'Up') this.moveMenuStar(-1);
+                if (event.key == 's' || event.key == 'S' || event.key === 'ArrowDown' || event.key === 'Down') this.moveMenuStar(1);
                 
             } else {
             // GAME
@@ -250,7 +250,14 @@ export default class InputClass {
         });
 
         // GAME MOUSE USE
+        $(document).on('contextmenu', (event) => {
+            event.preventDefault()
+            this.mouseMoveSwitsh = false
+            $("body").css({cursor: "default"});
+        });
+
         $("#canvas").on('click', (event) => {
+
             $("body").css({cursor: "crosshair"});
             if(this.mouseMoveSwitsh) {
                 if (event.pageX > (this.graphicsClass.SCREEN_WIDTH / 2)) {
@@ -259,6 +266,7 @@ export default class InputClass {
                     this.player.angle += -this.graphicsClass.toRadians(this.MOVE_ANGLE * 2)
                 }
             }
+            if (this.mouseMoveSwitsh) this.spritesClass.startShot()
             this.mouseMoveSwitsh = true
         });
 
@@ -279,14 +287,14 @@ export default class InputClass {
     }
 
     handleKeyPress = () => {
-        if (this.keyPressed['a']) { this.player.angle += -this.graphicsClass.toRadians(this.MOVE_ANGLE); }
-        if (this.keyPressed['d']) { this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE); }
+        if (this.keyPressed['a'] || this.keyPressed['A']) { this.player.angle += -this.graphicsClass.toRadians(this.MOVE_ANGLE); }
+        if (this.keyPressed['d'] || this.keyPressed['D']) { this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE); }
         if (this.keyPressed['ArrowLeft']) { this.player.angle += -this.graphicsClass.toRadians(this.MOVE_ANGLE); }
         if (this.keyPressed['ArrowRight']) { this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE); }
-        if (this.keyPressed['q']) { this.player.angle += -this.graphicsClass.toRadians(this.MOVE_ANGLE_SLOW); }
-        if (this.keyPressed['e']) { this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE_SLOW); }
-        if (this.keyPressed['w']) { this.player.speed = this.MOVE_SPEED }
-        if (this.keyPressed['s']) { this.player.speed = -this.MOVE_SPEED }
+        if (this.keyPressed['q'] || this.keyPressed['Q']) { this.player.angle += -this.graphicsClass.toRadians(this.MOVE_ANGLE_SLOW); }
+        if (this.keyPressed['e'] || this.keyPressed['E']) { this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE_SLOW); }
+        if (this.keyPressed['w'] || this.keyPressed['W']) { this.player.speed = this.MOVE_SPEED }
+        if (this.keyPressed['s'] || this.keyPressed['S']) { this.player.speed = -this.MOVE_SPEED }
         if (this.keyPressed['ArrowUp']) { this.player.speed = this.MOVE_SPEED }
         if (this.keyPressed['ArrowDown']) { this.player.speed = -this.MOVE_SPEED }
 
