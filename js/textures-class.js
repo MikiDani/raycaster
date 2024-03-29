@@ -10,19 +10,11 @@ export default class TexturesClass {
 
 	async loadTexturesPicture(data, dir, thisVariableArray) {
 
-		console.log(data);
-		let fileNames = data.texture
-
-
-		console.log(fileNames);
-		
+		let fileNames = data.textures
 
 		let dirConstruction = []
 		for (const nameDir of Object.keys(fileNames)) {
-			//IF NOTHING OBJECTDIR MAKE
-
-			console.log(nameDir);
-			
+			//IF NOTHING OBJECTDIR MAKE			
 			dirConstruction.push(nameDir)
 			thisVariableArray[nameDir] = (typeof thisVariableArray[nameDir] !== 'undefined') ? thisVariableArray[nameDir] : [];
 
@@ -40,6 +32,7 @@ export default class TexturesClass {
 					imgPic.setAttribute('src', img.src)
 					imgPic.setAttribute('width', imgWidth)
 					imgPic.setAttribute('height', imgHeight)
+					imgPic.setAttribute('texture-id', data['id'])
 
 					thisVariableArray[nameDir][fileName] = fileName;
 					thisVariableArray['element'] = imgPic;
@@ -113,7 +106,7 @@ export default class TexturesClass {
 				img.onerror = function(error) {
 					fault(error);
 				};
-				console.log('A ' + filename + ' betöltődött...');
+				// console.log('A ' + filename + ' loaded.');
 			}  
 		});
 	}

@@ -623,7 +623,6 @@ export default class GaphicsClass {
 			} else {
 				// CEILING 			"sky": [ {"texture": { "ceiling1": ["ceiling1"] }, "type": "celling" } ],
 				let texture = this.texturesClass.skyTexture.element
-				console.log(texture)
 				let textureWidth = this.texturesClass.skyTexture.textureWidth
 				let textureHeight = this.texturesClass.skyTexture.textureHeight
 				

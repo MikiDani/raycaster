@@ -9,19 +9,20 @@ class Editor {
 	constructor () {
 		this.mapSize = 64
 		this.mapContainerWidth = 4000
-		this.levelDatas = {
+		this.levelData = {
 			"player": {
 				"x": 1.5,
 				"y": 1.5,
 				"angle": 0
 			},
-			"error": 
-			{
-				"texture": {
-					"error": ["error"]
-				},
-				"type": "error"
-			},
+			"error": [
+				{
+					"textures": {
+						"error": ["error"]
+					},
+					"type": "error"
+				}
+			],
 		}
 		
 		this.map = []
@@ -145,11 +146,18 @@ class Editor {
 		});
 
 		// CLICK SAVE BUTTON
-		$("#save-button").on('click', function () {
+		$("#save-button").on('click', {levelData: this.levelData}, function (event) {
+			event.data.levelData
 			console.log('SAVE BUTTON Click:')
-			clone.levelDatas['map'] = clone.map
-			//const mapdata = JSON.stringify(clone.levelDatas).replace(/\s+/g, '')
-			const mapdata = JSON.stringify(clone.levelDatas)
+			event.data.levelData['map'] = clone.map
+
+			console.log('Ezzt Küldi:')
+
+			console.log(event.data.levelData);
+			
+
+			//const mapdata = JSON.stringify(event.data.levelData).replace(/\s+/g, '')
+			const mapdata = JSON.stringify(event.data.levelData)
 
 			if (clone.map.length != 0) {
 				var xhr = new XMLHttpRequest()
@@ -204,7 +212,7 @@ class Editor {
 				element.setAttribute('id', 'map_' + counter)
 				
 				elementRow.appendChild(element)
-				this.map[y][x] = null
+				this.map[y][x] = 0
 				counter++
 			}
 			document.querySelector(".map-container").appendChild(elementRow)
@@ -366,8 +374,8 @@ class Editor {
 
 	clickTexture(clone) {
 		// CLICK SELECTING TEXTURES
-		$("[id^='selected-']").on('click', {'clone': clone}, function(event) {
-			var clone = event.data.clone
+		var clone = this
+		$("[id^='selected-']").on('click', function() {
 
 			const elementName = $(this).attr('data-name')
 			const elementFileName = $(this).attr('data-filename')
@@ -380,9 +388,11 @@ class Editor {
 				$(`.textures-pic-container_${elementName}`).find('img').addClass('border-0')
 				$(this).removeClass('border-0').addClass('border-2')
 
-				clone.levelDatas[elementName] = clone[elementName][elementIndex]
+				if (!clone.levelData[elementName]) clone.levelData[elementName]
 
-				console.log(clone.levelDatas);
+				clone.levelData[elementName] = []
+				clone.levelData[elementName].push(clone[elementName][elementIndex])
+				
 				return;
 			}
 

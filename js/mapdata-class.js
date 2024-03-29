@@ -17,10 +17,11 @@ export default class MapDataClass {
         return [wall.dirConstruction[0], wall.dirConstruction[1]]
     }
 
-    createWall(wallData, dirConstruction) {
+    async createWall(wallData, dirConstruction) {        
         let wallArray = [];
         wallArray.dirConstruction = dirConstruction
         if (typeof wallData.type !== 'undefined') {
+            wallArray.id = wallData.id
             wallArray.type = wallData.type
             wallArray.height = wallData.height
             if (wallData.type == 'animated' || wallData.type == 'door') {
@@ -33,11 +34,11 @@ export default class MapDataClass {
                 wallArray.anim_maxFrame = dirConstruction.length-1
                 wallArray.anim_actFrame = wallData.anim_actFrame
             }
-        }
+        }        
         this.walls.push(wallArray)
     }
 
-    async defineTextures(map) {
+    async defineTextures(map) {        
         // CREATE this.map
         for (let n = 0; n < map.length; n++) {
             this.map[n] = [];
@@ -50,12 +51,14 @@ export default class MapDataClass {
             for(let mX=0; mX<map[0].length; mX++) {
 
                 if (map[mY][mX] != 0) {
+                    // Texture search based on texture identifier.
+                    let loadingTexture = this.walls.find(wall => wall !== null && wall.id == map[mY][mX].id);
                     // Érték szerinti átadás
-                    const wallValue = Object.assign({}, this.walls[map[mY][mX]]);
+                    const wallValue = {...loadingTexture}
                     this.map[mY][mX] = wallValue
                 }
             }
-        }
+        }        
     }
 
     loadAnimationTexture(obj, wallY, wallX) {

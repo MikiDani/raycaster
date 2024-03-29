@@ -1,0 +1,64 @@
+{
+    "map": [
+        [5, 5, 5, 5, 5, 5, 5],
+        [5, 0, 0, 0, 0, 0, 5],
+        [5, 0, 0, 0, 0, 0, 5],
+        [5, 0, 0, 0, 0, 0, 5],
+        [5, 0, 0, 0, 0, 0, 5],
+        [5, 0, 0, 0, 0, 0, 5],
+        [5, 0, 0, 0, 5, 0, 5],
+        [5, 5, 5, 5, 5, 5, 5]
+    ],
+    "player": {
+        "x": 1.5,
+        "y": 1.5,
+        "angle": 0
+    },
+    "error": [
+        {
+            "textures": {
+                "error": ["error"]
+            }
+        }
+    ],
+	"skys": [
+        {
+            "textures": {
+                "skys1": ["sky1"]
+            },
+            "type": "sky"
+        }
+    ],
+    "floors": [
+        {
+            "textures": {
+                "floors1": ["floor1"]
+            },
+            "type": "basic"
+        }
+    ],
+    "walls": [
+        {
+            "textures": {
+                "style01": ["wall1"]
+            },
+            "type": "basic",
+            "height": "normal"
+        }
+    ],
+    "sprites": [
+        {
+            "textures": {
+                "plant": ["plant1"]
+            },
+            "active": true,
+            "type": "fix",
+            "mode": "object",
+            "x": 2.5,
+            "y": 2.5,
+            "z": -15,
+            "angle": 0,
+            "distance": null
+        }
+    ]
+}

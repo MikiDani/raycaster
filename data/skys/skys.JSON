@@ -1,31 +1,31 @@
 [
     {
         "textures": {
-            "skys": ["sky1"]
+            "skys1": ["sky1"]
         },
         "type": "sky"
     },
     {
         "textures": {
-            "skys": ["sky2"]
+            "skys1": ["sky2"]
         },
         "type": "sky"
     },
     {
         "textures": {
-            "skys": ["sky3"]
+            "skys1": ["sky3"]
         },
         "type": "sky"
     },
     {
         "textures": {
-            "skys": ["sky4"]
+            "skys1": ["sky4"]
         },
         "type": "sky"
     },
     {
         "textures": {
-            "ceilings": ["ceiling1"]
+            "ceilings1": ["ceiling1"]
         },
         "type": "ceiling"
     }
