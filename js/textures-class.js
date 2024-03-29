@@ -10,11 +10,19 @@ export default class TexturesClass {
 
 	async loadTexturesPicture(data, dir, thisVariableArray) {
 
+		console.log(data);
 		let fileNames = data.texture
+
+
+		console.log(fileNames);
+		
 
 		let dirConstruction = []
 		for (const nameDir of Object.keys(fileNames)) {
 			//IF NOTHING OBJECTDIR MAKE
+
+			console.log(nameDir);
+			
 			dirConstruction.push(nameDir)
 			thisVariableArray[nameDir] = (typeof thisVariableArray[nameDir] !== 'undefined') ? thisVariableArray[nameDir] : [];
 
@@ -22,7 +30,7 @@ export default class TexturesClass {
 				thisVariableArray[nameDir][fileName] = []
 
 				const img = new Image();
-				img.src = `./img/${dir}/${nameDir}/${fileName}.png`
+				img.src = `./img/${dir}/${nameDir}/${fileName}.png`		
 				img.onload = function () {
 					const imgWidth = Math.floor(this.width)
 					const imgHeight = Math.floor(this.height)

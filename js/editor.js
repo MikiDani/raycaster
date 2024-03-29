@@ -15,6 +15,13 @@ class Editor {
 				"y": 1.5,
 				"angle": 0
 			},
+			"error": 
+			{
+				"texture": {
+					"error": ["error"]
+				},
+				"type": "error"
+			},
 		}
 		
 		this.map = []
@@ -141,7 +148,8 @@ class Editor {
 		$("#save-button").on('click', function () {
 			console.log('SAVE BUTTON Click:')
 			clone.levelDatas['map'] = clone.map
-			const mapdata = JSON.stringify(clone.levelDatas).replace(/\s+/g, '')
+			//const mapdata = JSON.stringify(clone.levelDatas).replace(/\s+/g, '')
+			const mapdata = JSON.stringify(clone.levelDatas)
 
 			if (clone.map.length != 0) {
 				var xhr = new XMLHttpRequest()

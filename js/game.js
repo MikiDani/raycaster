@@ -348,8 +348,14 @@ async function loadindDatas() {
 		spritesClass.createSprite(ammo, dirConstruction, spritesClass.weponsSprites)
 	}
 	
-	const mapDataResponse = await fetch('./data/maps/map.JSON');
+	const mapDataResponse = await fetch('./data/maps/map3.JSON');
     const mapData = await mapDataResponse.json();
+
+	const wallDataResponse = await fetch('./data/walls/walls.JSON');
+    const wallData = await wallDataResponse.json();
+
+	console.log(mapData);
+	
 	
 	player.x = mapData.player.x * CELL_SIZE
 	player.y = mapData.player.y * CELL_SIZE
@@ -358,18 +364,24 @@ async function loadindDatas() {
 	// Load Error Texture
 	let error = mapData.error[0]
 	await texturesClass.loadTexturesPicture(error, 'error', texturesClass.errorTexture)
+	
 
 	// Load SKY Texture
-	let sky = mapData.sky[0]
+	let sky = mapData.skys[0]
 	await texturesClass.loadTexturesPicture(sky, 'skys', texturesClass.skyTexture)
 
+	console.log('TEST3');
+
+
 	// Load Floor Texture
-	let floor = mapData.floor[0]
+	let floor = mapData.floors[0]
 	await texturesClass.loadTexturesPicture(floor, 'floors', texturesClass.floorTexture)
 
 	// Load Wall Textures
-	for (let i = 0; i < mapData.walls.length; i++) {
-        let wall = mapData.walls[i]
+	for (let i = 0; i < wallData.length; i++) {
+        let wall = wallData[i]
+		console.log(wall);
+		
 		let dirConstruction = await texturesClass.loadTextureToArray(wall.textures, 'walls', texturesClass.wallTextures)
 		mapDataClass.createWall(wall, dirConstruction)
     }
@@ -377,11 +389,11 @@ async function loadindDatas() {
 	await mapDataClass.defineTextures(mapData.map)
 
 	// Load Sprites
-	for (let i = 0; i < mapData.sprites.length; i++) {
-        let sprite = mapData.sprites[i]
-		let dirConstruction = await texturesClass.loadTextureToArray(sprite.textures, 'sprites', texturesClass.spriteTextures)		
-		spritesClass.createSprite(sprite, dirConstruction, spritesClass.sprites)
-    }
+	// for (let i = 0; i < mapData.sprites.length; i++) {
+    //     let sprite = mapData.sprites[i]
+	// 	let dirConstruction = await texturesClass.loadTextureToArray(sprite.textures, 'sprites', texturesClass.spriteTextures)		
+	// 	spritesClass.createSprite(sprite, dirConstruction, spritesClass.sprites)
+    // }
 }
 
 async function gameMenu() {

@@ -48,12 +48,11 @@ export default class MapDataClass {
         // Fill this.map
         for(let mY=0; mY<map.length; mY++) {
             for(let mX=0; mX<map[0].length; mX++) {
-                for(let n=1; n<this.walls.length; ++n) {
-                    if (map[mY][mX] == n) { 
-                        // Érték szerinti átadás
-                        const wallValue = Object.assign({}, this.walls[n]);
-                        this.map[mY][mX] = wallValue
-                    }
+
+                if (map[mY][mX] != 0) {
+                    // Érték szerinti átadás
+                    const wallValue = Object.assign({}, this.walls[map[mY][mX]]);
+                    this.map[mY][mX] = wallValue
                 }
             }
         }
