@@ -34,11 +34,18 @@ class Editor {
 		this.objectName = null
 		// ---------------
 		$(window).on('resize', this.resizer(this.mapSize, this.mapContainerWidth))
+		
 		this.mapUpload(this.mapSize)
+
 		this.resizer(this.mapSize, this.mapContainerWidth)
 		this.mapIconSize()
 		// ----------------
 		this.loadTextures()
+
+		console.log(this.walls);
+		
+
+		this.loadMap('map')
 
 		this.buttonOptions()
 	}
@@ -60,13 +67,13 @@ class Editor {
 					break;
 				}
 
-				let wallObj = clone.walls.find(obj => parseInt(obj.id) == parseInt(clone.selectedElementData.id))
+				let insertObject = clone.walls.find(obj => parseInt(obj.id) == parseInt(clone.selectedElementData.id))
 				
-				if(typeof wallObj != 'undefined') {
+				if(typeof insertObject != 'undefined') {
 					let dataInMap = {}
 					dataInMap.id = clone.selectedElementData.id
 
-					for(const [key, value] of Object.entries(wallObj)) {
+					for(const [key, value] of Object.entries(insertObject)) {
 						if (key !== 'textures' && key !== 'anim_function') {
 							if (String(value) !== String(clone.selectedElementData[key]))
 								dataInMap[key] = clone.selectedElementData[key]
@@ -75,8 +82,7 @@ class Editor {
 					clone.map[y][x] = dataInMap
 				}				
 			} else {					
-				clone.map[y][x] = 0
-				$(this).css("background-image", "none");
+				alert('Még nincsen adat a kurzorban! SIMA CLICK')
 			}
 		});
 
@@ -119,15 +125,16 @@ class Editor {
 		});
 
 		// FILL MAP BORDER BUTTON
-		$("#fill-border-button").on('click', function () {
-			console.log(clone.selectedElementData);
+		$("#fill-border-button").on('click', {selectedElementData: this.selectedElementData}, function (event) {
+			console.log(event.data.selectedElementData);
 
 			if (clone.selectedElementData) {
 				let counter = 0;
 				for (let y = 0; y < clone.mapSize; y++) {
 					for (let x = 0; x < clone.mapSize; x++) {
 						if (x == 0 || x==clone.mapSize-1 || y==0 || y==clone.mapSize-1) {
-							clone.map[y][x] = clone.selectedElementData.id
+							
+							clone.map[y][x] = {'id': clone.selectedElementData.id}
 							for(const [dir, filename] of Object.entries(clone.selectedElementData.textures)) {
 								$(`#map_${counter}`).css('background-image', `url(./img/${clone.objectName}/${dir}/${filename[0]}.png)`);
 								$(`#map_${counter}`).css('background-size', 'cover')
@@ -137,6 +144,8 @@ class Editor {
 						counter++;
 					}
 				}
+			} else {
+				alert('Még nincsen adat a kurzorban!')
 			}
 		});
 
@@ -151,10 +160,19 @@ class Editor {
 			console.log('SAVE BUTTON Click:')
 			event.data.levelData['map'] = clone.map
 
-			console.log('Ezzt Küldi:')
-
+			console.log('Ezzt Küldi: 1.')
 			console.log(event.data.levelData);
 			
+			for (let [key, value] of Object.entries(event.data.levelData)) {
+				console.log();
+				
+				if (value === 'true' || value === 'false') {
+					event.data.levelData[key] = value === 'true';
+				}
+			}
+			
+			console.log('Utánna: 2.')
+			console.log(event.data.levelData);
 
 			//const mapdata = JSON.stringify(event.data.levelData).replace(/\s+/g, '')
 			const mapdata = JSON.stringify(event.data.levelData)
@@ -216,6 +234,52 @@ class Editor {
 				counter++
 			}
 			document.querySelector(".map-container").appendChild(elementRow)
+		}
+	}
+
+	async loadMap(mapfileName) {	
+		const mapDataWait = await fetch(`./data/maps/${mapfileName}.JSON`);
+		const mapData = await mapDataWait.json();
+		console.log(mapData);
+
+		await new Promise(resolve => setTimeout(resolve, 1000));
+
+		console.log('Eltelt');
+		
+		for (let y = 0; y < this.map.length; y++) {
+			for (let x = 0; x < this.map[0].length; x++) {
+				
+				console.log(mapData.map[2][2]);
+
+				let cellData = mapData.map[y][x]
+
+				if(cellData) {
+                    // Texture search based on texture identifier.
+
+					console.log(this.walls);
+					
+
+                    let loadingTexture = this.walls.find(wall => wall !== null && wall.id == cellData.id);
+					if (loadingTexture) { loadingTexture.dirName = 'walls'}
+					console.log(loadingTexture);
+					
+
+                    // Érték szerinti átadás
+                    const wallValue = {...loadingTexture, ...cellData}
+                    
+                    this.map[y][x] = wallValue
+
+					console.log(wallValue);
+					
+
+					for(const [dir, filename] of Object.entries(wallValue.textures)) {
+						$(".map-container").find(`[map-x='${x}'][map-y='${y}']`).css('background-image', `url(./img/${wallValue.dirName}/${dir}/${filename[0]}.png)`);
+						$(".map-container").find(`[map-x='${x}'][map-y='${y}']`).css('background-size', 'cover')
+						break;
+					}
+				}
+
+			}
 		}
 	}
 
@@ -363,11 +427,16 @@ class Editor {
 			return fileData;
 		}
 
+		console.log('ITT VAGYOK%%%%');
+		
 		// Load textures
 		this.skys = await loadAction('skys')
 		this.floors = await loadAction('floors')
 		this.walls = await loadAction('walls')
 		this.objects = await loadAction('objects')
+
+		console.log(this.walls);
+		
 
 		clone.clickTexture(clone)
 	}

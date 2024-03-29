@@ -13,7 +13,6 @@ export default class MapDataClass {
                 if (checkActAnim) return checkActAnim;
             }
         }
-
         return [wall.dirConstruction[0], wall.dirConstruction[1]]
     }
 
@@ -51,14 +50,18 @@ export default class MapDataClass {
             for(let mX=0; mX<map[0].length; mX++) {
 
                 if (map[mY][mX] != 0) {
+                    let cellData = map[mY][mX]
+
                     // Texture search based on texture identifier.
-                    let loadingTexture = this.walls.find(wall => wall !== null && wall.id == map[mY][mX].id);
+                    let loadingTexture = this.walls.find(wall => wall !== null && wall.id == cellData.id);
                     // Érték szerinti átadás
-                    const wallValue = {...loadingTexture}
+                    const wallValue = {...loadingTexture, ...cellData}
+                    if(wallValue.id == '20') console.log(wallValue);
+                    
                     this.map[mY][mX] = wallValue
                 }
             }
-        }        
+        }
     }
 
     loadAnimationTexture(obj, wallY, wallX) {
