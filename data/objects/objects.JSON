@@ -1,6 +1,6 @@
 [
     {
-        "id": "500",
+        "id": 500,
         "textures": {
             "plant": ["plant1"]
         },
@@ -11,7 +11,7 @@
         "angle": 0
     },
     {
-        "id": "505",
+        "id": 505,
         "textures": {
             "coins": ["coin1"]
         },
@@ -23,7 +23,7 @@
         "angle": 0
     },
     {
-        "id": "510",
+        "id": 510,
         "textures": {
             "coins": ["coin2"]
         },
@@ -35,7 +35,7 @@
         "angle": 0
     },
     {
-        "id": "515",
+        "id": 515,
         "textures": {
             "coins": ["coin3"]
         },

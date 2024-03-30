@@ -387,14 +387,20 @@ async function loadindDatas() {
 	await mapDataClass.defineTextures(mapData.map)
 
 	// Load Sprites
-	for (let i = 0; i < objectsData.length; i++) {
-        let sprite = objectsData[i]
+	for (let i = 0; i < mapData.sprites.length; i++) {
+        let sprite = mapData.sprites[i]
+		let insertSprite = objectsData.find(obj => parseInt(obj.id) == parseInt(sprite.id))
+
+		if(typeof insertSprite != 'undefined') {
+			let data = {}
+			data.id = sprite.id
+			for (const [key, value] of Object.entries(insertSprite)) data[key] = value;
+			sprite = {...data, ...sprite}
+		}
+		
 		let dirConstruction = await texturesClass.loadTextureToArray(sprite.textures, 'sprites', texturesClass.spriteTextures)		
 		spritesClass.createSprite(sprite, dirConstruction, spritesClass.sprites)
-    }
-
-	console.log(spritesClass.sprites);
-	
+    }	
 }
 
 async function gameMenu() {
