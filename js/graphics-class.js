@@ -554,7 +554,7 @@ export default class GaphicsClass {
 		var timeStop = (Date.now()-this.gamePlay.timeStart)
 	
 		const playerDataText = `
-			Verzió: 0.3 |
+			Verzió: 0.4 |
 			------------------------|
 			GAME_WIDTH: ${this.GAME_WIDTH} px |
 			GAME_WIDTH3D: ${this.GAME_WIDTH3D} px |

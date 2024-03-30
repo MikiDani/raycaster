@@ -35,6 +35,7 @@
         "anim_function": null,
         "anim_repeat": true,
         "anim_repeatCount": 0,
+        "anim_repeatEnd": 3,
         "anim_startFrame": 1,
         "anim_actFrame": 1,
         "anim_speed": 80
@@ -52,6 +53,7 @@
         "anim_function": null,
         "anim_repeat": 10,
         "anim_repeatCount": 0,
+        "anim_repeatEnd": 3,
         "anim_startFrame": 1,
         "anim_actFrame": 1,
         "anim_speed": 80

@@ -29,6 +29,7 @@ export default class MapDataClass {
                 wallArray.anim_speed = wallData.anim_speed
                 wallArray.anim_repeat = wallData.anim_repeat
                 wallArray.anim_repeatCount = wallData.anim_repeatCount
+                wallArray.anim_repeatEnd = wallData.anim_repeatEnd
                 wallArray.anim_startFrame = wallData.anim_startFrame
                 wallArray.anim_maxFrame = dirConstruction.length-1
                 wallArray.anim_actFrame = wallData.anim_actFrame
@@ -48,16 +49,12 @@ export default class MapDataClass {
         // Fill this.map
         for(let mY=0; mY<map.length; mY++) {
             for(let mX=0; mX<map[0].length; mX++) {
-
                 if (map[mY][mX] != 0) {
                     let cellData = map[mY][mX]
-
                     // Texture search based on texture identifier.
                     let loadingTexture = this.walls.find(wall => wall !== null && wall.id == cellData.id);
                     // Érték szerinti átadás
-                    const wallValue = {...loadingTexture, ...cellData}
-                    if(wallValue.id == '20') console.log(wallValue);
-                    
+                    const wallValue = {...loadingTexture, ...cellData}                    
                     this.map[mY][mX] = wallValue
                 }
             }
@@ -73,10 +70,9 @@ export default class MapDataClass {
 					? obj.anim_startFrame
 					: obj.anim_actFrame
 					// console.log(obj.anim_actFrame)
-					if (obj.anim_repeat != true) {
-						obj.anim_repeatCount++
-						//console.log(obj.anim_repeatCount)
-						if (obj.anim_repeatCount >= obj.anim_repeat) {
+					if (!obj.anim_repeat) {
+						obj.anim_repeatCount++						
+                        if (obj.anim_repeatCount >= obj.anim_repeatEnd) {
 							clearInterval(obj.anim_function)
 							obj.anim_switch = false
 							obj.anim_function = null

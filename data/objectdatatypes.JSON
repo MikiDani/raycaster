@@ -23,6 +23,7 @@
     { "name": "anim_function",      "inputType": "null" },
     { "name": "anim_repeat",        "inputType": "boolean" },
     { "name": "anim_repeatCount",   "inputType": "number" },
+    { "name": "anim_repeatEnd",     "inputType": "number" },
     { "name": "anim_startFrame",    "inputType": "number" },
     { "name": "anim_actFrame",      "inputType": "number" },
     { "name": "rotate_switch",      "inputType": "boolean" },
