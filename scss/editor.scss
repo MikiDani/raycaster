@@ -6,6 +6,7 @@ $bordersize: 4mm; // Idézőjelek nélkül
 
 body {
     overflow-x: hidden;
+    user-select: none;
 }
 
 .container-box {

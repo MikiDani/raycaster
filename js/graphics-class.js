@@ -629,7 +629,7 @@ export default class GaphicsClass {
 				var repetitionX = Math.ceil(canvas.width / textureWidth)
 				
 				for (var i = 0; i < repetitionX; i++) {
-					this.context.drawImage(texture, i * textureWidth, 0, textureWidth, textureHeight * 1.3);
+					this.context.drawImage(texture, i * textureWidth, 0, textureWidth, textureHeight);
 				}
 			}
 		}

@@ -97,76 +97,73 @@ class Editor {
 				}
 				let insertedData = clone.insertedOptions(clone, y, x)
 
-				if (insertedData && insertedData.insertType == 'wall') clone.map[y][x] = insertedData.data;
-				if (insertedData && insertedData.insertType == 'object') clone.levelData.sprites.push(insertedData.data);
+				if (insertedData && insertedData.insertType == 'wall') {
+					delete insertedData.insertType
+					// if have delete sprite
+					let findSpriteIndex = clone.levelData.sprites.findIndex(sprite => y == Math.floor(sprite.y) && x == Math.floor(sprite.x))
+					if (findSpriteIndex !== -1) clone.levelData.sprites.splice(findSpriteIndex, 1)
+					// insert wall
+					clone.map[y][x] = insertedData.data;
+				}
+				if (insertedData && insertedData.insertType == 'object') {
+					delete insertedData.insertType
+					// if have delete sprite
+					let findSpriteIndex = clone.levelData.sprites.findIndex(sprite => y == Math.floor(sprite.y) && x == Math.floor(sprite.x))
+					if (findSpriteIndex !== -1) clone.levelData.sprites.splice(findSpriteIndex, 1)
+					// if have delete map
+					clone.map[y][x] = 0;
+					// insert sprite
+					clone.levelData.sprites.push(insertedData.data);
+				}
 				
-				console.log('ezt írja bele:');				
-				console.log(insertedData.insertType);
-				console.log(insertedData.data);
+				console.log('ezt írja bele:')			
+				console.log(insertedData.insertType)
+				console.log(insertedData.data)
 			} else {
-				// delete map brick
-
-				// clone.map[y][x] = 0
-				// $(this).css("background-image", "none")
+				alert('Nincsen kiválasztva semmi!')
 			}
 		});
 
 		// RIGHT CLICK
-		$("[id^='map_']").on('contextmenu', (event) => {
-            event.preventDefault()
-        });
-
-		$(".map-container").find("[id^='map_']").on('mousedown', { levelData: this.levelData }, function(event) {
-
+		$(document).on('contextmenu', (event) => event.preventDefault())
+				
+		$(".map-container").find("[id^='map_']").on('mousedown', { levelData: this.levelData }, function(event) {	
 			let levelData = event.data.levelData
-
 			event.preventDefault()
-			if (event.which == 3) {
 
+			if (event.which == 3) {
 				let y = $(this).attr('map-y')
 				let x = $(this).attr('map-x')
-
 				console.log(x, y);
 				
-
-				// clone.map[y][x] = 0
-				// $(this).css("background-image","").css("background-size", "").css("border", "");
+				// Map delete
+				clone.map[y][x] = 0
+				$(this).css("background-image","").css("background-size", "").css("border", "");
+				// Sprite delete				
+				let findSpriteIndex = levelData.sprites.findIndex(sprite => y == Math.floor(sprite.y) && x == Math.floor(sprite.x))
+				if (findSpriteIndex !== -1) levelData.sprites.splice(findSpriteIndex, 1)
 
 				console.log(levelData);
-
-				console.log(levelData.sprites);
-				
-				let findSprites = levelData.sprites.find(sprite => x == Math.floor(sprite.y) && y == Math.floor(sprite.x))
-
-				console.log(findSprites);
-
-			}		
-        });
-
-		// FILL MAP BUTTON
-		$("#fill-map-button").on('click', function () {
-			console.log(clone.selectedElementData);
-			
-			if (clone.selectedElementData) {
-				let counter = 0;
-				for (let y = 0; y < clone.mapSize; y++) {
-					for (let x = 0; x < clone.mapSize; x++) {
-						clone.map[y][x] = clone.selectedElementData.id
-						for(const [dir, filename] of Object.entries(clone.selectedElementData.textures)) {
-							$(`#map_${counter}`).css('background-image', `url(./img/${clone.objectName}/${dir}/${filename[0]}.png)`);
-							$(`#map_${counter}`).css('background-size', 'cover')
-							$(this).css('border', 'none')
-							if (typeof clone.selectedElementData.height != 'undefined' && clone.selectedElementData.height == 'big') $(this).css('border', '3px solid gray')
-							break;
-						}
-						counter++;
-					}
+			}
+		});
+		
+		// DELETE ALL MAP
+		$("#delete-all-button").on('click', function () {
+			for (let y = 0; y < clone.mapSize; y++) {
+				for (let x = 0; x < clone.mapSize; x++) {
+					clone.map[y][x] = 0
+					let findSpriteIndex = clone.levelData.sprites.findIndex(sprite => y == Math.floor(sprite.y) && x == Math.floor(sprite.x))
+					if (findSpriteIndex !== -1) clone.levelData.sprites.splice(findSpriteIndex, 1)
+					console.log('deleted all!');
+					
+					let mapBrickElment = $(".map-container").find(`[map-x='${x}'][map-y='${y}']`)
+					mapBrickElment.css("background-image","").css("background-size", "").css("border", "");
 				}
 			}
 		});
 
 		// FILL MAP BORDER BUTTON
-		$("#fill-border-button").on('click', {selectedElementData: this.selectedElementData}, function (event) {
+		$("#fill-border-button").on('click', function () {
 			if (clone.selectedElementData) {
 				let counter = 0;
 				for (let y = 0; y < clone.mapSize; y++) {
@@ -174,7 +171,12 @@ class Editor {
 						if (x == 0 || x==clone.mapSize-1 || y==0 || y==clone.mapSize-1) {
 
 							let dataInMap = clone.insertedOptions(clone, y, x)
-							if(dataInMap) clone.map[y][x] = dataInMap;
+							// insert map
+							if(dataInMap) clone.map[y][x] = dataInMap.data;
+							// if have sprite delete
+							let findSpriteIndex = clone.levelData.sprites.findIndex(sprite => y == Math.floor(sprite.y) && x == Math.floor(sprite.x))
+							if (findSpriteIndex !== -1) clone.levelData.sprites.splice(findSpriteIndex, 1)
+
 							console.log('ezt írja bele:');
 							console.log(dataInMap);
 
@@ -192,11 +194,6 @@ class Editor {
 			} else {
 				alert('Még nincsen adat a kurzorban!')
 			}
-		});
-
-		// DESELECT BUTTON
-		$("#deselect-button").on('click', function () {
-			clone.selectedElementData = 0
 		});
 
 		// CLICK SAVE BUTTON
@@ -300,13 +297,6 @@ class Editor {
 						loadingTexture.dirName = 'walls'
 						loadingTexture = {...loadingTexture, ...wallValue}
 					}
-					// if (!loadingTexture) {
-					// 	loadingTexture = this.objects.find(object => object !== null && object.id == cellData.id);
-					// 	if (loadingTexture) {
-					// 		loadingTexture.dirName = 'objects'
-					// 		loadingTexture = {...loadingTexture, ...wallValue}
-					// 	}
-					// }
 
 					// Map container graphics
 					if (loadingTexture) {
@@ -332,8 +322,11 @@ class Editor {
 			if(typeof insertSprite != 'undefined') {
 				let data = {}
 				data.id = sprite.id
+
 				for (const [key, value] of Object.entries(insertSprite)) data[key] = value;
 				sprite = {...data, ...sprite}
+
+				this.levelData.sprites.push(sprite)
 			}
 
 			// Map container graphics
@@ -365,7 +358,7 @@ class Editor {
 		});
 	}
 
-	loadInput(fileKey, fileValue) {
+	loadInput(fileKey, fileValue, elementName) {
 		// Action function
 		function elementCreator(objectData, fileKey, fileValue) {
 
@@ -420,7 +413,7 @@ class Editor {
 				<div class="data-title col-6 p-0 m-0"><span class="align-middle">${fileKey}:</span></div>
 				<div class="data-data col-6 p-0 m-0">
 					<select id="select_${fileKey}" name="${fileKey}" input-type="${objectData.inputType}" class="form-control form-control-sm align-middle">`;
-					for (const optionValue of objectData.values) {
+					for (const optionValue of objectData[elementName]) {
 						returnElement += `<option value="${optionValue}" ${checkChecked(optionValue)}>${optionValue}</option>`;
 					}
 					returnElement += `
@@ -522,6 +515,9 @@ class Editor {
 			const elementFileName = $(this).attr('data-filename')
 			const elementIndex = $(this).attr('data-index')
 
+			console.log(elementName);
+			
+
 			clone.objectName = elementName
 
 			// SKYS
@@ -565,7 +561,7 @@ class Editor {
 					<div class="texture-data text-white">
 						<div class="row data-line p-0 m-0">`;
 							for(const [fileKey, fileValue] of Object.entries(fileData[elementIndex])) {
-								let loadInput = clone.loadInput(fileKey, fileValue)
+								let loadInput = clone.loadInput(fileKey, fileValue, elementName)
 								selectedElements += loadInput
 							}
 							selectedElements += `
