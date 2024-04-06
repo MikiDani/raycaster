@@ -1,11 +1,12 @@
 export default class InputClass {
-    constructor ({mapDataClass: mapDataClass, spritesClass: spritesClass, graphicsClass: graphicsClass, menu: menu, gameMenu: gameMenu, player: player, keyPressed: keyPressed, gamePlay: gamePlay, check: check}) {
+    constructor ({mapDataClass: mapDataClass, spritesClass: spritesClass, graphicsClass: graphicsClass, movePlayer: movePlayer, menu: menu, gameMenu: gameMenu, player: player, keyPressed: keyPressed, gamePlay: gamePlay, check: check}) {
         this.mapDataClass = mapDataClass
         this.spritesClass = spritesClass
         this.graphicsClass = graphicsClass
+        this.movePlayer = movePlayer
         //--------------------------------------------------------------------
-        this.MOVE_SPEED = 20
-        this.MOVE_ANGLE = 5
+        this.MOVE_SPEED = 10
+        this.MOVE_ANGLE = 3
         this.MOVE_ANGLE_SLOW = 0.5
         this.WALL_DISTANCE = (graphicsClass.CELL_SIZE / 100) * 40
         //--------------------------------------------------------------------
@@ -287,12 +288,28 @@ export default class InputClass {
     }
 
     handleKeyPress = () => {
-        if (this.keyPressed['a'] || this.keyPressed['A']) { this.player.angle += -this.graphicsClass.toRadians(this.MOVE_ANGLE); }
-        if (this.keyPressed['d'] || this.keyPressed['D']) { this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE); }
+        if (this.keyPressed['q'] || this.keyPressed['Q']) {
+            let playerClone = {...this.player}
+            playerClone.x = playerClone.x + (Math.cos(playerClone.angle - this.graphicsClass.toRadians(90)) * this.MOVE_SPEED)
+            playerClone.y = playerClone.y + (Math.sin(playerClone.angle - this.graphicsClass.toRadians(90)) * this.MOVE_SPEED)
+            let checkMove = this.movePlayer(playerClone, true)
+            if (checkMove.moveX) this.player.x = this.player.x + (Math.cos(this.player.angle - this.graphicsClass.toRadians(90)) * this.MOVE_SPEED)
+            if (checkMove.moveY) this.player.y = this.player.y + (Math.sin(this.player.angle - this.graphicsClass.toRadians(90)) * this.MOVE_SPEED)
+        }
+        if (this.keyPressed['e'] || this.keyPressed['E']) {
+            let playerClone = {...this.player}
+            playerClone.x = playerClone.x + (Math.cos(playerClone.angle + this.graphicsClass.toRadians(90)) * this.MOVE_SPEED)
+            playerClone.y = playerClone.y + (Math.sin(playerClone.angle + this.graphicsClass.toRadians(90)) * this.MOVE_SPEED)
+            let checkMove = this.movePlayer(playerClone, true)
+            if (checkMove.moveX) this.player.x = this.player.x + (Math.cos(this.player.angle + this.graphicsClass.toRadians(90)) * this.MOVE_SPEED)
+            if (checkMove.moveY) this.player.y = this.player.y + (Math.sin(this.player.angle + this.graphicsClass.toRadians(90)) * this.MOVE_SPEED)
+        }
         if (this.keyPressed['ArrowLeft']) { this.player.angle += -this.graphicsClass.toRadians(this.MOVE_ANGLE); }
         if (this.keyPressed['ArrowRight']) { this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE); }
-        if (this.keyPressed['q'] || this.keyPressed['Q']) { this.player.angle += -this.graphicsClass.toRadians(this.MOVE_ANGLE_SLOW); }
-        if (this.keyPressed['e'] || this.keyPressed['E']) { this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE_SLOW); }
+        if (this.keyPressed['a'] || this.keyPressed['A']) { this.player.angle += -this.graphicsClass.toRadians(this.MOVE_SPEED); }
+        if (this.keyPressed['d'] || this.keyPressed['D']) { this.player.angle += this.graphicsClass.toRadians(this.MOVE_SPEED); }
+        if (this.keyPressed['r'] || this.keyPressed['R']) { this.player.angle += -this.graphicsClass.toRadians(this.MOVE_ANGLE_SLOW); }
+        if (this.keyPressed['t'] || this.keyPressed['T']) { this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE_SLOW); }
         if (this.keyPressed['w'] || this.keyPressed['W']) { this.player.speed = this.MOVE_SPEED }
         if (this.keyPressed['s'] || this.keyPressed['S']) { this.player.speed = -this.MOVE_SPEED }
         if (this.keyPressed['ArrowUp']) { this.player.speed = this.MOVE_SPEED }

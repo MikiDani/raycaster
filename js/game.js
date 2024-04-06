@@ -131,12 +131,13 @@ function checkMoveSprite(spriteObj) {
 	}
 }
 
-function movePlayer() {
-	if (player.speed != 0) {
-		let playerActX = Math.floor(player.x / CELL_SIZE)
-		let playerActY = Math.floor(player.y / CELL_SIZE)
+function movePlayer(bringPlayer, inputStrafeCheck) {
+	var pCheck = false
+	if (bringPlayer.speed != 0 || inputStrafeCheck) {
+		let playerActX = Math.floor(bringPlayer.x / CELL_SIZE)
+		let playerActY = Math.floor(bringPlayer.y / CELL_SIZE)
 
-		let pCheck = checkMoveSprite(player)
+		pCheck = checkMoveSprite(bringPlayer)
 
 		// PLAYER WAY ATMOSPHERE (DOOR)
 		check.playerCheckX = pCheck.checkX
@@ -167,29 +168,29 @@ function movePlayer() {
 				// PICKUP COINS
 				if (sprite.active == true && sprite.type == 'pickup' && sprite.mode.includes("coin")) {
 					sprite.active = false
-					player.score = parseInt(player.score) + parseInt(sprite.value)
-					console.log('PICK UP COIN!!!' + player.score)
+					bringPlayer.score = parseInt(bringPlayer.score) + parseInt(sprite.value)
+					console.log('PICK UP COIN!!!' + bringPlayer.score)
 					// COLORIZE SCREEN
 					let colorizeOption = {}
 					if (sprite.mode=='coin1') colorizeOption = { color: "255, 180, 50", alpha: 0.5, time: 200 }
 					if (sprite.mode=='coin2') colorizeOption = { color: "255, 255, 255", alpha: 0.5, time: 200 }
 					if (sprite.mode=='coin3') colorizeOption = { color: "200, 100, 0", alpha: 0.5, time: 200 }
 					graphicsClass.screenColorizeOptions(colorizeOption);
-	
 					return;
 				}
 			}
 		})
 
 		// 45° CHECK
-		let psPlayerX = Math.floor((player.x + Math.cos(player.angle) * player.speed) / CELL_SIZE)
-		let psPlayerY = Math.floor((player.y + Math.sin(player.angle) * player.speed) / CELL_SIZE)
+		let psPlayerX = Math.floor((bringPlayer.x + Math.cos(bringPlayer.angle) * bringPlayer.speed) / CELL_SIZE)
+		let psPlayerY = Math.floor((bringPlayer.y + Math.sin(bringPlayer.angle) * bringPlayer.speed) / CELL_SIZE)
 		if (mapDataClass.map[psPlayerY][psPlayerX]) { pCheck.moveX = false; pCheck.moveY = false; }
 
-		moveAction(player, pCheck)
+		moveAction(bringPlayer, pCheck)
 		
-		player.z = playerWalk()
+		bringPlayer.z = playerWalk()
 	}
+	return pCheck;
 }
 
 function moveCreature(creature) {
@@ -359,10 +360,6 @@ async function loadindDatas() {
 	const objectsDataResponse = await fetch('./data/objects/objects.JSON');
     const objectsData = await objectsDataResponse.json();
 	console.log(objectsData);
-
-	const blocksDataResponse = await fetch('./data/blocks/blocks.JSON');
-    const blocksData = await blocksDataResponse.json();
-	console.log(blocksData);
 	
 	player.x = mapData.player.x * CELL_SIZE
 	player.y = mapData.player.y * CELL_SIZE
@@ -396,10 +393,6 @@ async function loadindDatas() {
 		let dirName
 		let insertSprite = objectsData.find(obj => parseInt(obj.id) == parseInt(sprite.id))
 		if (insertSprite) { dirName = 'objects' }
-		if (!insertSprite) {
-			insertSprite = blocksData.find(block => parseInt(block.id) == parseInt(sprite.id))
-			if (insertSprite) { dirName = 'blocks' }
-		}
 		if(typeof insertSprite != 'undefined') {
 			let data = {}
 			data.id = sprite.id
@@ -453,7 +446,7 @@ var szamol = 0;
 function gameLoop() {
 	gamePlay.timeStart = Date.now()
 
-	movePlayer()
+	movePlayer(player)
 	graphicsClass.rays = graphicsClass.getRays()
 	graphicsClass.renderScreen()
 	spritesClass.sprites = spritesClass.sprites.sort((a, b) => b.distance - a.distance)
@@ -476,7 +469,7 @@ const texturesClass = new TexturesClass ()
 const mapDataClass 	= new MapDataClass  ({texturesClass: texturesClass})
 const spritesClass 	= new SpritesClass  ({CELL_SIZE: CELL_SIZE, player: player, texturesClass: texturesClass, mapDataClass: mapDataClass})
 const graphicsClass = new GaphicsClass  ({mapDataClass: mapDataClass, spritesClass: spritesClass, texturesClass: texturesClass, CELL_SIZE: CELL_SIZE, player: player, menu: menu, gamePlay: gamePlay, check: check})
-const inputClass 	= new InputsClass   ({mapDataClass: mapDataClass, spritesClass: spritesClass, graphicsClass: graphicsClass, menu: menu, gameMenu: gameMenu, player: player, keyPressed: keyPressed, gamePlay: gamePlay, check: check})
+const inputClass 	= new InputsClass   ({mapDataClass: mapDataClass, spritesClass: spritesClass, graphicsClass: graphicsClass, movePlayer: movePlayer, menu: menu, gameMenu: gameMenu, player: player, keyPressed: keyPressed, gamePlay: gamePlay, check: check})
 
 window.onload = async () => {
 	gameMenu()
