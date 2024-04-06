@@ -102,6 +102,13 @@ $listPicSize: 48px;
     }
 }
 
+.list-pic-block {
+    width: $listPicSize;
+    &:hover{
+        cursor: pointer;
+    }
+}
+
 .list-pic-object {
     width: $listPicSize;
     &:hover{

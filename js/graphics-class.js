@@ -5,6 +5,8 @@ export default class GaphicsClass {
 	context;
 	rays;
 	screenColorize;
+
+	spriteGrid;
 	constructor ({mapDataClass: mapDataClass, spritesClass: spritesClass, texturesClass: texturesClass, CELL_SIZE: CELL_SIZE, player: player, menu: menu, gamePlay: gamePlay, check: check})
 	{
 		this.texturesClass = texturesClass
@@ -19,11 +21,14 @@ export default class GaphicsClass {
 		this.CELL_SIZE = CELL_SIZE
 		this.WALKINTERVAL = -7
 		this.FOV = this.toRadians(60)
-		this.MINIMAP_SCALE = 0.25
-		this.MINIMAP_X = (this.GAME_WIDTH / 2) - (this.MINIMAP_SCALE * CELL_SIZE) * 30
-		this.MINIMAP_Y = (this.GAME_HEIGHT / 2) - (this.GAME_HEIGHT / 2.5)
-		this.PLAYER_SIZE = 6
-		this.SPRITE_SIZE = 6
+		//this.MINIMAP_SCALE = 0.25
+		//this.MINIMAP_X = (this.GAME_WIDTH / 2) - (this.MINIMAP_SCALE * CELL_SIZE) * 30
+		//this.MINIMAP_Y = (this.GAME_HEIGHT / 2) - (this.GAME_HEIGHT / 2.5)
+		this.MINIMAP_SCALE = 1.6
+		this.MINIMAP_X = 5
+		this.MINIMAP_Y = 5
+		this.PLAYER_SIZE = 10
+		this.SPRITE_SIZE = 10
 		//--------------------------------------------------------------------
 		this.map = []
 		this.player = player
@@ -43,6 +48,13 @@ export default class GaphicsClass {
 			alpha: null,
 			time: null,
 			action: null,
+		}
+
+		this.spriteGrid = {
+			angle: 0,
+			x: 0,
+			y: 0,
+			minimapLength: this.CELL_SIZE
 		}
 
 		window.addEventListener("resize", () => {
@@ -489,7 +501,7 @@ export default class GaphicsClass {
 		const rayLength = this.PLAYER_SIZE * 5;
 	
 		this.context.strokeStyle = 'orange'
-		this.context.lineWidth = 1;
+		this.context.lineWidth = 4;
 		this.context.beginPath()
 		this.context.moveTo(this.MINIMAP_X + (this.player.x * this.MINIMAP_SCALE), this.MINIMAP_Y + (this.player.y * this.MINIMAP_SCALE))
 		this.context.lineTo(
@@ -500,7 +512,7 @@ export default class GaphicsClass {
 		this.context.stroke()
 	
 		const spriteRayLength = 50;
-	
+
 		// SPRITES DRAW
 		this.spritesClass.nearSprites.forEach(nearIndex => {
 			let sprite = this.spritesClass.sprites[nearIndex]
@@ -519,13 +531,64 @@ export default class GaphicsClass {
 				this.context.beginPath()
 				this.context.moveTo(this.MINIMAP_X + (sprite.x * this.MINIMAP_SCALE), this.MINIMAP_Y + (sprite.y * this.MINIMAP_SCALE))
 				this.context.lineTo(
-					this.MINIMAP_X + ((sprite.x + (Math.cos(sprite.angle) * spriteRayLength)) * this.MINIMAP_SCALE),
-					this.MINIMAP_Y + ((sprite.y + (Math.sin(sprite.angle) * spriteRayLength)) * this.MINIMAP_SCALE),
+					this.MINIMAP_X + ((sprite.x + (Math.cos(this.toRadians(sprite.angle)) * spriteRayLength)) * this.MINIMAP_SCALE),
+					this.MINIMAP_Y + ((sprite.y + (Math.sin(this.toRadians(sprite.angle)) * spriteRayLength)) * this.MINIMAP_SCALE),
 				)
 				this.context.closePath()
 				this.context.stroke()
 			}
 		});
+		
+		// TEST DRAW 
+		
+		
+		let testLength = 64
+
+		let playerAngRad = this.player.angle
+		let spriteGridAngleRad = this.toRadians(this.spriteGrid.angle)
+
+		let testAngleRad = spriteGridAngleRad - playerAngRad
+		
+		console.log('------------');
+		console.log(this.spriteGrid.x);
+		console.log(this.spriteGrid.y);
+		console.log('playerAngRad: ' + playerAngRad);
+		console.log('spriteGridAngleRad: ' + spriteGridAngleRad);
+		console.log('testAangleRad: ' + testAngleRad);
+		console.log('------------');
+		// Alfa 
+		this.context.strokeStyle = 'white'
+		this.context.lineWidth = 5;
+		this.context.beginPath()
+		this.context.moveTo(this.MINIMAP_X + (this.spriteGrid.x * this.MINIMAP_SCALE), this.MINIMAP_Y + (this.spriteGrid.y * this.MINIMAP_SCALE))
+		this.context.lineTo(
+		this.MINIMAP_X + ((this.spriteGrid.x + (Math.cos(testAngleRad) * testLength)) * this.MINIMAP_SCALE),
+		this.MINIMAP_Y + ((this.spriteGrid.y + (Math.sin(testAngleRad) * testLength)) * this.MINIMAP_SCALE),
+		)
+		this.context.closePath()
+		this.context.stroke()
+
+		// A oldal hosszának képlete	
+		let aLength = testLength * Math.sin(testAngleRad)
+
+		this.context.strokeStyle = 'green'
+		this.context.lineWidth = 5;
+		this.context.beginPath()
+		this.context.moveTo(this.MINIMAP_X + (this.spriteGrid.x * this.MINIMAP_SCALE), this.MINIMAP_Y + (this.spriteGrid.y * this.MINIMAP_SCALE))
+		this.context.lineTo(this.MINIMAP_X + (this.spriteGrid.x * this.MINIMAP_SCALE), this.MINIMAP_Y + (this.spriteGrid.y * this.MINIMAP_SCALE) + (aLength * this.MINIMAP_SCALE))
+		this.context.closePath()
+		this.context.stroke()
+
+		// B oldal hosszának képlete	
+		let bLength = testLength * Math.cos(testAngleRad)
+
+		this.context.strokeStyle = 'blue'
+		this.context.lineWidth = 5;
+		this.context.beginPath()
+		this.context.moveTo(this.MINIMAP_X + (this.spriteGrid.x * this.MINIMAP_SCALE), this.MINIMAP_Y + (this.spriteGrid.y * this.MINIMAP_SCALE) + (aLength * this.MINIMAP_SCALE))
+		this.context.lineTo(this.MINIMAP_X + (this.spriteGrid.x * this.MINIMAP_SCALE) + (bLength * this.MINIMAP_SCALE), this.MINIMAP_Y + (this.spriteGrid.y * this.MINIMAP_SCALE) + (aLength * this.MINIMAP_SCALE))
+		this.context.closePath()
+		this.context.stroke()
 		
 		// CHECK Player BRICK
 		this.context.fillStyle = '#0000ff55'
@@ -730,14 +793,8 @@ export default class GaphicsClass {
 
 	renderScreenSprites(sprite, actualTexture) {		
 		var spriteAngle = Math.atan2(sprite.y - this.player.y, sprite.x - this.player.x);
-
 		spriteAngle = this.toAngle(spriteAngle)
 		
-		let spriteHeight = ((this.CELL_SIZE) / sprite.distance) * 1200
-		
-		let brick_number = spriteHeight / this.GRID_SIZE
-		let color_num = spriteHeight / actualTexture.imgHeight
-
 		const isOnTheScreen = this.rays.findIndex((textureRay, i) => {
 			if (i != this.rays.length-1) {
 
@@ -754,44 +811,88 @@ export default class GaphicsClass {
 		});
 	
 		if(isOnTheScreen !== -1) {
-			// SPRITE
-			let wi = isOnTheScreen - Math.floor(brick_number/2)
-			for(let w=0; w<brick_number; w++)
-			{
-				if(typeof this.rays[wi] != 'undefined' && this.rays[wi].distance > sprite.distance) {
-					for(let h=0; h<brick_number; h++) {
-						let colorX = Math.floor(((w * this.GRID_SIZE) / color_num))
-						let colorY = Math.floor(((h * this.GRID_SIZE) / color_num))
-						
-						if (this.SLIP_WIDTH + (wi * this.GRID_SIZE) + this.GRID_SIZE > 0) {
+			let spriteHeight = ((this.CELL_SIZE) / sprite.distance) * 1500
+			let brick_number = spriteHeight / this.GRID_SIZE
+			let color_num = spriteHeight / actualTexture.imgHeight
 
-							//console.log(actualTexture.data[colorY][colorX])
-							if(actualTexture.data[colorY][colorX] != 'rgba(0, 0, 0, 0)') {
+			
 
-								this.context.fillStyle = actualTexture.data[colorY][colorX];
-								this.context.fillRect(
-									this.cutOutX(this.SLIP_WIDTH + (wi * this.GRID_SIZE)),
-									this.cutOutY(Math.floor(this.player.z + (this.GAME_HEIGHT / 2) - ((spriteHeight / 2) + (this.calculatePercentage(spriteHeight, sprite.z))) + (h * this.GRID_SIZE))),
-									this.cutOutX(this.GRID_SIZE),
-									this.cutOutY(Math.ceil(this.GRID_SIZE))
-								);
-								
-								// Sprite Shadow
-								if (this.menu.spriteShadowsSwitch && sprite.distance>300 && actualTexture.data[colorY][colorX] !== 'rgba(0, 0, 0, 0)') {
-									let shadowDistance = this.calcShadowDistance(sprite.distance)
-									this.context.fillStyle = `rgba(0, 0, 0, ${shadowDistance})`
+			if (sprite.type == 'grid') {
+
+				this.spriteGrid = {...sprite}
+
+				// BLOCK
+				let wi = isOnTheScreen
+				for(let w=0; w<brick_number; w++) {
+
+					sprite.distance = Math.sqrt(Math.pow(this.player.y - (sprite.y), 2) + Math.pow(this.player.x - (sprite.x), 2));
+					
+					spriteHeight = ((this.CELL_SIZE) / sprite.distance) * 1460
+					brick_number = spriteHeight / this.GRID_SIZE
+					color_num = spriteHeight / actualTexture.imgHeight
+
+					if(typeof this.rays[wi] != 'undefined' && this.rays[wi].distance > sprite.distance) {
+
+						for(let h=0; h<brick_number; h++) {
+							let colorX = Math.floor(((w * this.GRID_SIZE) / color_num))
+							let colorY = Math.floor(((h * this.GRID_SIZE) / color_num))
+							
+							if (this.SLIP_WIDTH + (wi * this.GRID_SIZE) + this.GRID_SIZE > 0) {
+	
+								//console.log(actualTexture.data[colorY][colorX])
+								if(actualTexture.data[colorY][colorX] != 'rgba(0, 0, 0, 0)') {
+	
+									this.context.fillStyle = actualTexture.data[colorY][colorX];
 									this.context.fillRect(
 										this.cutOutX(this.SLIP_WIDTH + (wi * this.GRID_SIZE)),
 										this.cutOutY(Math.floor(this.player.z + (this.GAME_HEIGHT / 2) - ((spriteHeight / 2) + (this.calculatePercentage(spriteHeight, sprite.z))) + (h * this.GRID_SIZE))),
 										this.cutOutX(this.GRID_SIZE),
 										this.cutOutY(Math.ceil(this.GRID_SIZE))
 									);
+									
 								}
 							}
 						}
 					}
+					wi++
 				}
-				wi++
+
+
+			} else {
+				// SPRITE
+				let wi = isOnTheScreen - Math.floor(brick_number/2)
+				for(let w=0; w<brick_number; w++) {
+					if(typeof this.rays[wi] != 'undefined' && this.rays[wi].distance > sprite.distance) {
+						for(let h=0; h<brick_number; h++) {
+							let colorX = Math.floor(((w * this.GRID_SIZE) / color_num))
+							let colorY = Math.floor(((h * this.GRID_SIZE) / color_num))
+							if (this.SLIP_WIDTH + (wi * this.GRID_SIZE) + this.GRID_SIZE > 0) {
+								if(actualTexture.data[colorY][colorX] != 'rgba(0, 0, 0, 0)') {
+									this.context.fillStyle = actualTexture.data[colorY][colorX];
+									this.context.fillRect(
+										this.cutOutX(this.SLIP_WIDTH + (wi * this.GRID_SIZE)),
+										this.cutOutY(Math.floor(this.player.z + (this.GAME_HEIGHT / 2) - ((spriteHeight / 2) + (this.calculatePercentage(spriteHeight, sprite.z))) + (h * this.GRID_SIZE))),
+										this.cutOutX(this.GRID_SIZE),
+										this.cutOutY(Math.ceil(this.GRID_SIZE))
+									);
+									
+									// Sprite Shadow
+									if (this.menu.spriteShadowsSwitch && sprite.distance>300 && actualTexture.data[colorY][colorX] !== 'rgba(0, 0, 0, 0)') {
+										let shadowDistance = this.calcShadowDistance(sprite.distance)
+										this.context.fillStyle = `rgba(0, 0, 0, ${shadowDistance})`
+										this.context.fillRect(
+											this.cutOutX(this.SLIP_WIDTH + (wi * this.GRID_SIZE)),
+											this.cutOutY(Math.floor(this.player.z + (this.GAME_HEIGHT / 2) - ((spriteHeight / 2) + (this.calculatePercentage(spriteHeight, sprite.z))) + (h * this.GRID_SIZE))),
+											this.cutOutX(this.GRID_SIZE),
+											this.cutOutY(Math.ceil(this.GRID_SIZE))
+										);
+									}
+								}
+							}
+						}
+					}
+					wi++
+				}
 			}
 		}
 	}

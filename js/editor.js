@@ -3,6 +3,7 @@ class Editor {
 	skys;
 	floors;
 	walls;
+	blocks;
 	objects;
 	selectedElementData;
 	objectName;
@@ -11,8 +12,8 @@ class Editor {
 		this.mapContainerWidth = 4000
 		this.levelData = {
 			"player": {
-				"x": 1.5,
-				"y": 1.5,
+				"y": 2.5,
+				"x": 2.5,
 				"angle": 0
 			},
 			"error": [
@@ -31,6 +32,7 @@ class Editor {
 		this.skys = []
 		this.floors = []
 		this.walls = []
+		this.blocks = []
 		this.objects = []
 
 		this.objectName = null
@@ -48,14 +50,22 @@ class Editor {
 	insertedOptions(clone, y, x) {
 		let data = {}
 		let insertType = ''
-		let insertObject = clone.walls.find(obj => parseInt(obj.id) == parseInt(clone.selectedElementData.id))	
+		let insertObject = clone.walls.find(wall => parseInt(wall.id) == parseInt(clone.selectedElementData.id))	
 		if (insertObject) insertType = 'wall'
 		if (!insertObject) {
-			insertObject = clone.objects.find(obj => parseInt(obj.id) == parseInt(clone.selectedElementData.id))
+			insertObject = clone.objects.find(object => parseInt(object.id) == parseInt(clone.selectedElementData.id))
 			if (insertObject) {
 				insertType = 'object'
 				data.y = parseInt(y) + 0.5
 				data.x = parseInt(x) + 0.5
+			}
+			if (!insertObject) {
+				insertObject = clone.blocks.find(block => parseInt(block.id) == parseInt(clone.selectedElementData.id))
+				if (insertObject) {
+					insertType = 'block'
+					data.y = parseInt(y)
+					data.x = parseInt(x)
+				}
 			}
 		}
 
@@ -105,7 +115,7 @@ class Editor {
 					// insert wall
 					clone.map[y][x] = insertedData.data;
 				}
-				if (insertedData && insertedData.insertType == 'object') {
+				if (insertedData && (insertedData.insertType == 'object' || insertedData.insertType == 'block')) {
 					delete insertedData.insertType
 					// if have delete sprite
 					let findSpriteIndex = clone.levelData.sprites.findIndex(sprite => y == Math.floor(sprite.y) && x == Math.floor(sprite.x))
@@ -271,12 +281,12 @@ class Editor {
 	}
 
 	async loadMap(mapfileName) {
-		const mapDataWait = await fetch(`./data/maps/${mapfileName}.JSON`);
-		const mapData = await mapDataWait.json();
-		console.log(mapData);
+		const mapDataWait = await fetch(`./data/maps/${mapfileName}.JSON`)
+		const mapData = await mapDataWait.json()
+		console.log(mapData)
 
-		await new Promise(resolve => setTimeout(resolve, 300));
-		console.log('Eltelt');
+		await new Promise(resolve => setTimeout(resolve, 300))
+		console.log('Eltelt')
 
 		// load sky and floor
 		if (typeof mapData.skys != 'undefined') this.levelData.skys = mapData.skys
@@ -317,9 +327,16 @@ class Editor {
 		// load Sprites
 		mapData.sprites.forEach(sprite => {
 			let insertSprite = this.objects.find(obj => parseInt(obj.id) == parseInt(sprite.id))
-
-			if (insertSprite) insertSprite.dirName = 'objects'
-			if(typeof insertSprite != 'undefined') {
+			if (insertSprite) {
+				insertSprite.dirName = 'objects';
+			} else {
+				insertSprite = this.blocks.find(block => parseInt(block.id) == parseInt(sprite.id))
+				if (insertSprite) {
+					insertSprite.dirName = 'blocks';
+				}
+			}
+						
+			if (insertSprite) {
 				let data = {}
 				data.id = sprite.id
 
@@ -329,11 +346,13 @@ class Editor {
 				this.levelData.sprites.push(sprite)
 			}
 
+			console.log(this.levelData.sprites);
+			
 			// Map container graphics
 			let y = Math.floor(sprite.y)
 			let x = Math.floor(sprite.x)
 
-			for(const [dir, filename] of Object.entries(insertSprite.textures)) {
+			for(const [dir, filename] of Object.entries(insertSprite.textures)) {				
 				let mapBrickElment = $(".map-container").find(`[map-x='${x}'][map-y='${y}']`)
 				mapBrickElment.css('background-image', `url(./img/${insertSprite.dirName}/${dir}/${filename[0]}.png)`);
 				mapBrickElment.css('background-size', 'cover')
@@ -473,6 +492,7 @@ class Editor {
 				if (fileName.includes('ceiling')) return '-ceiling';
 				if (fileName.includes('floor')) return '-floor';
 				if (fileName.includes('wall')) return '-wall';
+				if (fileName.includes('block')) return '-block';
 				if (fileName.includes('object')) return '-object';
 			}
 
@@ -496,6 +516,7 @@ class Editor {
 		
 		// Load textures
 		this.walls = await loadAction('walls')
+		this.blocks = await loadAction('blocks')
 		this.objects = await loadAction('objects')
 		this.skys = await loadAction('skys')
 		this.floors = await loadAction('floors')
@@ -517,7 +538,6 @@ class Editor {
 
 			console.log(elementName);
 			
-
 			clone.objectName = elementName
 
 			// SKYS
@@ -541,6 +561,7 @@ class Editor {
 
 			if (elementName == 'walls') fileData = clone.walls;
 			if (elementName == 'objects') fileData = clone.objects;
+			if (elementName == 'blocks') fileData = clone.blocks;
 
 			let selectedElements = `
 			<div id="selected-container" class="p-0 m-0 px-1">

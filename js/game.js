@@ -30,7 +30,7 @@ const menu = {
 	optionsActive: false,
 	clearGameSwitch: false,
 	infoSwitch: false,
-	mapSwitch: false,
+	mapSwitch: true,
 	shadowsSwitch: true,
 	spriteShadowsSwitch: true,
 	mouseSwitch: true,
@@ -359,6 +359,10 @@ async function loadindDatas() {
 	const objectsDataResponse = await fetch('./data/objects/objects.JSON');
     const objectsData = await objectsDataResponse.json();
 	console.log(objectsData);
+
+	const blocksDataResponse = await fetch('./data/blocks/blocks.JSON');
+    const blocksData = await blocksDataResponse.json();
+	console.log(blocksData);
 	
 	player.x = mapData.player.x * CELL_SIZE
 	player.y = mapData.player.y * CELL_SIZE
@@ -389,8 +393,13 @@ async function loadindDatas() {
 	// Load Sprites
 	for (let i = 0; i < mapData.sprites.length; i++) {
         let sprite = mapData.sprites[i]
+		let dirName
 		let insertSprite = objectsData.find(obj => parseInt(obj.id) == parseInt(sprite.id))
-
+		if (insertSprite) { dirName = 'objects' }
+		if (!insertSprite) {
+			insertSprite = blocksData.find(block => parseInt(block.id) == parseInt(sprite.id))
+			if (insertSprite) { dirName = 'blocks' }
+		}
 		if(typeof insertSprite != 'undefined') {
 			let data = {}
 			data.id = sprite.id
@@ -398,7 +407,7 @@ async function loadindDatas() {
 			sprite = {...data, ...sprite}
 		}
 		
-		let dirConstruction = await texturesClass.loadTextureToArray(sprite.textures, 'sprites', texturesClass.spriteTextures)		
+		let dirConstruction = await texturesClass.loadTextureToArray(sprite.textures, dirName, texturesClass.spriteTextures)		
 		spritesClass.createSprite(sprite, dirConstruction, spritesClass.sprites)
     }	
 }

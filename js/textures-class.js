@@ -50,7 +50,6 @@ export default class TexturesClass {
 	async loadTextureToArray(fileNames, dir, thisVariableArray) {
 		let dirConstruction = []
 		for (const nameDir of Object.keys(fileNames)) {
-
 			//IF NOTHING OBJECTDIR MAKE
 			dirConstruction.push(nameDir)
 			thisVariableArray[nameDir] = (typeof thisVariableArray[nameDir] !== 'undefined') ? thisVariableArray[nameDir] : [];
@@ -63,7 +62,6 @@ export default class TexturesClass {
 				dirConstruction.push(fileName)
 			}
 		}
-
 		return dirConstruction;
 	}
 
@@ -107,7 +105,7 @@ export default class TexturesClass {
 					fault(error);
 				};
 				// console.log('A ' + filename + ' loaded.');
-			}  
+			}
 		});
 	}
 }

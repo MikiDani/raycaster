@@ -20,28 +20,28 @@
             <div class="col-lg-8 p-3 m-0 map-container">
             </div>
             <div class="col-lg-4 p-0 m-0 tools-container">
-            <div class="row tools-title m-3">
-                <div class="d-flex justify-content-between align-items-center mt-2">
-                    <button type="button" id="save-button" class="btn btn-sm btn-minw1 btn-primary" data-size="big">Save</button>
-                    <button type="button" id="load-button" class="btn btn-sm btn-minw1 btn-primary" data-size="big" data-bs-toggle="modal" data-bs-target="#load-window">Load</button>
-                    <button type="button" id="options-button" class="btn btn-sm btn-minw1 btn-primary" data-size="big">Options</button>
+                <div class="row tools-title m-3">
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <button type="button" id="save-button" class="btn btn-sm btn-minw1 btn-primary" data-size="big">Save</button>
+                        <button type="button" id="load-button" class="btn btn-sm btn-minw1 btn-primary" data-size="big" data-bs-toggle="modal" data-bs-target="#load-window">Load</button>
+                        <button type="button" id="options-button" class="btn btn-sm btn-minw1 btn-primary" data-size="big">Options</button>
+                    </div>
+                    <div class="px-3 py-0">
+                        <input type="text" name="filename" value="testmap.json" placeholder="filename.json" class="form-control my-3">
+                    </div>
                 </div>
-                <div class="px-3 py-0">
-                    <input type="text" name="filename" value="testmap.json" placeholder="filename.json" class="form-control my-3">
+                <div class="mx-3 my-0 d-flex justify-content-between align-items-center">
+                    <button id="map-icon-size-button" class="btn btn-sm btn-minw1 btn-primary" data-size="big">Small Icons</button>
+                    <button id="fill-border-button" class="btn btn-sm btn-minw1 btn-primary" data-size="big">Fill Border</button>
+                    <button id="delete-all-button" class="btn btn-sm btn-minw1 btn-primary" data-size="big">Delete All</button>
+                    <button id="x2" class="btn btn-sm btn-minw1 btn-primary" data-size="big">x2</button>
                 </div>
-            </div>
-            <div class="mx-3 my-0 d-flex justify-content-between align-items-center">
-                <button id="map-icon-size-button" class="btn btn-sm btn-minw1 btn-primary" data-size="big">Small Icons</button>
-                <button id="fill-border-button" class="btn btn-sm btn-minw1 btn-primary" data-size="big">Fill Border</button>
-                <button id="delete-all-button" class="btn btn-sm btn-minw1 btn-primary" data-size="big">Delete All</button>
-                <button id="x2" class="btn btn-sm btn-minw1 btn-primary" data-size="big">x2</button>
-            </div>
-            <div id="textures-selected" class="row p-3 m-0">
-                <!-- javascript generated -->
-            </div>
-            <div id="textures-list" class="row p-0 m-0 mb-0">
-                <!-- javascript generated -->
-            </div>
+                <div id="textures-selected" class="row p-3 m-0">
+                    <!-- javascript generated -->
+                </div>
+                <div id="textures-list" class="row p-0 m-0 mb-0 mx-3">
+                    <!-- javascript generated -->
+                </div>
             </div>
         </div>
     </div>
@@ -50,14 +50,14 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                <h5 class="modal-title">Load Map</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title">Load Map</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                 ...
                 </div>
                 <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>

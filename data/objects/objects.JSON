@@ -1,6 +1,6 @@
 [
     {
-        "id": 500,
+        "id": 1000,
         "textures": {
             "plant": ["plant1"]
         },
@@ -11,7 +11,7 @@
         "angle": 0
     },
     {
-        "id": 505,
+        "id": 1005,
         "textures": {
             "coins": ["coin1"]
         },
@@ -20,10 +20,10 @@
         "mode": "coin1",
         "value": 100,
         "z": -15,
-        "angle": 0
+        "angle": 45
     },
     {
-        "id": 510,
+        "id": 1010,
         "textures": {
             "coins": ["coin2"]
         },
@@ -32,10 +32,10 @@
         "mode": "coin2",
         "value": 50,
         "z": -15,
-        "angle": 0
+        "angle": 45
     },
     {
-        "id": 515,
+        "id": 1015,
         "textures": {
             "coins": ["coin3"]
         },
@@ -44,6 +44,6 @@
         "mode": "coin3",
         "value": 10,
         "z": -15,
-        "angle": 0
+        "angle": 45
     }
 ]

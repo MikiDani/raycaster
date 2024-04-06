@@ -1,0 +1,24 @@
+[
+	{
+		"id": 500,
+		"textures": {
+			"test": ["test1"]
+		},
+		"active": true,
+		"type": "fix",
+		"mode": "object",
+		"z": 0,
+		"angle": 1.5708
+	},
+	{
+		"id": 505,
+		"textures": {
+			"block2": ["block2"]
+		},
+		"active": true,
+		"type": "fix",
+		"mode": "object",
+		"z": 0,
+		"angle": 90
+	}
+]
