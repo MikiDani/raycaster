@@ -3,10 +3,9 @@
     { "name": "name",               "inputType": "text" },
     { "name": "active",             "inputType": "boolean" },
     { "name": "type",               "inputType": "select", "walls": ["basic", "door", "secret", "animated"],
-                                                           "objects": ["fix", "pickup"],
-                                                           "blocks": ["grid"] },
-    { "name": "mode",               "inputType": "select", "objects": ["coin1", "coin2", "coin3"], "blocks": ["fix", "door"] },
-    
+                                                           "objects": ["fix", "ghost", "pickup"] },
+    { "name": "mode",               "inputType": "select", "walls": ["normal", "key1", "key2"],
+                                                           "objects": ["object", "coin1", "coin2", "coin3", "key1", "key2"] },
     { "name": "height",             "inputType": "select", "walls": ["normal", "big"] },
     { "name": "animation",          "inputType": "boolean" },
     { "name": "x",                  "inputType": "number" },

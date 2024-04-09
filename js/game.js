@@ -30,7 +30,7 @@ const menu = {
 	optionsActive: false,
 	clearGameSwitch: false,
 	infoSwitch: false,
-	mapSwitch: true,
+	mapSwitch: false,
 	shadowsSwitch: true,
 	spriteShadowsSwitch: true,
 	mouseSwitch: true,
@@ -152,9 +152,9 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 			// WAY PLAYER BRICK
 			if ((pCheck.checkX == spriteActX) && (pCheck.checkY == spriteActY)) {
 				console.log('SPRITE A KÖVETKEZŐ!!!')
-				if (sprite.type == 'pickup') return;
+				if (sprite.type == 'pickup' || sprite.type == 'ghost') return;
 				
-				// CRASH AND STOP PLAYAER
+				// CRASH AND STOP PLAYER
 				pCheck.moveX = false
 				pCheck.moveY = false
 
@@ -175,6 +175,24 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 					if (sprite.mode=='coin1') colorizeOption = { color: "255, 180, 50", alpha: 0.5, time: 200 }
 					if (sprite.mode=='coin2') colorizeOption = { color: "255, 255, 255", alpha: 0.5, time: 200 }
 					if (sprite.mode=='coin3') colorizeOption = { color: "200, 100, 0", alpha: 0.5, time: 200 }
+					graphicsClass.screenColorizeOptions(colorizeOption);
+					return;
+				}
+				
+				// PICKUP KEYS
+				if (sprite.active == true && sprite.type == 'pickup' && sprite.mode.includes("key")) {
+					sprite.active = false
+					let colorizeOption = {}
+					if (sprite.mode=='key1') {
+						bringPlayer.key1 = true
+						console.log('PICK UP cellar KEY1')
+						colorizeOption = { color: "255, 255, 255", alpha: 0.5, time: 200 }
+					}
+					if (sprite.mode=='key2') {
+						bringPlayer.key2 = true
+						console.log('PICK UP cellar KEY2')
+						colorizeOption = { color: "255, 180, 50", alpha: 0.5, time: 200 }
+					}
 					graphicsClass.screenColorizeOptions(colorizeOption);
 					return;
 				}
