@@ -375,6 +375,10 @@ async function loadindDatas() {
     const wallsData = await wallsDataResponse.json();
 	console.log(wallsData);
 
+	const blocksDataResponse = await fetch('./data/blocks/blocks.JSON');
+    const blocksData = await blocksDataResponse.json();
+	console.log(blocksData);
+
 	const objectsDataResponse = await fetch('./data/objects/objects.JSON');
     const objectsData = await objectsDataResponse.json();
 	console.log(objectsData);
@@ -411,6 +415,10 @@ async function loadindDatas() {
 		let dirName
 		let insertSprite = objectsData.find(obj => parseInt(obj.id) == parseInt(sprite.id))
 		if (insertSprite) { dirName = 'objects' }
+		if (!insertSprite) {
+			insertSprite = blocksData.find(block => parseInt(block.id) == parseInt(sprite.id))
+			if (insertSprite) { dirName = 'blocks' }
+		}
 		if(typeof insertSprite != 'undefined') {
 			let data = {}
 			data.id = sprite.id
@@ -420,7 +428,7 @@ async function loadindDatas() {
 		
 		let dirConstruction = await texturesClass.loadTextureToArray(sprite.textures, dirName, texturesClass.spriteTextures)		
 		spritesClass.createSprite(sprite, dirConstruction, spritesClass.sprites)
-    }	
+    }
 }
 
 async function gameMenu() {

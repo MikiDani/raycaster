@@ -3,6 +3,7 @@ class Editor {
 	skys;
 	floors;
 	walls;
+	blocks;
 	objects;
 	selectedElementData;
 	objectName;
@@ -31,6 +32,7 @@ class Editor {
 		this.skys = []
 		this.floors = []
 		this.walls = []
+		this.blocks = []
 		this.objects = []
 
 		this.objectName = null
@@ -56,6 +58,14 @@ class Editor {
 				insertType = 'object'
 				data.y = parseInt(y) + 0.5
 				data.x = parseInt(x) + 0.5
+			}
+			if (!insertObject) {
+				insertObject = clone.blocks.find(block => parseInt(block.id) == parseInt(clone.selectedElementData.id))
+				if (insertObject) {
+					insertType = 'block'
+					data.y = parseInt(y)
+					data.x = parseInt(x)
+				}
 			}
 		}
 
@@ -105,7 +115,7 @@ class Editor {
 					// insert wall
 					clone.map[y][x] = insertedData.data;
 				}
-				if (insertedData && (insertedData.insertType == 'object')) {
+				if (insertedData && (insertedData.insertType == 'object' || insertedData.insertType == 'block')) {
 					delete insertedData.insertType
 					// if have delete sprite
 					let findSpriteIndex = clone.levelData.sprites.findIndex(sprite => y == Math.floor(sprite.y) && x == Math.floor(sprite.x))
@@ -319,7 +329,13 @@ class Editor {
 			let insertSprite = this.objects.find(obj => parseInt(obj.id) == parseInt(sprite.id))
 			if (insertSprite) {
 				insertSprite.dirName = 'objects';
-			}						
+			} else {
+				insertSprite = this.blocks.find(block => parseInt(block.id) == parseInt(sprite.id))
+				if (insertSprite) {
+					insertSprite.dirName = 'blocks';
+				}
+			}
+						
 			if (insertSprite) {
 				let data = {}
 				data.id = sprite.id
@@ -476,6 +492,7 @@ class Editor {
 				if (fileName.includes('ceiling')) return '-ceiling';
 				if (fileName.includes('floor')) return '-floor';
 				if (fileName.includes('wall')) return '-wall';
+				if (fileName.includes('block')) return '-block';
 				if (fileName.includes('object')) return '-object';
 			}
 
@@ -499,6 +516,7 @@ class Editor {
 		
 		// Load textures
 		this.walls = await loadAction('walls')
+		this.blocks = await loadAction('blocks')
 		this.objects = await loadAction('objects')
 		this.skys = await loadAction('skys')
 		this.floors = await loadAction('floors')
@@ -543,6 +561,7 @@ class Editor {
 
 			if (elementName == 'walls') fileData = clone.walls;
 			if (elementName == 'objects') fileData = clone.objects;
+			if (elementName == 'blocks') fileData = clone.blocks;
 
 			let selectedElements = `
 			<div id="selected-container" class="p-0 m-0 px-1">
