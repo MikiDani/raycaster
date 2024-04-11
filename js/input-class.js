@@ -136,12 +136,29 @@ export default class InputClass {
             if (event.key == ' ') {
                 console.log('Space');
                 if (this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX]) {
-
                     // type
-                    console.log(this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX].type);
+                    console.log(this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX].mode);
                     // OPEN DOOR
-                    if (this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX].type == 'door') {
+                    if (this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX].mode == 'door') {
                         this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX].anim_switch = true
+                    }
+                    if (this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX].mode == 'secret') {
+                        alert("FIND SECRET!");
+                        this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX].anim_switch = true
+                    }
+                    if (this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX].mode == 'key1') {
+                        console.log(this.player.key1);
+                        if (this.player.key1)
+                        {
+                            console.log('BENT');
+                            this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX].anim_switch = true;
+                        }
+                        else alert("This Door the KEY1!");
+                    }
+                    if (this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX].mode == 'key2') {
+                        if (this.player.key2)
+                            this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX].anim_switch = true;
+                        else alert("You need the KEY2!");s
                     }
                 }
             }
@@ -156,6 +173,7 @@ export default class InputClass {
 
                 // GAME PUSH ESC
                 if (!this.menu.menuactive) {
+                    // this.keyPressed = []   ???
                     this.menu.menuactive = false
                     this.mouseMoveSwitsh = false
                     $("body").css({cursor: "default"});

@@ -5,8 +5,9 @@
             "plant": ["plant1"]
         },
         "active": true,
-        "type": "fix",
-        "mode": "object",
+        "type": "object",
+        "mode": "normal",
+        "material": "fix",
         "z": -15,
         "angle": 0
     },
@@ -16,8 +17,9 @@
             "coins": ["coin1"]
         },
         "active": true,
-        "type": "pickup",
+        "type": "object",
         "mode": "coin1",
+        "material": "ghost",
         "value": 100,
         "z": -15,
         "angle": 45
@@ -28,8 +30,9 @@
             "coins": ["coin2"]
         },
         "active": true,
-        "type": "pickup",
+        "type": "object",
         "mode": "coin2",
+        "material": "ghost",
         "value": 50,
         "z": -15,
         "angle": 45
@@ -40,8 +43,9 @@
             "coins": ["coin3"]
         },
         "active": true,
-        "type": "pickup",
+        "type": "object",
         "mode": "coin3",
+        "material": "ghost",
         "value": 10,
         "z": -15,
         "angle": 45
@@ -52,8 +56,9 @@
             "cellar": ["cuffs"]
         },
         "active": true,
-        "type": "ghost",
-        "mode": "object",
+        "type": "object",
+        "mode": "normal",
+        "material": "ghost",
         "z": 10
     },
     {
@@ -62,8 +67,9 @@
             "cellar": ["bones"]
         },
         "active": true,
-        "type": "ghost",
-        "mode": "object",
+        "type": "object",
+        "mode": "normal",
+        "material": "ghost",
         "z": -10
     },
     {
@@ -72,8 +78,9 @@
             "cellar": ["barell"]
         },
         "active": true,
-        "type": "fix",
-        "mode": "object",
+        "type": "object",
+        "mode": "normal",
+        "material": "fix",
         "z": -5
     },
     {
@@ -82,8 +89,9 @@
             "keys": ["cellar-key1"]
         },
         "active": true,
-        "type": "pickup",
+        "type": "object",
         "mode": "key1",
+        "material": "ghost",
         "z": -15
     },
     {
@@ -92,8 +100,9 @@
             "keys": ["cellar-key2"]
         },
         "active": true,
-        "type": "pickup",
+        "type": "object",
         "mode": "key2",
+        "material": "ghost",
         "z": -15
     }
 ]

@@ -7,7 +7,7 @@ export default class MapDataClass {
     }
 
     returnActualWallTexture(wall, wallY, wallX) {
-        if (wall.type == 'animated' || wall.type == 'door') {
+        if (wall.mode == 'animated' || wall.mode == 'door' || wall.mode == 'secret' || wall.mode == 'key1' || wall.mode == 'key2' || wall.mode == 'ammo') {
             if (wall.anim_switch) {
                 let checkActAnim = this.loadAnimationTexture(wall, wallY, wallX)                
                 if (checkActAnim) return checkActAnim;
@@ -22,8 +22,9 @@ export default class MapDataClass {
         if (typeof wallData.type !== 'undefined') {
             wallArray.id = wallData.id
             wallArray.type = wallData.type
+            wallArray.mode = wallData.mode
             wallArray.height = wallData.height
-            if (wallData.type == 'animated' || wallData.type == 'door') {
+            if (wallData.mode == 'animated' || wallData.mode == 'door' || wallData.mode == 'secret' || wallData.mode == 'key1' || wallData.mode == 'key2' || wallData.mode == 'ammo') {
                 wallArray.anim_switch = wallData.anim_switch
                 wallArray.anim_function = wallData.anim_function
                 wallArray.anim_speed = wallData.anim_speed
@@ -64,23 +65,20 @@ export default class MapDataClass {
     loadAnimationTexture(obj, wallY, wallX) {
 		if(obj.anim_switch) {
 			if(!obj.anim_function) {
+                // Create animation interval
 				obj.anim_function = setInterval(() => {
-					obj.anim_actFrame++
-					obj.anim_actFrame = (obj.anim_actFrame >= obj.dirConstruction.length) // obj.dirConstruction.length = anim_max frames
-					? obj.anim_startFrame
-					: obj.anim_actFrame
-					// console.log(obj.anim_actFrame)
-					if (!obj.anim_repeat) {
-						obj.anim_repeatCount++						
+                    obj.anim_actFrame++
+                    // obj.dirConstruction.length = anim_max frames
+					obj.anim_actFrame = (obj.anim_actFrame >= obj.dirConstruction.length) ? obj.anim_startFrame : obj.anim_actFrame
+                    if (!obj.anim_repeat) {
+						obj.anim_repeatCount++
                         if (obj.anim_repeatCount >= obj.anim_repeatEnd) {
 							clearInterval(obj.anim_function)
 							obj.anim_switch = false
 							obj.anim_function = null
 							obj.anim_repeatCount = 0
 							// if DOOR expiration deleting in map.
-							if (obj.type == 'door') {
-                                this.map[wallY][wallX] = 0
-							}
+							if (obj.mode == 'door' || obj.mode == 'secret' || obj.mode == 'key1' ||obj.mode == 'key2') this.map[wallY][wallX] = 0
 						}
 					}
 				}, obj.anim_speed)

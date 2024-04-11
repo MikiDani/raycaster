@@ -5,10 +5,11 @@
 			"test": ["test1"]
 		},
 		"active": true,
-		"type": "fix",
-		"mode": "object",
+		"type": "block",
+		"mode": "normal",
+		"material": "fix",
 		"z": 0,
-		"angle": 1.5708
+		"angle": 0
 	},
 	{
 		"id": 505,
@@ -16,8 +17,9 @@
 			"block2": ["block2"]
 		},
 		"active": true,
-		"type": "fix",
-		"mode": "object",
+		"type": "block",
+		"mode": "normal",
+		"material": "fix",
 		"z": 0,
 		"angle": 90
 	}

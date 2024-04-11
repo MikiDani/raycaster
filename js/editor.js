@@ -63,8 +63,8 @@ class Editor {
 				insertObject = clone.blocks.find(block => parseInt(block.id) == parseInt(clone.selectedElementData.id))
 				if (insertObject) {
 					insertType = 'block'
-					data.y = parseInt(y)
-					data.x = parseInt(x)
+					data.y = parseInt(y) + 0.5
+					data.x = parseInt(x) + 0.5
 				}
 			}
 		}

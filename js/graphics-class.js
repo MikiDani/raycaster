@@ -5,13 +5,13 @@ export default class GaphicsClass {
 	context;
 	rays;
 	screenColorize;
-
-	spriteGrid;
+	checkDistance;
 	constructor ({mapDataClass: mapDataClass, spritesClass: spritesClass, texturesClass: texturesClass, CELL_SIZE: CELL_SIZE, player: player, menu: menu, gamePlay: gamePlay, check: check})
 	{
 		this.texturesClass = texturesClass
 		this.spritesClass = spritesClass
 		this.mapDataClass = mapDataClass
+		this.checkDistance = []
 		//--------------------------------------------------------------------
 		this.SCREEN_WIDTH = window.innerWidth
 		this.SCREEN_HEIGHT = window.innerHeight
@@ -21,9 +21,12 @@ export default class GaphicsClass {
 		this.CELL_SIZE = CELL_SIZE
 		this.WALKINTERVAL = -7
 		this.FOV = this.toRadians(60)
-		this.MINIMAP_SCALE = 0.25
-		this.MINIMAP_X = (this.GAME_WIDTH / 2) - (this.MINIMAP_SCALE * CELL_SIZE) * 30
-		this.MINIMAP_Y = (this.GAME_HEIGHT / 2) - (this.GAME_HEIGHT / 2.5)
+		// this.MINIMAP_SCALE = 0.25
+		// this.MINIMAP_X = (this.GAME_WIDTH / 2) - (this.MINIMAP_SCALE * CELL_SIZE) * 30
+		// this.MINIMAP_Y = (this.GAME_HEIGHT / 2) - (this.GAME_HEIGHT / 2.5)
+		this.MINIMAP_SCALE = 1.3
+		this.MINIMAP_X = 100
+		this.MINIMAP_Y = 50
 		this.PLAYER_SIZE = 10
 		this.SPRITE_SIZE = 10
 		//--------------------------------------------------------------------
@@ -45,13 +48,6 @@ export default class GaphicsClass {
 			alpha: null,
 			time: null,
 			action: null,
-		}
-
-		this.spriteGrid = {
-			angle: 0,
-			x: 0,
-			y: 0,
-			minimapLength: this.CELL_SIZE
 		}
 
 		window.addEventListener("resize", () => {
@@ -291,7 +287,7 @@ export default class GaphicsClass {
 		return shadowDistance
 	}
 
-	getVCrash(angle) {
+	getVCrash(angle, type, bY, bX) {
 		// VERTICAL CHECK
 		const right = Math.abs(Math.floor((angle-Math.PI/2) / Math.PI) % 2)
 		const up = Math.abs(Math.floor(angle / Math.PI) % 2)
@@ -318,7 +314,14 @@ export default class GaphicsClass {
 
 			if(this.outOfMapBounds(cellX, cellY)) break;
 
-			wall = (this.mapDataClass.map[cellY][cellX]) ? true : false;
+			if (!type) {
+				// Normal check
+				wall = (this.mapDataClass.map[cellY][cellX]) ? true : false;
+			} else {				
+				// Block check
+				wall = (cellY == bY && cellX == bX) ? true : false;
+			}
+
 			actCellY = cellY
 
 			if(!wall) {
@@ -328,16 +331,18 @@ export default class GaphicsClass {
 			}
 		}
 
+		
 		let start = (!right)
 			? (this.CELL_SIZE - (Math.floor(((nextY / this.CELL_SIZE) - actCellY) * this.CELL_SIZE)) - 1)
 			: Math.floor(((nextY / this.CELL_SIZE) - actCellY) * this.CELL_SIZE);
+		
+		let sendNextY = (type) ? nextY : nextY;
 
 		return {
-			// wall : wall,
 			wallX: lastCellX,
 			wallY: lastCellY,
 			angle,
-			distance: this.distance(this.player.x, this.player.y, nextX, nextY),
+			distance: this.distance(this.player.x, this.player.y, nextX, sendNextY),
 			vertical: true,
 			start: start,
 			dirX: right,
@@ -347,7 +352,7 @@ export default class GaphicsClass {
 		}
 	}
 
-	getHCrash(angle) {
+	getHCrash(angle, type, bY, bX) {
 		// HORIZONTAL CHECK
 		const up = Math.abs(Math.floor(angle / Math.PI) % 2)
 		const right = Math.abs(Math.floor((angle-Math.PI/2) / Math.PI) % 2)
@@ -371,12 +376,19 @@ export default class GaphicsClass {
 			const cellX = Math.floor(nextX / this.CELL_SIZE)
 			const cellY = (up) ? Math.floor(nextY / this.CELL_SIZE) - 1 : Math.floor(nextY / this.CELL_SIZE);
 
-			if(this.outOfMapBounds(cellX, cellY)) break;
+			if (this.outOfMapBounds(cellX, cellY)) break;
 
-			wall = (this.mapDataClass.map[cellY][cellX]) ? true : false;
+			if (!type) {
+				// Normal check
+				wall = (this.mapDataClass.map[cellY][cellX]) ? true : false;
+			} else {				
+				// Block check
+				wall = (cellY == bY && cellX == bX) ? true : false;
+			}
+
 			actCellX = cellX
 
-			if(!wall) {
+			if (!wall) {
 				nextX += xA; nextY += yA;
 			} else {
 				lastCellX = cellX; lastCellY = cellY;
@@ -388,12 +400,13 @@ export default class GaphicsClass {
 			? (this.CELL_SIZE - (Math.floor(((nextX / this.CELL_SIZE) - actCellX) * this.CELL_SIZE)) - 1)
 			: Math.floor(((nextX / this.CELL_SIZE) - actCellX) * this.CELL_SIZE);
 
+		let sendNextX = (type) ? nextX : nextX;
+
 		return {
-			// wall: wall,
 			wallX: lastCellX,
 			wallY: lastCellY,
 			angle,
-			distance: this.distance(this.player.x, this.player.y, nextX, nextY),
+			distance: this.distance(this.player.x, this.player.y, sendNextX, nextY),
 			vertical: false,
 			start: start,
 			dirY: up,
@@ -403,19 +416,18 @@ export default class GaphicsClass {
 		}
 	}
 
-	castRay(angle) {
-		const vCrash = this.getVCrash(angle)
-		const hCrash = this.getHCrash(angle)
-		return (hCrash.distance >= vCrash.distance) ? vCrash : hCrash;
-	}
-
 	getRays() {
 		const initialAngle = this.player.angle - (this.FOV/2)
 		const angleStep = this.FOV / this.NUMBER_OF_RAYS
 	
 		return Array.from({length: this.NUMBER_OF_RAYS}, (_, i) => {
 			const angle = initialAngle + i * angleStep;
-			const ray = this.castRay(angle)
+
+			const vCrash = this.getVCrash(angle, false)
+			const hCrash = this.getHCrash(angle, false)
+
+			const ray = (hCrash.distance >= vCrash.distance) ? vCrash : hCrash;
+
 			return ray
 		})
 	}
@@ -427,27 +439,15 @@ export default class GaphicsClass {
 				if (actualTexture && actualTexture[key]) {
 					actualTexture = actualTexture[key];
 				} else {
-					return this.texturesClass.errorTextures['error']['error']
-				}
-			}
-			return actualTexture
-		}
-		return this.texturesClass.errorTextures['error']['error']
-	}
 
-	loadTexture2(classType, textureType, texturePlace) {
-		if (classType[textureType]) {
-			let actualTexture = classType[textureType]
-			for (const key of texturePlace) {
-				if (actualTexture && actualTexture[key]) {
-					actualTexture = actualTexture[key];
-				} else {
-					return this.texturesClass.errorTextures['error']['error']
+					console.log(this.texturesClass.errorTexture);
+					
+					return this.texturesClass.errorTexture['error']['error']
 				}
 			}
 			return actualTexture
 		}
-		return this.texturesClass.errorTextures['error']['error']
+		return this.texturesClass.errorTexture['error']['error']
 	}
 
 	renderMinimap(rays) {
@@ -456,7 +456,7 @@ export default class GaphicsClass {
 		this.mapDataClass.map.forEach((row, y) => {
 			row.forEach((cell, x) => {
 				if(cell) {
-					if (cell.type == 'door') this.context.fillStyle = 'gold'
+					if (cell.mode == 'door') this.context.fillStyle = 'gold'
 					else this.context.fillStyle = 'gray'
 
 					this.context.fillRect(
@@ -470,7 +470,7 @@ export default class GaphicsClass {
 		});
 		
 		// FOV RAYS
-		if (true) {
+		if (false) {
 			rays.forEach(ray => {
 				this.context.strokeStyle = 'yellow'
 				this.context.lineWidth = 1;
@@ -483,6 +483,28 @@ export default class GaphicsClass {
 				this.context.closePath()
 				this.context.stroke()
 			});
+		}
+
+		// BLOCK RAYS CHECK
+		console.log(typeof this.checkDistance);
+		
+		
+		if (true) {
+			this.checkDistance.forEach(ray => {
+				//console.log( ray.distance);
+				this.context.strokeStyle = 'lime'
+				this.context.lineWidth = 1;
+				this.context.beginPath()
+				this.context.moveTo(this.MINIMAP_X +(this.player.x * this.MINIMAP_SCALE), this.MINIMAP_Y + (this.player.y * this.MINIMAP_SCALE))
+				this.context.lineTo(
+					this.MINIMAP_X + ((this.player.x + (Math.cos(ray.angle) * ray.distance)) * this.MINIMAP_SCALE),
+					this.MINIMAP_Y + ((this.player.y + (Math.sin(ray.angle) * ray.distance)) * this.MINIMAP_SCALE),
+				)
+				this.context.closePath()
+				this.context.stroke()
+			});
+
+			this.checkDistance = []
 		}
 	
 		// PLAYER
@@ -766,64 +788,144 @@ export default class GaphicsClass {
 		})
 	}
 
-	renderScreenSprites(sprite, actualTexture) {		
-		var spriteAngle = Math.atan2(sprite.y - this.player.y, sprite.x - this.player.x);
-		spriteAngle = this.toAngle(spriteAngle)
-		
-		const isOnTheScreen = this.rays.findIndex((textureRay, i) => {
-			if (i != this.rays.length-1) {
-
-				const rayFirst = this.toAngle(textureRay.angle);
-				const raySecond = this.toAngle(this.rays[i+1].angle);
-				
-				// If a point falls on the line, exception handling.
-				if (rayFirst > raySecond && ( spriteAngle == 0 || (spriteAngle > 359 && spriteAngle < 360)  || (spriteAngle > 0 && spriteAngle < 0.204)) )
-				 	return true;
-				
-				if (spriteAngle >= rayFirst && spriteAngle <= raySecond) return true;
-				return false;
-			}
-		});
-	
-		if(isOnTheScreen !== -1) {
-			let spriteHeight = ((this.CELL_SIZE) / sprite.distance) * 1500
-			let brick_number = spriteHeight / this.GRID_SIZE
-			let color_num = spriteHeight / actualTexture.imgHeight
+	renderScreenSprites(sprite, actualTexture) {
+		// Object Draw
+		if (sprite.type=='object') {
+			var spriteAngle = Math.atan2(sprite.y - this.player.y, sprite.x - this.player.x);
+			spriteAngle = this.toAngle(spriteAngle)
 			
-			// SPRITE
-			let wi = isOnTheScreen - Math.floor(brick_number/2)
-			for(let w=0; w<brick_number; w++) {
-				if(typeof this.rays[wi] != 'undefined' && this.rays[wi].distance > sprite.distance) {
-					for(let h=0; h<brick_number; h++) {
-						let colorX = Math.floor(((w * this.GRID_SIZE) / color_num))
-						let colorY = Math.floor(((h * this.GRID_SIZE) / color_num))
-						if (this.SLIP_WIDTH + (wi * this.GRID_SIZE) + this.GRID_SIZE > 0) {
-							if(actualTexture.data[colorY][colorX] != 'rgba(0, 0, 0, 0)') {
-								this.context.fillStyle = actualTexture.data[colorY][colorX];
-								this.context.fillRect(
-									this.cutOutX(this.SLIP_WIDTH + (wi * this.GRID_SIZE)),
-									this.cutOutY(Math.floor(this.player.z + (this.GAME_HEIGHT / 2) - ((spriteHeight / 2) + (this.calculatePercentage(spriteHeight, sprite.z))) + (h * this.GRID_SIZE))),
-									this.cutOutX(this.GRID_SIZE),
-									this.cutOutY(Math.ceil(this.GRID_SIZE))
-								);
-								
-								// Sprite Shadow
-								if (this.menu.spriteShadowsSwitch && sprite.distance>300 && actualTexture.data[colorY][colorX] !== 'rgba(0, 0, 0, 0)') {
-									let shadowDistance = this.calcShadowDistance(sprite.distance)
-									this.context.fillStyle = `rgba(0, 0, 0, ${shadowDistance})`
+			const isOnTheScreen = this.rays.findIndex((textureRay, i) => {
+				if (i != this.rays.length-1) {
+	
+					const rayFirst = this.toAngle(textureRay.angle);
+					const raySecond = this.toAngle(this.rays[i+1].angle);
+					
+					// If a point falls on the line, exception handling.
+					if (rayFirst > raySecond && ( spriteAngle == 0 || (spriteAngle > 359 && spriteAngle < 360)  || (spriteAngle > 0 && spriteAngle < 0.204)) )
+						 return true;
+					
+					if (spriteAngle >= rayFirst && spriteAngle <= raySecond) return true;
+					return false;
+				}
+			});		
+		
+			if(isOnTheScreen !== -1) {
+				let spriteHeight = ((this.CELL_SIZE) / sprite.distance) * 1500
+				let brick_number = spriteHeight / this.GRID_SIZE
+				let color_num = spriteHeight / actualTexture.imgHeight
+				
+				// SPRITE
+				let wi = isOnTheScreen - Math.floor(brick_number/2)
+				for(let w=0; w<brick_number; w++) {
+					if(typeof this.rays[wi] != 'undefined' && this.rays[wi].distance > sprite.distance) {
+						for(let h=0; h<brick_number; h++) {
+							let colorX = Math.floor(((w * this.GRID_SIZE) / color_num))
+							let colorY = Math.floor(((h * this.GRID_SIZE) / color_num))
+							if (this.SLIP_WIDTH + (wi * this.GRID_SIZE) + this.GRID_SIZE > 0) {
+								if(actualTexture.data[colorY][colorX] != 'rgba(0, 0, 0, 0)') {
+									this.context.fillStyle = actualTexture.data[colorY][colorX];
 									this.context.fillRect(
 										this.cutOutX(this.SLIP_WIDTH + (wi * this.GRID_SIZE)),
 										this.cutOutY(Math.floor(this.player.z + (this.GAME_HEIGHT / 2) - ((spriteHeight / 2) + (this.calculatePercentage(spriteHeight, sprite.z))) + (h * this.GRID_SIZE))),
 										this.cutOutX(this.GRID_SIZE),
 										this.cutOutY(Math.ceil(this.GRID_SIZE))
 									);
+									
+									// Sprite Shadow
+									if (this.menu.spriteShadowsSwitch && sprite.distance>300 && actualTexture.data[colorY][colorX] !== 'rgba(0, 0, 0, 0)') {
+										let shadowDistance = this.calcShadowDistance(sprite.distance)
+										this.context.fillStyle = `rgba(0, 0, 0, ${shadowDistance})`
+										this.context.fillRect(
+											this.cutOutX(this.SLIP_WIDTH + (wi * this.GRID_SIZE)),
+											this.cutOutY(Math.floor(this.player.z + (this.GAME_HEIGHT / 2) - ((spriteHeight / 2) + (this.calculatePercentage(spriteHeight, sprite.z))) + (h * this.GRID_SIZE))),
+											this.cutOutX(this.GRID_SIZE),
+											this.cutOutY(Math.ceil(this.GRID_SIZE))
+										);
+									}
 								}
 							}
 						}
 					}
+					wi++
 				}
-				wi++
 			}
+		// Block sprite draw
+		} else if (sprite.type=='block') {
+			let checkY = Math.floor(sprite.y / this.CELL_SIZE);
+			let checkX = Math.floor(sprite.x / this.CELL_SIZE);
+			
+			// console.log(checkX, checkY);
+
+			this.rays.forEach((ray, i) => {
+				
+				let checkDistanceV = this.getVCrash(ray.angle, true, checkY, checkX)
+				let checkDistanceH = this.getHCrash(ray.angle, true, checkY, checkX)
+
+				// let blockDistance = (checkDistanceV.distance < checkDistanceH.distance) ? checkDistanceV : checkDistanceH;
+				
+				let blockDistance
+				
+				if (sprite.angle == 90) blockDistance = checkDistanceH
+				if (sprite.angle == 0) blockDistance = checkDistanceV
+				
+				if (blockDistance.wallY != undefined && blockDistance.wallX != undefined) {
+					
+					this.checkDistance.push(blockDistance)	// SEGED
+
+					const rayDistance = ray.distance
+					const distance = this.fixFhishEye(blockDistance.distance, blockDistance.angle, this.player.angle)
+					
+					//const distance = blockDistance.distance
+
+
+
+
+					const wallHeight = ((this.CELL_SIZE) / distance) * 1450
+					const BRICK_SIZE = wallHeight / this.CELL_SIZE				
+					
+					if (rayDistance > blockDistance.distance) {
+						let mod = 0
+			
+						let wallHeightNum = this.CELL_SIZE
+						let wallHeightPos = wallHeight / 2
+								
+						for(let n = 0; n < wallHeightNum; n++) {
+							if (typeof blockDistance.vertical !== 'undefined') {
+			
+								let actPixel = ((n + mod) % this.CELL_SIZE)
+			
+								this.context.fillStyle = (blockDistance.vertical)
+								? this.colorDarkening(actualTexture.data[actPixel][blockDistance.start], 0.4)
+								: actualTexture.data[actPixel][blockDistance.start];
+								
+								if (this.SLIP_WIDTH + (i * this.GRID_SIZE) + this.GRID_SIZE > 0) {
+			
+									//console.log(blockDistance.rayDirX, blockDistance.rayDirY);
+									
+									this.context.fillRect(
+										this.cutOutX(this.SLIP_WIDTH + (i * this.GRID_SIZE)),
+										this.cutOutY(this.player.z + Math.floor((((this.GAME_HEIGHT / 2)) - wallHeightPos) + (Math.ceil(n * BRICK_SIZE)))),
+										this.GRID_SIZE,
+										this.cutOutY(Math.ceil(BRICK_SIZE))
+									);
+						
+									//Shadow
+									if (this.menu.shadowsSwitch) {
+										let shadowDistance = this.calcShadowDistance(distance)
+										this.context.fillStyle = `rgba(0, 0, 0, ${shadowDistance})`;
+										this.context.fillRect(
+											this.cutOutX(this.SLIP_WIDTH + (i * this.GRID_SIZE)),
+											this.cutOutY(this.player.z + Math.floor(((this.GAME_HEIGHT / 2) - wallHeightPos) + (Math.ceil(n * BRICK_SIZE)))),
+											this.GRID_SIZE,
+											this.cutOutY(Math.ceil(BRICK_SIZE))
+										);
+									}
+								}
+							}
+						}
+					}					
+				}
+			});
 		}
 	}
 }

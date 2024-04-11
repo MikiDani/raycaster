@@ -2,92 +2,31 @@
     {
         "id": 5,
         "textures": {
-            "style01": ["wall1"]
+            "cellar": ["wall1"]
         },
-        "type": "basic",
+        "type": "wall",
         "mode": "normal",
+        "material": "fix",
         "height": "normal"
     },
     {
         "id": 10,
         "textures": {
-            "style01": ["wall2"]
+            "cellar": ["wall1-c1"]
         },
-        "type": "basic",
+        "type": "wall",
         "mode": "normal",
-        "height": "big"
+        "material": "fix",
+        "height": "normal"
     },
     {
         "id": 15,
         "textures": {
-            "style01": ["wall4"]
-        },
-        "type": "secret",
-        "mode": "normal",
-        "height": "normal"
-    },
-    {
-        "id": 20,
-        "textures": {
-            "style01": ["wall3-1", "wall3-2", "wall3-3", "wall3-4"]
-        },
-        "type": "animated",
-        "mode": "normal",
-        "height": "normal",
-        "anim_switch": true,
-        "anim_action": "start",
-        "anim_function": null,
-        "anim_repeat": true,
-        "anim_repeatCount": 0,
-        "anim_repeatEnd": 3,
-        "anim_startFrame": 1,
-        "anim_actFrame": 1,
-        "anim_speed": 80
-    },
-    {
-        "id": 25,
-        "textures": {
-            "style01": ["door1-1", "door1-2", "door1-3", "door1-4", "door1-5", "door1-6", "door1-7", "door1-8", "door1-9"]
-        },
-        "type": "door",
-        "mode": "normal",
-        "height": "normal",
-        "active": true,
-        "anim_switch": false,
-        "anim_action": "push",
-        "anim_function": null,
-        "anim_repeat": 10,
-        "anim_repeatCount": 0,
-        "anim_repeatEnd": 9,
-        "anim_startFrame": 1,
-        "anim_actFrame": 1,
-        "anim_speed": 80
-    },
-    {
-        "id": 30,
-        "textures": {
-            "cellar": ["wall1"]
-        },
-        "type": "basic",
-        "mode": "normal",
-        "height": "normal"
-    },
-    {
-        "id": 35,
-        "textures": {
-            "cellar": ["wall1-c1"]
-        },
-        "type": "basic",
-        "mode": "normal",
-        "height": "normal"
-    },
-    {
-        "id": 40,
-        "textures": {
             "cellar": ["wall1-t1", "wall1-t2", "wall1-t3", "wall1-t4"]
         },
-        "type": "animated",
-        "mode": "normal",
+        "type": "wall",
+        "mode": "animated",
+        "material": "fix",
         "height": "normal",
         "anim_switch": true,
         "anim_action": "start",
@@ -100,12 +39,13 @@
         "anim_speed": 80
     },
     {
-        "id": 45,
+        "id": 20,
         "textures": {
             "cellar": ["door1", "door1-a1", "door1-a2"]
         },
-        "type": "door",
-        "mode": "normal",
+        "type": "wall",
+        "mode": "door",
+        "material": "fix",
         "height": "normal",
         "active": true,
         "anim_switch": false,
@@ -119,12 +59,13 @@
         "anim_speed": 180
     },
     {
-        "id": 50,
+        "id": 25,
         "textures": {
             "cellar": ["door1-key1", "door1-key1-a1", "door1-key1-a2"]
         },
-        "type": "door",
+        "type": "wall",
         "mode": "key1",
+        "material": "fix",
         "height": "normal",
         "active": true,
         "anim_switch": false,
@@ -138,12 +79,13 @@
         "anim_speed": 180
     },
     {
-        "id": 55,
+        "id": 30,
         "textures": {
             "cellar": ["door1-key2", "door1-key2-a1", "door1-key2-a2"]
         },
-        "type": "door",
+        "type": "wall",
         "mode": "key2",
+        "material": "fix",
         "height": "normal",
         "active": true,
         "anim_switch": false,

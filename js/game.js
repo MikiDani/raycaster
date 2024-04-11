@@ -152,7 +152,7 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 			// WAY PLAYER BRICK
 			if ((pCheck.checkX == spriteActX) && (pCheck.checkY == spriteActY)) {
 				console.log('SPRITE A KÖVETKEZŐ!!!')
-				if (sprite.type == 'pickup' || sprite.type == 'ghost') return;
+				if (sprite.material == 'ghost') return;
 				
 				// CRASH AND STOP PLAYER
 				pCheck.moveX = false
@@ -166,7 +166,7 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 			if ((spriteActX == playerActX) && (spriteActY == playerActY)) {
 
 				// PICKUP COINS
-				if (sprite.active == true && sprite.type == 'pickup' && sprite.mode.includes("coin")) {
+				if (sprite.active == true && sprite.mode.includes("coin")) {
 					sprite.active = false
 					bringPlayer.score = parseInt(bringPlayer.score) + parseInt(sprite.value)
 					console.log('PICK UP COIN!!!' + bringPlayer.score)
@@ -180,7 +180,7 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 				}
 				
 				// PICKUP KEYS
-				if (sprite.active == true && sprite.type == 'pickup' && sprite.mode.includes("key")) {
+				if (sprite.active == true && sprite.mode.includes("key")) {
 					sprite.active = false
 					let colorizeOption = {}
 					if (sprite.mode=='key1') {
@@ -297,7 +297,7 @@ function spritesCheck() {
 			}
 
 			// IF AMMO
-			if (sprite.type == 'ammo') {
+			if (sprite.mode == 'ammo') {
 				if(sprite.active) {
 					moveAmmo(sprite, nearData)
 					let checkActAnim = mapDataClass.loadAnimationTexture(sprite)
@@ -306,7 +306,7 @@ function spritesCheck() {
 				}
 			}
 			
-			let actualTexture = (sprite.type == 'ammo') 
+			let actualTexture = (sprite.mode == 'ammo') 
 			? texturesClass.weaponsTextures[sprite.dirConstruction[0]][getActualTexture]
 			: texturesClass.spriteTextures[sprite.dirConstruction[0]][getActualTexture];
 			
