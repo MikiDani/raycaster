@@ -297,7 +297,7 @@ function spritesCheck() {
 			}
 
 			// IF AMMO
-			if (sprite.mode == 'ammo') {
+			if (sprite.type == 'ammo') {
 				if(sprite.active) {
 					moveAmmo(sprite, nearData)
 					let checkActAnim = mapDataClass.loadAnimationTexture(sprite)
@@ -305,8 +305,16 @@ function spritesCheck() {
 					sprite.z = playerWalk()
 				}
 			}
+
+			// IF BLOCK
+			if (sprite.type == 'block') {
+				if(sprite.active) {
+					let checkActAnim = mapDataClass.loadAnimationTexture(sprite)
+					if (checkActAnim) getActualTexture = checkActAnim[1]
+				}
+			}
 			
-			let actualTexture = (sprite.mode == 'ammo') 
+			let actualTexture = (sprite.type == 'ammo') 
 			? texturesClass.weaponsTextures[sprite.dirConstruction[0]][getActualTexture]
 			: texturesClass.spriteTextures[sprite.dirConstruction[0]][getActualTexture];
 			

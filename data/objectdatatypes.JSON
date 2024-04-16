@@ -16,7 +16,9 @@
     { "name": "x",                  "inputType": "number" },
     { "name": "y",                  "inputType": "number" },
     { "name": "z",                  "inputType": "number" },
-    { "name": "angle",              "inputType": "number" },
+    { "name": "angle",              "inputType": "select", "walls": [null],
+                                                           "objects": [0, 45, 90, 135],
+                                                           "blocks": [0, 90] },
     { "name": "speed",              "inputType": "number" },
     { "name": "move",               "inputType": "boolean" },
     { "name": "moveType",           "inputType": "text" },
@@ -38,5 +40,9 @@
     { "name": "anim_startFrame",    "inputType": "number" },
     { "name": "anim_actFrame",      "inputType": "number" },
     { "name": "rotate_switch",      "inputType": "boolean" },
-    { "name": "rotate_frames",      "inputType": "array" }
+    { "name": "rotate_frames",      "inputType": "array" },
+
+    { "name": "open_switch",        "inputType": "boolean" },
+    { "name": "open_function",      "inputType": "null" },
+    { "name": "open_positionValue", "inputType": "number" }
 ]

@@ -4,18 +4,18 @@
             "textures": {
                 "player_weapon1": ["player_weapon1"]
             },
-            "name": "player_weapon1",
             "type": "fps",
             "mode": "",
+            "name": "player_weapon1",
             "active": false
         },
         {
             "textures": {
                 "map_weapon1": ["map_weapon1"]
             },
-            "name": "map_weapon1",
             "type": "pickup",
             "mode": "",
+            "name": "map_weapon1",
             "active": false,
             "x": null,
             "y": null,
@@ -29,9 +29,9 @@
             "textures": {
                 "ammo_weapon1": ["ammo_weapon1-1", "ammo_weapon1-2"]
             },
-            "name": "ammo_weapon1",
             "type": "ammo",
             "mode": "ammo",
+            "name": "ammo_weapon1",
             "active": false,
             "move": true,
             "demage": 1,

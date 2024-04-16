@@ -35,6 +35,11 @@ export default class MapDataClass {
                 wallArray.anim_maxFrame = dirConstruction.length-1
                 wallArray.anim_actFrame = wallData.anim_actFrame
             }
+            if (wallData.type == 'block') {
+                wallArray.open_switch = wallData.open_switch
+                wallArray.open_function = wallData.open_function
+                wallArray.open_positionValue = wallData.open_positionValue
+            }
         }        
         this.walls.push(wallArray)
     }
@@ -78,12 +83,14 @@ export default class MapDataClass {
 							obj.anim_function = null
 							obj.anim_repeatCount = 0
 							// if DOOR expiration deleting in map.
-							if (obj.mode == 'door' || obj.mode == 'secret' || obj.mode == 'key1' ||obj.mode == 'key2') this.map[wallY][wallX] = 0
+                            if (obj.type == 'wall') {
+                                if (obj.mode == 'door' || obj.mode == 'secret' || obj.mode == 'key1' ||obj.mode == 'key2') this.map[wallY][wallX] = 0
+                            }
 						}
 					}
 				}, obj.anim_speed)
 			}
-			return [obj.dirConstruction[0], obj.dirConstruction[obj.anim_actFrame]]
+		return [obj.dirConstruction[0], obj.dirConstruction[obj.anim_actFrame]]
 		}
 	}
 }

@@ -107,6 +107,54 @@ class Editor {
 				}
 				let insertedData = clone.insertedOptions(clone, y, x)
 
+				function insertBlockFrame(clone, y, x, angle) {
+					function deleteMap(clone, y,x) {
+						clone.map[y][x] = 0;
+					} 
+					function deleteSprite(clone, y,x) {
+						let findSpriteIndex = clone.levelData.sprites.findIndex(sprite => y == Math.floor(sprite.y) && x == Math.floor(sprite.x))
+						if (findSpriteIndex !== -1) clone.levelData.sprites.splice(findSpriteIndex, 1)
+					}
+					function drawTexture(clone, y, x, obj) {
+						let loadingTexture = clone.walls.find(wall => wall.id == obj.id)
+
+						console.log(loadingTexture);
+						
+						let mapBrick = $(".map-container").find(`[id^='map_'][map-y='${y}'][map-x='${x}']`);
+
+						console.log(mapBrick);
+						
+
+						for(const [dir, filename] of Object.entries(loadingTexture.textures)) {
+							mapBrick.css('background-image', `url(./img/walls/${dir}/${filename[0]}.png)`);
+							mapBrick.css('background-size', 'cover')
+							mapBrick.css('border', 'none')
+							if (typeof loadingTexture.height != 'undefined' && loadingTexture.height == 'big') $(this).css('border', '3px solid gray')
+							break;
+						}
+					}
+
+					console.log(x);
+					console.log(y);
+					console.log(angle);
+
+					if (angle==90) {
+						if (typeof clone.map[y][x-1] != undefined)
+							deleteMap(clone, y, x-1); deleteSprite(clone, y, x-1); clone.map[y][x-1] = {id:5}; drawTexture(clone, y, x-1, {id:5});
+						
+						if (typeof clone.map[y][x+1] != undefined)
+							deleteMap(clone, y, x+1); deleteSprite(clone, y, x+1); clone.map[y][x+1] = {id:5}; drawTexture(clone, y, x+1, {id:5});
+					}
+
+					if (angle==0) {
+						if (typeof clone.map[y-1][x] != undefined)
+							deleteMap(clone, y-1, x); deleteSprite(clone, y-1, x); clone.map[y-1][x] = {id:5}; drawTexture(clone, y-1, x, {id:5});
+						
+						if (typeof clone.map[y+1][x] != undefined)
+							deleteMap(clone, y+1, x); deleteSprite(clone, y+1, x); clone.map[y+1][x] = {id:5}; drawTexture(clone, y+1, x, {id:5});
+					}
+				}
+
 				if (insertedData && insertedData.insertType == 'wall') {
 					delete insertedData.insertType
 					// if have delete sprite
@@ -116,7 +164,10 @@ class Editor {
 					clone.map[y][x] = insertedData.data;
 				}
 				if (insertedData && (insertedData.insertType == 'object' || insertedData.insertType == 'block')) {
+					if (insertedData.insertType == 'block') insertBlockFrame(clone, Math.floor(insertedData.data.y), Math.floor(insertedData.data.x), clone.selectedElementData.angle)
 					delete insertedData.insertType
+					delete insertedData.dirName
+					
 					// if have delete sprite
 					let findSpriteIndex = clone.levelData.sprites.findIndex(sprite => y == Math.floor(sprite.y) && x == Math.floor(sprite.x))
 					if (findSpriteIndex !== -1) clone.levelData.sprites.splice(findSpriteIndex, 1)
@@ -126,8 +177,7 @@ class Editor {
 					clone.levelData.sprites.push(insertedData.data);
 				}
 				
-				console.log('ezt írja bele:')			
-				console.log(insertedData.insertType)
+				console.log('ezt írja bele:')
 				console.log(insertedData.data)
 			} else {
 				alert('Nincsen kiválasztva semmi!')
@@ -427,6 +477,9 @@ class Editor {
 				function checkChecked(value) {
 					if (fileValue == value) return ' selected'; else return '';
 				}
+
+				console.log(objectData);
+				
 
 				returnElement = `
 				<div class="data-title col-6 p-0 m-0"><span class="align-middle">${fileKey}:</span></div>

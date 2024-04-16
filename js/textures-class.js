@@ -67,7 +67,7 @@ export default class TexturesClass {
 
 	async loadTexture(dir, nameDir, filename) {
 		return new Promise((good, fault) => {
-			const img = new Image();
+			const img = new Image()
 			img.src = `./img/${dir}/${nameDir}/${filename}.png`
 			// Finder
 			let $element = $('body').find("#" + filename)
@@ -97,7 +97,7 @@ export default class TexturesClass {
 							texture[h][w] = rgbaColor
 							count = count + 4
 						}
-					}	
+					}
 					good({name: filename, imgWidth: imgWidth, imgHeight: imgHeight, data: texture});
 				};
 		

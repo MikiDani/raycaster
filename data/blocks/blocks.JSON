@@ -8,7 +8,6 @@
 		"type": "block",
 		"mode": "normal",
 		"material": "fix",
-		"z": 0,
 		"angle": 0
 	},
 	{
@@ -20,7 +19,29 @@
 		"type": "block",
 		"mode": "normal",
 		"material": "fix",
-		"z": 0,
 		"angle": 90
-	}
+	},
+	{
+        "id": 510,
+        "textures": {
+            "door1": ["block-door1", "block-door1-a1", "block-door1-a2"]
+        },
+        "active": true,
+        "type": "block",
+        "mode": "door",
+        "material": "fix",
+		"angle": 0,
+        "anim_switch": false,
+        "anim_action": "push",
+        "anim_function": null,
+        "anim_repeat": false,
+        "anim_repeatCount": 0,
+        "anim_repeatEnd": 3,
+        "anim_startFrame": 1,
+        "anim_actFrame": 1,
+        "anim_speed": 180,
+		"open_switch": false,
+		"open_function" : null,
+		"open_positionValue": 0
+    }
 ]
