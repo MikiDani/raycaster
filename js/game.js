@@ -8,7 +8,7 @@ import TexturesClass from './textures-class.js'
 import MapDataClass from './mapdata-class.js'
 import SpritesClass from './sprites-class.js'
 
-const CLOCKSIGNAL = 30
+const CLOCKSIGNAL = 15
 const CELL_SIZE = 64
 
 const player = {

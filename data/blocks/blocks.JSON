@@ -2,7 +2,7 @@
 	{
 		"id": 500,
 		"textures": {
-			"test": ["test1"]
+			"block1": ["block1"]
 		},
 		"active": true,
 		"type": "block",
