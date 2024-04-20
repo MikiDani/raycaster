@@ -17,7 +17,7 @@
     { "name": "y",                  "inputType": "number" },
     { "name": "z",                  "inputType": "number" },
     { "name": "angle",              "inputType": "select", "walls": [null],
-                                                           "objects": [0, 45, 90, 135],
+                                                           "objects": [0, 90, 180, 270],
                                                            "blocks": [0, 90] },
     { "name": "speed",              "inputType": "number" },
     { "name": "move",               "inputType": "boolean" },

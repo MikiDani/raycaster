@@ -95,6 +95,13 @@ body {
 
 $listPicSize: 48px;
 
+.list-pic-player {
+    width: $listPicSize;
+    &:hover{
+        cursor: pointer;
+    }
+}
+
 .list-pic-wall {
     width: $listPicSize;
     &:hover{
@@ -138,6 +145,7 @@ $listPicSize: 48px;
 }
 
 $blockBorderColor: olive;
+$blockColor: #b8b800;
 
 .block-90-borders {
     border-top: 5px solid $blockBorderColor !important;

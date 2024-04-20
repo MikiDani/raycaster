@@ -9,11 +9,15 @@ export default class GaphicsClass {
 	checkDistance;
 	mod;
 
-	constructor ({mapDataClass: mapDataClass, spritesClass: spritesClass, texturesClass: texturesClass, CELL_SIZE: CELL_SIZE, player: player, menu: menu, gamePlay: gamePlay, check: check})
+	poisonModValue;
+	poisonModScale;
+
+	constructor ({mapDataClass: mapDataClass, spritesClass: spritesClass, texturesClass: texturesClass, CELL_SIZE: CELL_SIZE, player: player, menu: menu, gamePlay: gamePlay, check: check, poisonModValue: poisonModValue})
 	{
 		this.texturesClass = texturesClass
 		this.spritesClass = spritesClass
 		this.mapDataClass = mapDataClass
+		this.poisonModValue = poisonModValue
 
 		this.checkDistance = []
 		//--------------------------------------------------------------------
@@ -40,7 +44,9 @@ export default class GaphicsClass {
 		this.menu = menu
 		this.gamePlay = gamePlay
 		this.check = check
-		this.colorCache = new Map();
+		this.poisonModValue = 60
+		this.poisonModScale = 2
+		this.colorCache = new Map()
 		
 		this.floorTexture = ['floor', 'floor1']
 
@@ -733,12 +739,18 @@ export default class GaphicsClass {
 
 		// START RAYS
 		this.rays.forEach((ray, i) => {
-			//const distance = ray.distance;
-			const distance = this.fixFhishEye(ray.distance, ray.angle, this.player.angle)
-			const wallHeight = ((this.CELL_SIZE) / distance) * 1450
-			const BRICK_SIZE = wallHeight / this.CELL_SIZE
+			
+			let distance = (this.player.poison)
+			? ray.distance 
+			: this.fixFhishEye(ray.distance, ray.angle, this.player.angle);
+
+			let wallHeight = (this.player.poison)
+			? ((this.CELL_SIZE) / distance) * 1450 + this.poisonModValue 
+			: ((this.CELL_SIZE) / distance) * 1450;
+
+			let BRICK_SIZE = wallHeight / this.CELL_SIZE
 	
-			// Wall
+			// WALLS DRAWING
 			let wall = this.mapDataClass.map[ray.wallY][ray.wallX]
 			
 			let mod = 0
@@ -877,9 +889,15 @@ export default class GaphicsClass {
 						this.checkDistance.push(blockDistance)	// SEGED
 	
 						let rayDistance = ray.distance
-						let distance = this.fixFhishEye(blockDistance.distance, blockDistance.angle, this.player.angle)
+						
+						let distance = (this.player.poison)
+						? blockDistance.distance 
+						: this.fixFhishEye(blockDistance.distance, blockDistance.angle, this.player.angle);
 	
-						let wallHeight = ((this.CELL_SIZE) / distance) * 1450
+						let wallHeight = (this.player.poison)
+						? ((this.CELL_SIZE) / distance) * 1450 + this.poisonModValue 
+						: ((this.CELL_SIZE) / distance) * 1450;
+
 						let BRICK_SIZE = wallHeight / this.CELL_SIZE
 	
 						if (sprite.open_switch) {							
@@ -963,5 +981,19 @@ export default class GaphicsClass {
 				}	
 			}, 10);
 		}
+	}
+
+	poison() {
+		// fov
+		this.poisonModValue = this.poisonModValue + this.poisonModScale
+		this.FOV = this.toRadians(this.poisonModValue)
+		if (this.poisonModValue >=120) this.poisonModScale = -2
+		if (this.poisonModValue <=50) this.poisonModScale = 2
+		// color
+		let cR = Math.floor(Math.random() * 256)
+		let cG = Math.floor(Math.random() * 256)
+		let cB = Math.floor(Math.random() * 256)
+		let colorizeOption = { color: `${cR}, ${cG}, ${cB}`, alpha: 0.2, time: 150 }
+		this.screenColorizeOptions(colorizeOption)
 	}
 }

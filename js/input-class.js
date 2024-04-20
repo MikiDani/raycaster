@@ -158,6 +158,7 @@ export default class InputClass {
 							this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX].anim_switch = true;
 						else alert("This Door the KEY1!");
 					}
+
 					if (this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX].mode == 'key2') {
 						if (this.player.key2)
 							this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX].anim_switch = true;
@@ -332,7 +333,7 @@ export default class InputClass {
 	}
 
 	handleKeyPress = () => {
-		if (this.keyPressed['q'] || this.keyPressed['Q']) {
+		if (this.keyPressed['q'] || this.keyPressed['Q'] || this.keyPressed['Home']) {
 			let playerClone = {...this.player}
 			playerClone.x = playerClone.x + (Math.cos(playerClone.angle - this.graphicsClass.toRadians(90)) * this.MOVE_SPEED)
 			playerClone.y = playerClone.y + (Math.sin(playerClone.angle - this.graphicsClass.toRadians(90)) * this.MOVE_SPEED)
@@ -340,7 +341,7 @@ export default class InputClass {
 			if (checkMove.moveX) this.player.x = this.player.x + (Math.cos(this.player.angle - this.graphicsClass.toRadians(90)) * this.MOVE_SPEED)
 			if (checkMove.moveY) this.player.y = this.player.y + (Math.sin(this.player.angle - this.graphicsClass.toRadians(90)) * this.MOVE_SPEED)
 		}
-		if (this.keyPressed['e'] || this.keyPressed['E']) {
+		if (this.keyPressed['e'] || this.keyPressed['E'] || this.keyPressed['PageUp']) {
 			let playerClone = {...this.player}
 			playerClone.x = playerClone.x + (Math.cos(playerClone.angle + this.graphicsClass.toRadians(90)) * this.MOVE_SPEED)
 			playerClone.y = playerClone.y + (Math.sin(playerClone.angle + this.graphicsClass.toRadians(90)) * this.MOVE_SPEED)
@@ -356,6 +357,14 @@ export default class InputClass {
 		if (this.keyPressed['t'] || this.keyPressed['T']) { this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE_SLOW); }
 		if (this.keyPressed['w'] || this.keyPressed['W']) { this.player.speed = this.MOVE_SPEED }
 		if (this.keyPressed['s'] || this.keyPressed['S']) { this.player.speed = -this.MOVE_SPEED }
+		if (this.keyPressed['p'] || this.keyPressed['P']) {
+			if (this.player.poison == false) {
+				this.player.poison = true;
+			} else {
+				this.player.poison = false;
+				this.graphicsClass.FOV = this.graphicsClass.toRadians(60)
+			}
+		}
 		if (this.keyPressed['ArrowUp']) { this.player.speed = this.MOVE_SPEED }
 		if (this.keyPressed['ArrowDown']) { this.player.speed = -this.MOVE_SPEED }
 

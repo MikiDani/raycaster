@@ -22,6 +22,7 @@ const player = {
 	speed: 0,
 	score: 0,
 	weapon: 1,
+	poison: false,
 }
 
 const menu = {
@@ -494,6 +495,8 @@ function gameLoop() {
 
 	szamol++;
 	//if (szamol == 3) clearInterval(gamePlay.game)
+
+	if (player.poison) graphicsClass.poison()
 }
 
 //-------------------
