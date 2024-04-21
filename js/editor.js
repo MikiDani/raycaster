@@ -34,6 +34,7 @@ class Editor {
 		this.walls = []
 		this.blocks = []
 		this.objects = []
+		this.creatures = []
 
 		this.objectName = null
 		// ---------------
@@ -79,6 +80,14 @@ class Editor {
 				insertObject = clone.blocks.find(block => parseInt(block.id) == parseInt(clone.selectedElementData.id))
 				if (insertObject) {
 					insertType = 'block'
+					data.y = parseInt(y) + 0.5
+					data.x = parseInt(x) + 0.5
+				}
+			}
+			if (!insertObject) {
+				insertObject = clone.creatures.find(creature => parseInt(creature.id) == parseInt(clone.selectedElementData.id))
+				if (insertObject) {
+					insertType = 'creature'
 					data.y = parseInt(y) + 0.5
 					data.x = parseInt(x) + 0.5
 				}
@@ -186,10 +195,6 @@ class Editor {
 						}
 					}
 
-					console.log(x);
-					console.log(y);
-					console.log(angle);
-
 					if (angle==90) {
 						if (typeof clone.map[y][x-1] != undefined)
 							deleteMap(clone, y, x-1); deleteSprite(clone, y, x-1); clone.map[y][x-1] = {id:5}; drawTexture(clone, y, x-1, {id:5});
@@ -215,7 +220,7 @@ class Editor {
 					// insert wall
 					clone.map[y][x] = insertedData.data;
 				}
-				if (insertedData && (insertedData.insertType == 'object' || insertedData.insertType == 'block')) {
+				if (insertedData && (insertedData.insertType == 'object' || insertedData.insertType == 'block' || insertedData.insertType == 'creature')) {
 					if (insertedData.insertType == 'block') insertBlockFrame(clone, Math.floor(insertedData.data.y), Math.floor(insertedData.data.x), clone.selectedElementData.angle)
 					delete insertedData.insertType
 					delete insertedData.dirName
@@ -444,6 +449,11 @@ class Editor {
 				insertSprite = this.blocks.find(block => parseInt(block.id) == parseInt(sprite.id))
 				if (insertSprite) {
 					insertSprite.dirName = 'blocks';
+				} else {
+					insertSprite = this.creatures.find(creatures => parseInt(creatures.id) == parseInt(sprite.id))
+					if (insertSprite) {
+						insertSprite.dirName = 'creatures';
+					}
 				}
 			}
 						
@@ -456,8 +466,6 @@ class Editor {
 
 				this.levelData.sprites.push(sprite)
 			}
-
-			console.log(this.levelData.sprites);
 			
 			// Map container graphics
 			let y = Math.floor(sprite.y)
@@ -540,6 +548,7 @@ class Editor {
 				}
 
 				console.log(objectData);
+				console.log(objectData[elementName]);
 				
 
 				returnElement = `
@@ -613,6 +622,7 @@ class Editor {
 				if (fileName.includes('wall')) return '-wall';
 				if (fileName.includes('block')) return '-block';
 				if (fileName.includes('object')) return '-object';
+				if (fileName.includes('creature')) return '-creature';
 			}
 
 			let elements = `
@@ -639,6 +649,7 @@ class Editor {
 		this.walls = await loadAction('walls')
 		this.blocks = await loadAction('blocks')
 		this.objects = await loadAction('objects')
+		this.creatures = await loadAction('creatures')
 		this.skys = await loadAction('skys')
 		this.floors = await loadAction('floors')
 
@@ -705,9 +716,16 @@ class Editor {
 			
 			let fileData = []
 
+			console.log('-----------');
+			console.log(elementName);
+			
 			if (elementName == 'walls') fileData = clone.walls;
 			if (elementName == 'objects') fileData = clone.objects;
 			if (elementName == 'blocks') fileData = clone.blocks;
+			if (elementName == 'creatures') fileData = clone.creatures;
+
+			console.log(fileData);
+			
 
 			let selectedElements = `
 			<div id="selected-container" class="p-0 m-0 px-1">

@@ -25,6 +25,7 @@ export default class GaphicsClass {
 		this.SCREEN_HEIGHT = window.innerHeight
 		this.GAME_WIDTH = 1250
 		this.GAME_HEIGHT = 700
+		this.GRAPHICS_RATIO = 6	// 4, Best, 6 Normal, 8, Medim, 10 Low, 
 
 		this.CELL_SIZE = CELL_SIZE
 		this.WALKINTERVAL = -7
@@ -61,12 +62,17 @@ export default class GaphicsClass {
 			action: null,
 		}
 
-		window.addEventListener("resize", () => {
-			document.body.style.backgroundColor = "black";
-			this.gameResize()
-		});
+		if (false) {
+			window.addEventListener("resize", () => {
+				document.body.style.backgroundColor = "black";
+				this.gameResize()
+			});
+		}
 
 		this.gameResize()
+
+		console.log(this.GRAPHICS_RATIO);
+		
 	}
 
 	gameResize() {
@@ -75,7 +81,7 @@ export default class GaphicsClass {
 
 		this.SLIP_WIDTH = Math.floor(-(this.GAME_WIDTH/100) * 10)
 		this.GAME_WIDTH3D = this.GAME_WIDTH + (2 * Math.abs(this.SLIP_WIDTH))
-		this.NUMBER_OF_RAYS = Math.floor(this.GAME_WIDTH3D / 6)
+		this.NUMBER_OF_RAYS = Math.floor(this.GAME_WIDTH3D / this.GRAPHICS_RATIO)	// GRAPHICS_RATIO BEST = 6
 		this.GRID_SIZE = Math.floor(this.GAME_WIDTH3D / this.NUMBER_OF_RAYS)
 		this.makeScreen()
 		this.makeMenu()
@@ -141,14 +147,56 @@ export default class GaphicsClass {
 		this.menuElement.style.backgroundImage = 'url("./img/menu/bg-menu.jpg")'
 		container.appendChild(this.menuElement)
 
+		let canvasContainer = document.createElement("div")
+		canvasContainer.setAttribute('id', 'canvas-container')
+		canvasContainer.setAttribute('width', this.GAME_WIDTH)
+		canvasContainer.setAttribute('height', this.GAME_HEIGHT)
+		canvasContainer.style.display='none'
+		canvasContainer.style.position='relative'
+		container.appendChild(canvasContainer)
+
 		const canvas = document.createElement("canvas")
 		canvas.setAttribute('id', 'canvas')
 		canvas.setAttribute('width', this.GAME_WIDTH)
 		canvas.setAttribute('height', this.GAME_HEIGHT)
-		canvas.style.display='none'
-		container.appendChild(canvas)
+		// canvas.style.display='none'
+		canvasContainer.appendChild(canvas)
 		this.context = canvas.getContext('2d')
 		this.context.imageSmoothingEnabled = false
+
+		let scrollXpos = (this.GAME_WIDTH / 2) - 375
+		let scrollInfoBox = document.createElement("div")
+		scrollInfoBox.setAttribute('id', 'scroll-info-box')
+		scrollInfoBox.setAttribute('width', '750px')
+		scrollInfoBox.style.position='absolute'
+		scrollInfoBox.style.left= scrollXpos + 'px'
+		scrollInfoBox.style.top='200px'
+				
+		let scrollInfoBoxTop = document.createElement("div")
+		scrollInfoBoxTop.setAttribute('id', 'scroll-info-box-top')
+		scrollInfoBoxTop.classList.add('scroll-info-box-top')
+		scrollInfoBox.appendChild(scrollInfoBoxTop)
+		
+		let scrollInfoBoxContent = document.createElement("div")
+		scrollInfoBoxContent.setAttribute('id', 'scroll-info-box-content')
+		scrollInfoBoxContent.classList.add('scroll-info-box-content')
+		scrollInfoBoxContent.style.position='relative'
+		scrollInfoBox.appendChild(scrollInfoBoxContent)
+		
+		let scrollInfoBoxContentText = document.createElement("div")
+		scrollInfoBoxContentText.setAttribute('id', 'scroll-info-box-content-text')
+		scrollInfoBoxContent.appendChild(scrollInfoBoxContentText)
+		
+		let scrollInfoBoxBottom = document.createElement("div")
+		scrollInfoBoxBottom.style.position='absolute'
+		scrollInfoBoxBottom.style.bottom='-28px'
+		scrollInfoBoxBottom.style.left='0px'
+		scrollInfoBoxBottom.classList.add('scroll-info-box-bottom')
+		scrollInfoBoxBottom.setAttribute('id', 'scroll-info-box-bottom')
+		scrollInfoBoxContent.appendChild(scrollInfoBoxBottom)
+
+		canvasContainer.appendChild(scrollInfoBox)
+		scrollInfoBox.style.display='none'
 	}
 
 	makeMenu() {
@@ -158,6 +206,11 @@ export default class GaphicsClass {
 			<div id="menu-box" class="mx-auto col-4 pt-5">`;
 				if (this.menu.optionsActive) {
 					
+					let graphicsratioSelected = function(value, GRAPHICS_RATIO) {
+						if (value == GRAPHICS_RATIO) return 'selected';
+						return '';
+					}
+
 					let infopanelSelected = (this.menu.infoSwitch) ? 'selected' : null;
 					let minimapSelected = (this.menu.mapSwitch) ? 'selected' : null;
 
@@ -166,6 +219,19 @@ export default class GaphicsClass {
 						<div class="menu-row col-2 bg-menu-selector d-flex justify-content-center align-items-center"><img src="./img/menu/star-selector.gif" style="display:none;"></div>
 						<div class="menu-row col d-flex justify-content-start align-items-center">
 							<span>Back</span>
+						</div>
+					</div>`;
+					menuElementContent += `
+					<div id="menu-graphicsratio" class="menu-element row">
+						<div class="menu-row col-2 bg-menu-selector d-flex justify-content-center align-items-center"><img src="./img/menu/star-selector.gif" style="display:none;"></div>
+						<div class="menu-row col d-flex justify-content-start align-items-center">
+							<span>graphicsratio:</span>
+							<select id="graphicsratio-select" name="graphicsratio" class="form-control form-control-sm control-small-width ms-5 invisible-pointer">
+								<option value="10" ${graphicsratioSelected(10, this.GRAPHICS_RATIO)}>Low</option>
+								<option value="8" ${graphicsratioSelected(8, this.GRAPHICS_RATIO)}>Medium</option>
+								<option value="6" ${graphicsratioSelected(6, this.GRAPHICS_RATIO)}>Normal</option>
+								<option value="4" ${graphicsratioSelected(4, this.GRAPHICS_RATIO)}>Best</option>
+							</select>
 						</div>
 					</div>`;
 					menuElementContent += `
@@ -221,6 +287,46 @@ export default class GaphicsClass {
 				}
 			menuElementContent += `</div>`;
 		$("#menu-bg").append(menuElementContent)
+	}
+
+	async scrollInfoMaker(htmlElements, time) {
+		var GAME_HEIGHT = this.GAME_HEIGHT
+		let imgTopUrl = "./img/menu/info-scroll-top-pix.png";
+		let imgBottomUrl = "./img/menu/info-scroll-bottom-pix.png";
+		let imgBgUrl = "./img/menu/info-scroll-bg-pix.png";
+	
+		function loadImage(url) {
+			return new Promise((success, error) => {
+				let img = new Image();
+				img.onload = () => success();
+				img.onerror = error;
+				img.src = url;
+			});
+		}
+
+		try {
+			await Promise.all([
+				new Promise(resolve => {
+					$("#scroll-info-box-content-text").html(htmlElements);
+					resolve();
+				}),
+				loadImage(imgTopUrl),
+				loadImage(imgBottomUrl),
+				loadImage(imgBgUrl)
+			]);
+
+			let marginTop = Math.floor((GAME_HEIGHT - $("#scroll-info-box").height()) / 2)
+
+			$("#scroll-info-box").css('top', marginTop + 'px')
+			$("#scroll-info-box").show();
+
+		} catch (error) { console.error(error); }
+		
+		// Hide Info
+		setTimeout(() => {
+			$("#scroll-info-box-content-text").html('')
+			$("#scroll-info-box").hide()
+		}, time);
 	}
 
 	toAngle(rad) {
@@ -820,6 +926,12 @@ export default class GaphicsClass {
 	renderScreenSprites(sprite, actualTexture) {
 		// Object Draw
 		if (sprite.active) {
+
+			// if (sprite.type == 'creature') {
+			// 	console.log(sprite);
+				
+			// }
+
 			if (sprite.type=='object' || sprite.type == 'ammo' || sprite.type == 'creature') {
 				let spriteAngle = Math.atan2(sprite.y - this.player.y, sprite.x - this.player.x);
 				spriteAngle = this.toAngle(spriteAngle)

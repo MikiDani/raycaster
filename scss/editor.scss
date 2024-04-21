@@ -123,6 +123,13 @@ $listPicSize: 48px;
     }
 }
 
+.list-pic-creature {
+    width: $listPicSize;
+    &:hover{
+        cursor: pointer;
+    }
+}
+
 .list-pic-sky {
     width: $listPicSize * 2.9;
     &:hover{

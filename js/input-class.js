@@ -123,6 +123,11 @@ export default class InputClass {
 				this.changeOptionRow('minimap-select')
 			}
 
+			if (menuId == 'menu-graphicsratio') { 
+				this.changeMenuStar('menu-graphicsratio', true)
+				this.changeOptionRow('graphicsratio-select')
+			}
+
 		}, 10)  // Ha lesz hang akkor kell majd beállítani
 		return;
 	}
@@ -148,21 +153,33 @@ export default class InputClass {
 					}
 
 					if (this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX].mode == 'secret') {
-						alert("FIND SECRET!");
+						
+						let content = `<h3 class='text-center'>Your found a secret!</h3><p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Cupiditate, nostrum.</p>`
+						this.graphicsClass.scrollInfoMaker(content, 3000)
+						
 						this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX].anim_switch = true
 					}
 
 					if (this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX].mode == 'key1') {
-						console.log(this.player.key1);
 						if (this.player.key1)
 							this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX].anim_switch = true;
-						else alert("This Door the KEY1!");
+						else {
+							let content = `<h3 class='text-center'>You need the silver key to open this door!</h3>`
+							this.graphicsClass.scrollInfoMaker(content, 3000)
+						}
 					}
 
 					if (this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX].mode == 'key2') {
 						if (this.player.key2)
 							this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX].anim_switch = true;
-						else alert("You need the KEY2!");
+						else {
+							let content = `<h3 class='text-center'>You need the gold key to open this door!</h3><p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officia tempora maiores sint! Ea optio repellat.Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+
+							<img src="./img/objects/keys/cellar-key2.png" alt="gold key" style='float:right;width:200px;'/>
+
+							Officia tempora maiores sint! Ea optio repellat.Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officia tempora maiores sint! Ea optio repellat.Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officia tempora maiores sint! Ea optio repellat.Lorem ipsum dolor, sit amet consectetur adipisicing elit.</p>`
+							this.graphicsClass.scrollInfoMaker(content, 3000)
+						}
 					}
 				}
 
@@ -351,8 +368,8 @@ export default class InputClass {
 		}
 		if (this.keyPressed['ArrowLeft']) { this.player.angle += -this.graphicsClass.toRadians(this.MOVE_ANGLE); }
 		if (this.keyPressed['ArrowRight']) { this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE); }
-		if (this.keyPressed['a'] || this.keyPressed['A']) { this.player.angle += -this.graphicsClass.toRadians(this.MOVE_SPEED); }
-		if (this.keyPressed['d'] || this.keyPressed['D']) { this.player.angle += this.graphicsClass.toRadians(this.MOVE_SPEED); }
+		if (this.keyPressed['a'] || this.keyPressed['A']) { this.player.angle += -this.graphicsClass.toRadians(this.MOVE_ANGLE); }
+		if (this.keyPressed['d'] || this.keyPressed['D']) { this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE); }
 		if (this.keyPressed['r'] || this.keyPressed['R']) { this.player.angle += -this.graphicsClass.toRadians(this.MOVE_ANGLE_SLOW); }
 		if (this.keyPressed['t'] || this.keyPressed['T']) { this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE_SLOW); }
 		if (this.keyPressed['w'] || this.keyPressed['W']) { this.player.speed = this.MOVE_SPEED }
@@ -374,6 +391,25 @@ export default class InputClass {
 	add_optionsEventListeners() {
 		// ADD OPTIONS
 		var clone = this
+		
+		$('#graphicsratio-select').on('change', function(event) {
+			event.preventDefault();
+			var selectedValue = $(this).val();
+			if (selectedValue == '10') {
+				clone.graphicsClass.GRAPHICS_RATIO = 8; $(this).val(8)
+			} else if (selectedValue == '8') {
+				clone.graphicsClass.GRAPHICS_RATIO = 6; $(this).val(6)
+			} else if (selectedValue == '6') {
+				clone.graphicsClass.GRAPHICS_RATIO = 4; $(this).val(4)
+			} else if (selectedValue == '4') {
+				clone.graphicsClass.GRAPHICS_RATIO = 10; $(this).val(10)
+			}
+			$(this).blur();
+			console.log(clone.graphicsClass.GRAPHICS_RATIO)
+
+			clone.graphicsClass.gameResize()
+		});
+
 		$('#infopanel-select').on('change', function(event) {
 			event.preventDefault();
 			var selectedValue = $(this).val();

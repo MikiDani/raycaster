@@ -213,6 +213,9 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 }
 
 function moveCreature(creature) {
+	
+	console.log(creature);
+	
 	if (typeof creature.speed != 'undefined' && creature.speed != 0) {
 
 		let cCheck = checkMoveSprite(creature)
@@ -289,7 +292,7 @@ function spritesCheck() {
 
 				if(sprite.moveType == 'mode1') {
 					getActualTexture = creatureSpriteSelect(sprite)
-					moveCreature(sprite)
+					// moveCreature(sprite)			!!! HIBA !!!!
 				}
 
 				if(sprite.moveType == 'levitation') {
@@ -391,6 +394,10 @@ async function loadindDatas() {
 	const objectsDataResponse = await fetch('./data/objects/objects.JSON');
     const objectsData = await objectsDataResponse.json();
 	console.log(objectsData);
+
+	const creaturesDataResponse = await fetch('./data/creatures/creatures.JSON');
+    const creaturesData = await creaturesDataResponse.json();
+	console.log(creaturesData);
 	
 	player.x = mapData.player.x * CELL_SIZE
 	player.y = mapData.player.y * CELL_SIZE
@@ -424,9 +431,13 @@ async function loadindDatas() {
 		let dirName
 		let insertSprite = objectsData.find(obj => parseInt(obj.id) == parseInt(sprite.id))
 		if (insertSprite) { dirName = 'objects' }
-		if (!insertSprite) {
+		else if (!insertSprite) {
 			insertSprite = blocksData.find(block => parseInt(block.id) == parseInt(sprite.id))
 			if (insertSprite) { dirName = 'blocks' }
+			else if (!insertSprite) {
+				insertSprite = creaturesData.find(creature => parseInt(creature.id) == parseInt(sprite.id))
+				if (insertSprite) { dirName = 'creatures' }
+			}
 		}
 		if(typeof insertSprite != 'undefined') {
 			let data = {}
@@ -446,18 +457,20 @@ async function gameMenu() {
 		clearInterval(gamePlay.game)
 		gamePlay.game = null		
 		inputClass.moveMenuStar()
-		document.getElementById('canvas').style.display='none'
+		document.getElementById('canvas-container').style.display='none'
 		document.getElementById('loading').style.display='none'
 		document.getElementById('menu-bg').style.display='block'
 		graphicsClass.clrScr()
 		return;
 	} else {
 		//// GAME
+
+		console.log(graphicsClass.GRAPHICS_RATIO);
 		
 		// LOADING
 		if (!gamePlay.gameLoaded) {
 			document.getElementById('menu-bg').style.display='none'
-			document.getElementById('canvas').style.display='none'
+			document.getElementById('canvas-container').style.display='none'
 			document.getElementById('loading').style.display='block'
 			await loadindDatas()
 			gamePlay.gameLoaded = true
@@ -467,7 +480,7 @@ async function gameMenu() {
 		// BACK TO GAME
 		document.getElementById('menu-bg').style.display='none'
 		document.getElementById('loading').style.display='none'
-		document.getElementById('canvas').style.display='block'
+		document.getElementById('canvas-container').style.display='block'
 		
 		if (!gamePlay.game) {
 			gamePlay.game = setInterval(gameLoop, CLOCKSIGNAL);

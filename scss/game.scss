@@ -81,3 +81,25 @@ canvas {
 .invisible-pointer {
     pointer-events: none;
 }
+
+#scroll-info-box-top {
+    background-image: url("../img/menu/info-scroll-top-pix.png");
+    width: 750px;
+    height: 69px;
+}
+
+#scroll-info-box-content {
+    background-image: url("../img/menu/info-scroll-bg-pix.png");
+    background-repeat: repeat-y;
+    width: 750px;
+    font-size: 20px;
+    padding-left: 40px;
+    padding-right: 25px;
+    padding-bottom: 50px;
+}
+
+#scroll-info-box-bottom {
+    background-image: url("../img/menu/info-scroll-bottom-pix.png");
+    width: 750px;
+    height: 69px;
+}

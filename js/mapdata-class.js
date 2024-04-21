@@ -24,7 +24,11 @@ export default class MapDataClass {
             wallArray.type = wallData.type
             wallArray.mode = wallData.mode
             wallArray.height = wallData.height
-            if (wallData.mode == 'animated' || wallData.mode == 'door' || wallData.mode == 'secret' || wallData.mode == 'key1' || wallData.mode == 'key2' || wallData.mode == 'ammo') {
+            if (wallData.mode == 'animated'
+            || wallData.mode == 'door' || wallData.mode == 'secret'
+            || wallData.mode == 'key1' || wallData.mode == 'key2'
+            || wallData.mode == 'ammo'
+            || wallData.mode == 'creature') {
                 wallArray.anim_switch = wallData.anim_switch
                 wallArray.anim_function = wallData.anim_function
                 wallArray.anim_speed = wallData.anim_speed
@@ -40,6 +44,10 @@ export default class MapDataClass {
                 wallArray.open_function = wallData.open_function
                 wallArray.open_positionValue = wallData.open_positionValue
             }
+            // if (wallData.type == 'creature') {
+            //     wallArray.anim_frames = wallData.anim_frames
+            //     wallArray.rotate_frames = wallData.rotate_frames
+            // }
         }        
         this.walls.push(wallArray)
     }

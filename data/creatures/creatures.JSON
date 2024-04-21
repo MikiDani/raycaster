@@ -1,0 +1,30 @@
+[
+    {
+        "id": "1500",
+        "textures": {
+            "ninja2": ["ninja2_A1", "ninja2_A2", "ninja2_A3", "ninja2_A4",
+                       "ninja2_B1", "ninja2_B2", "ninja2_B3", "ninja2_B4",
+                       "ninja2_C1", "ninja2_C2", "ninja2_C3", "ninja2_C4",
+                       "ninja2_D1", "ninja2_D2", "ninja2_D3", "ninja2_D4"]
+        },
+        "active": true,
+        "type": "creature",
+        "mode": "enemy",
+        "material": "enemy",
+        "z": 0,
+        "angle": 0,
+        "speed": 3,
+        "move": true,
+        "moveType": "mode1",
+        "anim_switch": true,
+        "anim_frames": [1, 2, 3, 4],
+        "anim_actFrame": 0,
+        "anim_speed": 100,
+        "anim_repeat": false,
+        "anim_repeatCount": 0,
+        "anim_startFrame": 1,
+        "anim_function": null,
+        "rotate_switch": true,
+        "rotate_frames": ["B", "D", "A", "C"]
+    }
+]
