@@ -531,7 +531,7 @@ class Editor {
 				function checkChecked(value) {
 					if (fileValue == value) return ' selected'; else return '';
 				}
-
+				
 				returnElement = `
 				<div class="data-title col-6 p-0 m-0"><span class="align-middle">${fileKey}:</span></div>
 				<div class="data-data col-6 p-0 m-0">
@@ -543,18 +543,21 @@ class Editor {
 			}
 
 			if (objectData.inputType == 'select') {
+				
 				function checkChecked(value) {
 					if (fileValue == value) return ' selected'; else return '';
 				}
+				
+				let checkDisabled = (fileKey == 'type') ? 'disabled' : '';
+				let checkBg = (fileKey == 'type') ? 'bg-disabled' : '';
 
-				console.log(objectData);
-				console.log(objectData[elementName]);
+				console.log(checkDisabled);
 				
 
 				returnElement = `
 				<div class="data-title col-6 p-0 m-0"><span class="align-middle">${fileKey}:</span></div>
 				<div class="data-data col-6 p-0 m-0">
-					<select id="select_${fileKey}" name="${fileKey}" input-type="${objectData.inputType}" class="form-control form-control-sm align-middle">`;
+					<select id="select_${fileKey}" name="${fileKey}" input-type="${objectData.inputType}" class="form-control form-control-sm align-middle ${checkBg}" ${checkDisabled}>`;
 					for (const optionValue of objectData[elementName]) {
 						returnElement += `<option value="${optionValue}" ${checkChecked(optionValue)}>${optionValue}</option>`;
 					}

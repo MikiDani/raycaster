@@ -214,12 +214,11 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 
 function moveCreature(creature) {
 	
-	console.log(creature);
 	
 	if (typeof creature.speed != 'undefined' && creature.speed != 0) {
-
+		
 		let cCheck = checkMoveSprite(creature)
-
+		
 		check.creatureCheckX = cCheck.checkX
 		check.creatureCheckY = cCheck.checkY
 
@@ -257,7 +256,7 @@ function moveAmmo(ammoSprite, nearData) {
 	return true
 }
 
-function moveAction(sprite, check) {
+function moveAction(sprite, check) {	
 	if (sprite.move) {
 		(check.moveX) ? sprite.x += Math.cos(sprite.angle) * sprite.speed : false;
 		(check.moveY) ? sprite.y += Math.sin(sprite.angle) * sprite.speed : false;
@@ -292,7 +291,7 @@ function spritesCheck() {
 
 				if(sprite.moveType == 'mode1') {
 					getActualTexture = creatureSpriteSelect(sprite)
-					// moveCreature(sprite)			!!! HIBA !!!!
+					moveCreature(sprite)			// !!!! HIBA !!!!
 				}
 
 				if(sprite.moveType == 'levitation') {
@@ -436,7 +435,7 @@ async function loadindDatas() {
 			if (insertSprite) { dirName = 'blocks' }
 			else if (!insertSprite) {
 				insertSprite = creaturesData.find(creature => parseInt(creature.id) == parseInt(sprite.id))
-				if (insertSprite) { dirName = 'creatures' }
+				if (insertSprite) { dirName = 'creatures'; }
 			}
 		}
 		if(typeof insertSprite != 'undefined') {
@@ -444,6 +443,12 @@ async function loadindDatas() {
 			data.id = sprite.id
 			for (const [key, value] of Object.entries(insertSprite)) data[key] = value;
 			sprite = {...data, ...sprite}
+			if (sprite.type == 'creature') 
+			{
+				console.log('ÁÁÁÁÁÁTTTTTVÁÁÁÁLLLL');
+				
+				sprite.angle = graphicsClass.toRadians(sprite.angle)
+			}
 		}
 		
 		let dirConstruction = await texturesClass.loadTextureToArray(sprite.textures, dirName, texturesClass.spriteTextures)		

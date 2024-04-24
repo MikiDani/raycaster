@@ -43,5 +43,28 @@
 		"open_switch": false,
 		"open_function" : null,
 		"open_positionValue": 0
+    },
+	{
+        "id": 515,
+        "textures": {
+            "door_key1": ["block-door-key1", "block-door-key1-a1", "block-door-key1-a2"]
+        },
+        "active": true,
+        "type": "block",
+        "mode": "key1",
+        "material": "fix",
+		"angle": 0,
+        "anim_switch": false,
+        "anim_action": "push",
+        "anim_function": null,
+        "anim_repeat": false,
+        "anim_repeatCount": 0,
+        "anim_repeatEnd": 3,
+        "anim_startFrame": 1,
+        "anim_actFrame": 1,
+        "anim_speed": 180,
+		"open_switch": false,
+		"open_function" : null,
+		"open_positionValue": 0
     }
 ]

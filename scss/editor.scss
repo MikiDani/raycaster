@@ -181,3 +181,8 @@ $blockColor: #b8b800;
     padding-bottom: 5px solid $blockBorderColor !important;
     background-color: deeppink !important;
 }
+
+.bg-disabled {
+    background-color: #b8b8b8 !important;
+    border-color: gray !important;
+}

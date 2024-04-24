@@ -6,8 +6,8 @@ export default class InputClass {
 		this.movePlayer = movePlayer
 		//--------------------------------------------------------------------
 		this.MOVE_SPEED = 10
-		this.MOVE_ANGLE = 3
-		this.MOVE_ANGLE_SLOW = 0.5
+		this.MOVE_ANGLE = 5
+		this.MOVE_ANGLE_SLOW = 1
 		this.WALL_DISTANCE = (graphicsClass.CELL_SIZE / 100) * 40
 		//--------------------------------------------------------------------
 		this.menu = menu
@@ -132,70 +132,74 @@ export default class InputClass {
 		return;
 	}
 
+	key1AlertMessage () {
+		let content = `<h3 class='text-center'>You need the silver key to open this door!</h3>`
+		this.graphicsClass.scrollInfoMaker(content, 3000)
+	}
+
+	key2AlertMessage () {
+		let content = `<h3 class='text-center'>You need the gold key to open this door!</h3><p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officia tempora maiores sint! Ea optio repellat.Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+		<img src="./img/objects/keys/cellar-key2.png" alt="gold key" style='float:right;width:200px;'/>
+		Officia tempora maiores sint! Ea optio repellat.Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officia tempora maiores sint! Ea optio repellat.Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officia tempora maiores sint! Ea optio repellat.Lorem ipsum dolor, sit amet consectetur adipisicing elit.</p>`
+		this.graphicsClass.scrollInfoMaker(content, 3000)
+	}
+
 	loadInputs() {
 		//////////
 		// KEYDOWN
 		//////////
+		var clone = this
 		document.addEventListener('keydown', (event) => {
 			// TOGETHER
 			if (event.key == ' ') {
 				console.log('Space');
 
 				// Check MAP
-				if (this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX]) {
+				var mapData = this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX]
+
+				if (mapData) {
 					// type
-					console.log(this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX].mode);
-					// OPEN DOOR
-					if (this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX].mode == 'door') {
+					console.log(mapData.mode);
+					// OPEN DOOR	
+
+					if (mapData.mode == 'door') {
 						console.log('DOOR ANIM SWITCH');
 						
-						this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX].anim_switch = true
+						mapData.anim_switch = true
 					}
 
-					if (this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX].mode == 'secret') {
+					if (mapData.mode == 'secret') {
 						
 						let content = `<h3 class='text-center'>Your found a secret!</h3><p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Cupiditate, nostrum.</p>`
 						this.graphicsClass.scrollInfoMaker(content, 3000)
 						
-						this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX].anim_switch = true
+						mapData.anim_switch = true
 					}
 
-					if (this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX].mode == 'key1') {
-						if (this.player.key1)
-							this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX].anim_switch = true;
-						else {
-							let content = `<h3 class='text-center'>You need the silver key to open this door!</h3>`
-							this.graphicsClass.scrollInfoMaker(content, 3000)
-						}
+					if (mapData.mode == 'key1') {
+						if (this.player.key1) mapData.anim_switch = true; else key1AlertMessage();
 					}
 
-					if (this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX].mode == 'key2') {
-						if (this.player.key2)
-							this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX].anim_switch = true;
-						else {
-							let content = `<h3 class='text-center'>You need the gold key to open this door!</h3><p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officia tempora maiores sint! Ea optio repellat.Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-
-							<img src="./img/objects/keys/cellar-key2.png" alt="gold key" style='float:right;width:200px;'/>
-
-							Officia tempora maiores sint! Ea optio repellat.Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officia tempora maiores sint! Ea optio repellat.Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officia tempora maiores sint! Ea optio repellat.Lorem ipsum dolor, sit amet consectetur adipisicing elit.</p>`
-							this.graphicsClass.scrollInfoMaker(content, 3000)
-						}
+					if (mapData.mode == 'key2') {
+						if (this.player.key2) mapData.anim_switch = true; else key2AlertMessage();
 					}
 				}
-
+			
 				// Check Blocks			
 				
 				// OPEN DOOR
-				let checkingBlock = this.spritesClass.sprites.find(block => block.type == 'block' && block.mode == 'door'	// Type check
+				let checkingBlock = this.spritesClass.sprites.find(block => block.type == 'block' && (block.mode == 'door' || block.mode == 'key1' || block.mode == 'key2')		// Type check
 					&& Math.floor(block.x/this.graphicsClass.CELL_SIZE) == this.check.playerCheckX && Math.floor(block.y/this.graphicsClass.CELL_SIZE) == this.check.playerCheckY	// Position check
 					&& block.open_function == null)		// not active
 
 				if (checkingBlock) {
+					if (checkingBlock.mode == 'key1' && (!this.player.key1)) { clone.key1AlertMessage(); return; }
+					if (checkingBlock.mode == 'key2' && (!this.player.key2)) { clone.key2AlertMessage(); return; }
 					console.log('DOOR OPEN KEZD');
 					checkingBlock.open_switch = true
 				}
 			}
-			
+		
 			if(event.key == 'Escape') {
 				// MENU PUSH ESC
 				if (this.menu.optionsActive) {

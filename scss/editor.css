@@ -119,6 +119,13 @@ body {
   cursor: pointer;
 }
 
+.list-pic-creature {
+  width: 48px;
+}
+.list-pic-creature:hover {
+  cursor: pointer;
+}
+
 .list-pic-sky {
   width: 139.2px;
 }
@@ -166,4 +173,9 @@ body {
   padding-top: 5px solid #b8b800 !important;
   padding-bottom: 5px solid olive !important;
   background-color: deeppink !important;
+}
+
+.bg-disabled {
+  background-color: #b8b8b8 !important;
+  border-color: gray !important;
 }/*# sourceMappingURL=editor.css.map */
