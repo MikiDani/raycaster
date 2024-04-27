@@ -118,9 +118,19 @@ export default class InputClass {
 				this.changeOptionRow('infopanel-select')
 			};
 			
-			if (menuId == 'menu-minimap') { 
-				this.changeMenuStar('menu-minimap', true)
-				this.changeOptionRow('minimap-select')
+			if (menuId == 'menu-shadows') { 
+				this.changeMenuStar('menu-shadows', true)
+				this.changeOptionRow('shadows-select')
+			}
+
+			if (menuId == 'menu-sky') { 
+				this.changeMenuStar('menu-sky', true)
+				this.changeOptionRow('sky-select')
+			}
+
+			if (menuId == 'menu-floor') { 
+				this.changeMenuStar('menu-floor', true)
+				this.changeOptionRow('floor-select')
 			}
 
 			if (menuId == 'menu-graphicsratio') { 
@@ -130,18 +140,6 @@ export default class InputClass {
 
 		}, 10)  // Ha lesz hang akkor kell majd beállítani
 		return;
-	}
-
-	key1AlertMessage () {
-		let content = `<h3 class='text-center'>You need the silver key to open this door!</h3>`
-		this.graphicsClass.scrollInfoMaker(content, 3000)
-	}
-
-	key2AlertMessage () {
-		let content = `<h3 class='text-center'>You need the gold key to open this door!</h3><p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officia tempora maiores sint! Ea optio repellat.Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-		<img src="./img/objects/keys/cellar-key2.png" alt="gold key" style='float:right;width:200px;'/>
-		Officia tempora maiores sint! Ea optio repellat.Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officia tempora maiores sint! Ea optio repellat.Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officia tempora maiores sint! Ea optio repellat.Lorem ipsum dolor, sit amet consectetur adipisicing elit.</p>`
-		this.graphicsClass.scrollInfoMaker(content, 3000)
 	}
 
 	loadInputs() {
@@ -177,11 +175,16 @@ export default class InputClass {
 					}
 
 					if (mapData.mode == 'key1') {
-						if (this.player.key1) mapData.anim_switch = true; else key1AlertMessage();
+						if (this.player.key1) mapData.anim_switch = true;
+						else {
+							let content = `<div class="text-center"><h3 class='text-center'>You need the silver key to open this wall!</h3><div class="info-key1-container mx-auto"></div></div>`
+							this.graphicsClass.scrollInfoMaker(content, 3000)
+						}
 					}
 
 					if (mapData.mode == 'key2') {
-						if (this.player.key2) mapData.anim_switch = true; else key2AlertMessage();
+						let content = `<div class="text-center"><h3 class='text-center'>You need the gold key to open this wall!</h3><div class="info-key2-container mx-auto"></div></div>`
+						this.graphicsClass.scrollInfoMaker(content, 3000)
 					}
 				}
 			
@@ -193,8 +196,18 @@ export default class InputClass {
 					&& block.open_function == null)		// not active
 
 				if (checkingBlock) {
-					if (checkingBlock.mode == 'key1' && (!this.player.key1)) { clone.key1AlertMessage(); return; }
-					if (checkingBlock.mode == 'key2' && (!this.player.key2)) { clone.key2AlertMessage(); return; }
+					if (checkingBlock.mode == 'key1' && (!this.player.key1)) {
+						let content = `<div class="text-center"><h3 class='text-center'>You need the silver key to open this door!</h3><div class="info-key1-container mx-auto"></div></div>`
+							this.graphicsClass.scrollInfoMaker(content, 3000)
+						return;
+					}
+
+					if (checkingBlock.mode == 'key2' && (!this.player.key2)) { 
+						let content = `<div class="text-center"><h3 class='text-center'>You need the gold key to open this door!</h3><div class="info-key2-container mx-auto"></div></div>`
+						this.graphicsClass.scrollInfoMaker(content, 3000)
+						return;
+					}
+
 					console.log('DOOR OPEN KEZD');
 					checkingBlock.open_switch = true
 				}
@@ -395,53 +408,61 @@ export default class InputClass {
 	add_optionsEventListeners() {
 		// ADD OPTIONS
 		var clone = this
-		
 		$('#graphicsratio-select').on('change', function(event) {
-			event.preventDefault();
-			var selectedValue = $(this).val();
-			if (selectedValue == '10') {
-				clone.graphicsClass.GRAPHICS_RATIO = 8; $(this).val(8)
-			} else if (selectedValue == '8') {
-				clone.graphicsClass.GRAPHICS_RATIO = 6; $(this).val(6)
-			} else if (selectedValue == '6') {
-				clone.graphicsClass.GRAPHICS_RATIO = 4; $(this).val(4)
-			} else if (selectedValue == '4') {
-				clone.graphicsClass.GRAPHICS_RATIO = 10; $(this).val(10)
-			}
-			$(this).blur();
-			console.log(clone.graphicsClass.GRAPHICS_RATIO)
-
-			clone.graphicsClass.gameResize()
+			event.preventDefault()
+			let cloneThis = $(this)
+			clone.graphicsratioSelectAction(clone, cloneThis)
 		});
 
-		$('#infopanel-select').on('change', function(event) {
+		$('#shadows-select, #sky-select, #floor-select, #infopanel-select').on('change', function(event) {
+			
+			let variableName = $(this).attr('data-variablename')
+			
+			console.log(variableName)
+
 			event.preventDefault();
 			var selectedValue = $(this).val();
 			if (selectedValue == '0') {
-				clone.menu.infoSwitch = false;
+				clone.menu[variableName] = false;
 			} else if (selectedValue == '1') {
-				clone.menu.infoSwitch = true;
+				clone.menu[variableName] = true;
 			}
 			$(this).blur();
-			console.log(clone.menu.infoSwitch)
+
+			console.log(clone.menu[variableName])
+		});
+	}
+
+	graphicsratioSelectAction(clone, cloneThis) {
+		var selectedValue = cloneThis.val();
+		if (selectedValue == '10') {
+			clone.graphicsClass.GRAPHICS_RATIO = 8; cloneThis.val(8)
+		} else if (selectedValue == '8') {
+			clone.graphicsClass.GRAPHICS_RATIO = 6; cloneThis.val(6)
+		} else if (selectedValue == '6') {
+			clone.graphicsClass.GRAPHICS_RATIO = 4; cloneThis.val(4)
+		} else if (selectedValue == '4') {
+			clone.graphicsClass.GRAPHICS_RATIO = 10; cloneThis.val(10)
+		}
+		cloneThis.blur()
+		clone.graphicsClass.gameResize()
+
+		$('#graphicsratio-select').on('change', function(event) {
+			event.preventDefault()
+			let cloneThis = $(this)
+			clone.graphicsratioSelectAction(clone, cloneThis)
 		});
 
-		$('#minimap-select').on('change', function(event) {
-			event.preventDefault();
-			var selectedValue = $(this).val();
-			if (selectedValue == '0') {
-				clone.menu.mapSwitch = false;
-			} else if (selectedValue == '1') {
-				clone.menu.mapSwitch = true;
-			}
-			$(this).blur();
-			console.log(clone.menu.mapSwitch)
-		});
+		clone.moveMenuStar(0)
 	}
 
 	remove_optionsEventListeners() {
 		// REMOVE OPTIONS
+		$('#shadows-select').off('change')
+		$('#sky-select').off('change')
+		$('#floor-select').off('change')
+		$('#graphicsratio-seletc').off('change')
+
 		$('#infopanel-select').off('change')
-		$('#minimap-select').off('change')
 	}
 }

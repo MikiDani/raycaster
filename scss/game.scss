@@ -74,6 +74,10 @@ canvas {
     background-color: #c15909;
 }
 
+.bg-menu-selector-back {
+    background-color: #c1590977;
+}
+
 .control-small-width {
     width: 100px !important;
 }
@@ -102,4 +106,20 @@ canvas {
     background-image: url("../img/menu/info-scroll-bottom-pix.png");
     width: 750px;
     height: 69px;
+}
+
+.info-key1-container {
+    width: 128px;
+    height: 56px;
+    background-image: url("../img/objects/keys/cellar-key1.png");
+    background-size: cover;
+    background-position: bottom;
+}
+
+.info-key2-container {
+    width: 128px;
+    height: 56px;
+    background-image: url("../img/objects/keys/cellar-key2.png");
+    background-size: cover;
+    background-position: bottom;
 }

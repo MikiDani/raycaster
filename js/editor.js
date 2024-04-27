@@ -635,7 +635,8 @@ class Editor {
 			<div class="p-0 px-1 m-0">
 				<div class="textures-pic-container textures-pic-container_${name} p-0 m-0 mt-2">`;
 					fileData.forEach((textureArray, index) => {
-						for(const[key, value] of Object.entries(textureArray.textures)) {
+						for(const[key, value] of Object.entries(textureArray.textures)) {	
+							if (key == 'color') return;
 							elements += `<img src="./img/${name}/${key}/${value[0]}.png" alt="${value[0]}" class="list-pic${checkPicType(value[0])} p-0 m-0 me-2 mb-2 border border-primary border-0" data-name="${name}" data-index="${index}" data-filename="${value[0]}" id="selected-${name}_${index}">`;
 						}
 					});					

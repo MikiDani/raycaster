@@ -1,32 +1,37 @@
 [
     {
+        "type": "sky",
         "textures": {
             "skys1": ["sky1"]
         },
-        "type": "sky"
+        "color": "#afc1b3"
     },
     {
+        "type": "sky",
         "textures": {
             "skys1": ["sky2"]
         },
-        "type": "sky"
+        "color": "#7c658e"
     },
     {
+        "type": "sky",
         "textures": {
             "skys1": ["sky3"]
         },
-        "type": "sky"
+        "color": "#ffe69b"
     },
     {
+        "type": "sky",
         "textures": {
             "skys1": ["sky4"]
         },
-        "type": "sky"
+        "color": "#1c1f12"
     },
     {
+        "type": "ceiling",
         "textures": {
             "ceilings1": ["ceiling1"]
         },
-        "type": "ceiling"
+        "color": "#656565"
     }
 ]

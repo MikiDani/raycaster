@@ -81,7 +81,7 @@
         "type": "object",
         "mode": "normal",
         "material": "fix",
-        "z": -5
+        "z": 0
     },
     {
         "id": 1035,
@@ -92,7 +92,7 @@
         "type": "object",
         "mode": "key1",
         "material": "ghost",
-        "z": -15
+        "z": 0
     },
     {
         "id": 1040,
@@ -103,6 +103,6 @@
         "type": "object",
         "mode": "key2",
         "material": "ghost",
-        "z": -15
+        "z": 0
     }
 ]

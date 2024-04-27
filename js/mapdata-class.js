@@ -1,4 +1,8 @@
 export default class MapDataClass {
+    map;
+    walls;
+    sky;
+    floor;
     constructor({texturesClass: texturesClass}) {
         this.texturesClass = texturesClass
         //--------------------------------

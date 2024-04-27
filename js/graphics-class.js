@@ -11,6 +11,7 @@ export default class GaphicsClass {
 
 	poisonModValue;
 	poisonModScale;
+	blockMask;
 
 	constructor ({mapDataClass: mapDataClass, spritesClass: spritesClass, texturesClass: texturesClass, CELL_SIZE: CELL_SIZE, player: player, menu: menu, gamePlay: gamePlay, check: check, poisonModValue: poisonModValue})
 	{
@@ -20,6 +21,7 @@ export default class GaphicsClass {
 		this.poisonModValue = poisonModValue
 
 		this.checkDistance = []
+		this.blockMask = []
 		//--------------------------------------------------------------------
 		this.SCREEN_WIDTH = window.innerWidth
 		this.SCREEN_HEIGHT = window.innerHeight
@@ -212,19 +214,22 @@ export default class GaphicsClass {
 					}
 
 					let infopanelSelected = (this.menu.infoSwitch) ? 'selected' : null;
-					let minimapSelected = (this.menu.mapSwitch) ? 'selected' : null;
+					let shadowsSelected = (this.menu.shadowsSwitch) ? 'selected' : null;
+					let skySelected = (this.menu.skySwitch) ? 'selected' : null;
+					let floorSelected = (this.menu.floorSwitch) ? 'selected' : null;
 
 					menuElementContent += `
 					<div id="menu-options-back" class="menu-element row">
-						<div class="menu-row col-2 bg-menu-selector d-flex justify-content-center align-items-center"><img src="./img/menu/star-selector.gif" style="display:none;"></div>
+						<div class="menu-row col-2 bg-menu-selector-back d-flex justify-content-center align-items-center"><img src="./img/menu/star-selector.gif" style="display:none;"></div>
 						<div class="menu-row col d-flex justify-content-start align-items-center">
 							<span>Back</span>
 						</div>
 					</div>`;
+					// <h3>Graphics Options</h3>
 					menuElementContent += `
 					<div id="menu-graphicsratio" class="menu-element row">
 						<div class="menu-row col-2 bg-menu-selector d-flex justify-content-center align-items-center"><img src="./img/menu/star-selector.gif" style="display:none;"></div>
-						<div class="menu-row col d-flex justify-content-start align-items-center">
+						<div class="menu-row col d-flex justify-content-between align-items-center">
 							<span>graphicsratio:</span>
 							<select id="graphicsratio-select" name="graphicsratio" class="form-control form-control-sm control-small-width ms-5 invisible-pointer">
 								<option value="10" ${graphicsratioSelected(10, this.GRAPHICS_RATIO)}>Low</option>
@@ -235,24 +240,46 @@ export default class GaphicsClass {
 						</div>
 					</div>`;
 					menuElementContent += `
-					<div id="menu-infopanel" class="menu-element row">
+					<div id="menu-shadows" class="menu-element row">
 						<div class="menu-row col-2 bg-menu-selector d-flex justify-content-center align-items-center"><img src="./img/menu/star-selector.gif" style="display:none;"></div>
-						<div class="menu-row col d-flex justify-content-start align-items-center">
-							<span>infopanel:</span>
-							<select id="infopanel-select" name="infopanel" class="form-control form-control-sm control-small-width ms-5 invisible-pointer">
-								<option value="0">Ki</option>
-								<option value="1" ${infopanelSelected}>Be</option>
+						<div class="menu-row col d-flex justify-content-between align-items-center">
+							<span>shadows:</span>
+							<select id="shadows-select" name="shadows" data-variablename="shadowsSwitch" class="form-control form-control-sm control-small-width ms-5 invisible-pointer">
+								<option value="0">Off</option>
+								<option value="1" ${shadowsSelected}>On</option>
 							</select>
 						</div>
 					</div>`;
 					menuElementContent += `
-					<div id="menu-minimap" class="menu-element row">
+					<div id="menu-sky" class="menu-element row">
 						<div class="menu-row col-2 bg-menu-selector d-flex justify-content-center align-items-center"><img src="./img/menu/star-selector.gif" style="display:none;"></div>
-						<div class="menu-row col d-flex justify-content-start align-items-center">
-							<span>Minimap:</span>
-							<select id="minimap-select" name="minimap" class="form-control form-control-sm control-small-width ms-5 invisible-pointer">
-								<option value="0">Ki</option>
-								<option value="1" ${minimapSelected}>Be</option>
+						<div class="menu-row col d-flex justify-content-between align-items-center">
+							<span>sky:</span>
+							<select id="sky-select" name="sky" data-variablename="skySwitch" class="form-control form-control-sm control-small-width ms-5 invisible-pointer">
+								<option value="0">Off</option>
+								<option value="1" ${skySelected}>On</option>
+							</select>
+						</div>
+					</div>`;
+					menuElementContent += `
+					<div id="menu-floor" class="menu-element row">
+						<div class="menu-row col-2 bg-menu-selector d-flex justify-content-center align-items-center"><img src="./img/menu/star-selector.gif" style="display:none;"></div>
+						<div class="menu-row col d-flex justify-content-between align-items-center">
+							<span>floor:</span>
+							<select id="floor-select" name="floor" data-variablename="floorSwitch" class="form-control form-control-sm control-small-width ms-5 invisible-pointer">
+								<option value="0">Off</option>
+								<option value="1" ${floorSelected}>On</option>
+							</select>
+						</div>
+					</div>`;
+					menuElementContent += `
+					<div id="menu-infopanel" class="menu-element row">
+						<div class="menu-row col-2 bg-menu-selector d-flex justify-content-center align-items-center"><img src="./img/menu/star-selector.gif" style="display:none;"></div>
+						<div class="menu-row col d-flex justify-content-between align-items-center">
+							<span>infopanel:</span>
+							<select id="infopanel-select" name="infopanel" data-variablename="infoSwitch" class="form-control form-control-sm control-small-width ms-5 invisible-pointer">
+								<option value="0">Off</option>
+								<option value="1" ${infopanelSelected}>On</option>
 							</select>
 						</div>
 					</div>`;
@@ -327,6 +354,10 @@ export default class GaphicsClass {
 			$("#scroll-info-box-content-text").html('')
 			$("#scroll-info-box").hide()
 		}, time);
+	}
+
+	spriteDistanceCalc(sprite) {
+		return Math.sqrt(Math.pow(this.player.y - sprite.y, 2) + Math.pow(this.player.x - sprite.x, 2));
 	}
 
 	toAngle(rad) {
@@ -697,7 +728,8 @@ export default class GaphicsClass {
 		const spriteRayLength = 50;
 
 		// SPRITES DRAW
-		this.spritesClass.nearSprites.forEach(nearIndex => {
+		//this.spritesClass.nearSprites.forEach(nearIndex => {
+		this.spritesClass.sprites.forEach(nearIndex => {
 			let sprite = this.spritesClass.sprites[nearIndex]
 
 			if (typeof sprite != 'undefined' && sprite.active) {
@@ -901,7 +933,7 @@ export default class GaphicsClass {
 
 			// Simple Floor
 			if(!this.menu.floorSwitch) {
-				this.context.fillStyle = 'orange';
+				this.context.fillStyle = this.mapDataClass.floor.color;
 				this.context.fillRect(
 					this.SLIP_WIDTH + (i * this.GRID_SIZE),
 					this.player.z + (this.GAME_HEIGHT / 2) + (wallHeight / 2),
@@ -912,7 +944,7 @@ export default class GaphicsClass {
 	
 			// Simple Sky
 			if(!this.menu.skySwitch) {
-				this.context.fillStyle = 'brown';
+				this.context.fillStyle = this.mapDataClass.sky.color;
 				this.context.fillRect(
 					this.SLIP_WIDTH + (i * this.GRID_SIZE),
 					0,
@@ -926,67 +958,8 @@ export default class GaphicsClass {
 	renderScreenSprites(sprite, actualTexture) {
 		// Object Draw
 		if (sprite.active) {
-
-			// if (sprite.type == 'creature') {
-			// 	console.log(sprite);
-				
-			// }
-
-			if (sprite.type=='object' || sprite.type == 'ammo' || sprite.type == 'creature') {
-				let spriteAngle = Math.atan2(sprite.y - this.player.y, sprite.x - this.player.x);
-				spriteAngle = this.toAngle(spriteAngle)
-				
-				let isOnTheScreen = this.rays.findIndex((textureRay, i) => {
-					if (i != this.rays.length-1) {
-						let rayFirst = this.toAngle(textureRay.angle);
-						let raySecond = this.toAngle(this.rays[i+1].angle);
-						
-						// If a point falls on the line, exception handling.
-						if (rayFirst > raySecond && ( spriteAngle == 0 || (spriteAngle > 359 && spriteAngle < 360)  || (spriteAngle > 0 && spriteAngle < 0.204)) )
-							return true;
-						
-						if (spriteAngle >= rayFirst && spriteAngle <= raySecond) return true;
-						return false;
-					}
-				});
-			
-				if (isOnTheScreen !== -1) {
-					let spriteHeight = ((this.CELL_SIZE) / sprite.distance) * 1500
-					let brick_number = spriteHeight / this.GRID_SIZE
-					let color_num = spriteHeight / actualTexture.imgHeight
-					
-					// SPRITE
-					let wi = isOnTheScreen - Math.floor(brick_number / 2)
-					for(let w=0; w<brick_number; w++) {
-						if (typeof this.rays[wi] != 'undefined' && this.rays[wi].distance > sprite.distance) {
-							
-							for (let h=0; h < brick_number; h++) {
-								let colorX = Math.floor(((w * this.GRID_SIZE) / color_num))
-								let colorY = Math.floor(((h * this.GRID_SIZE) / color_num))
-								if (this.SLIP_WIDTH + (wi * this.GRID_SIZE) + this.GRID_SIZE > 0) {
-									if (actualTexture.data[colorY][colorX] != 'rgba(0, 0, 0, 0)') {
-
-										let shadowDisMod = this.calcShadowDistance(sprite.distance)
-
-										this.context.fillStyle = (this.menu.shadowsSwitch)
-										? this.colorDarkening(actualTexture.data[colorY][colorX], shadowDisMod)
-										: this.context.fillStyle = actualTexture.data[colorY][colorX]
-										
-										this.context.fillRect(
-											this.SLIP_WIDTH + (wi * this.GRID_SIZE),
-											Math.floor(this.player.z + (this.GAME_HEIGHT / 2) - ((spriteHeight / 2) + (this.calculatePercentage(spriteHeight, sprite.z))) + (h * this.GRID_SIZE)),
-											this.GRID_SIZE,
-											Math.ceil(this.GRID_SIZE)
-										);
-									}
-								}
-							}
-						}
-						wi++
-					}
-				}
 			// BLOCK SPRITE draw
-			} else if (sprite.type=='block') {
+			if (sprite.type == 'block') {
 				let checkY = Math.floor(sprite.y / this.CELL_SIZE);
 				let checkX = Math.floor(sprite.x / this.CELL_SIZE);
 				
@@ -995,23 +968,23 @@ export default class GaphicsClass {
 					let blockDistance
 					if (sprite.angle == 90) blockDistance = this.getHCrash(ray.angle, true, checkY, checkX)
 					if (sprite.angle == 0) blockDistance = this.getVCrash(ray.angle, true, checkY, checkX)
-	
+
 					if (blockDistance.wallY != undefined && blockDistance.wallX != undefined) {
-	
+						
 						this.checkDistance.push(blockDistance)	// SEGED
-	
+
 						let rayDistance = ray.distance
 						
 						let distance = (this.player.poison)
 						? blockDistance.distance 
 						: this.fixFhishEye(blockDistance.distance, blockDistance.angle, this.player.angle);
-	
+
 						let wallHeight = (this.player.poison)
 						? ((this.CELL_SIZE) / distance) * 1450 + this.poisonModValue 
 						: ((this.CELL_SIZE) / distance) * 1450;
 
 						let BRICK_SIZE = wallHeight / this.CELL_SIZE
-	
+
 						if (sprite.open_switch) {							
 							if (sprite.open_positionValue == 0) {
 								//sprite.active = true
@@ -1052,6 +1025,61 @@ export default class GaphicsClass {
 						}
 					}
 				});
+			// OBJECT, AMMO, CREATURE
+			} else if (sprite.type=='object' || sprite.type == 'ammo' || sprite.type == 'creature') {
+				let spriteAngle = Math.atan2(sprite.y - this.player.y, sprite.x - this.player.x);
+				spriteAngle = this.toAngle(spriteAngle)
+				
+				let isOnTheScreen = this.rays.findIndex((textureRay, i) => {
+					if (i != this.rays.length-1) {
+						let rayFirst = this.toAngle(textureRay.angle);
+						let raySecond = this.toAngle(this.rays[i+1].angle);
+						
+						// If a point falls on the line, exception handling.
+						if (rayFirst > raySecond && ( spriteAngle == 0 || (spriteAngle > 359 && spriteAngle < 360)  || (spriteAngle > 0 && spriteAngle < 0.204)) )
+							return true;
+						
+						if (spriteAngle >= rayFirst && spriteAngle <= raySecond) return true;
+						return false;
+					}
+				});
+			
+				if (isOnTheScreen !== -1) {
+					let spriteHeight = ((this.CELL_SIZE) / sprite.distance) * 1500
+					let brick_number = spriteHeight / this.GRID_SIZE
+					let color_num = spriteHeight / actualTexture.imgHeight
+					
+					// SPRITE
+					let wi = isOnTheScreen - Math.floor(brick_number / 2)
+					for(let w=0; w<brick_number; w++) {
+
+						if (typeof this.rays[wi] != 'undefined' && this.rays[wi].distance > sprite.distance) {
+							
+							for (let h=0; h < brick_number; h++) {
+								let colorX = Math.floor(((w * this.GRID_SIZE) / color_num))
+								let colorY = Math.floor(((h * this.GRID_SIZE) / color_num))
+								if (this.SLIP_WIDTH + (wi * this.GRID_SIZE) + this.GRID_SIZE > 0) {
+									if (actualTexture.data[colorY][colorX] != 'rgba(0, 0, 0, 0)') {
+
+										let shadowDisMod = this.calcShadowDistance(sprite.distance)
+
+										this.context.fillStyle = (this.menu.shadowsSwitch)
+										? this.colorDarkening(actualTexture.data[colorY][colorX], shadowDisMod)
+										: this.context.fillStyle = actualTexture.data[colorY][colorX]
+										
+										this.context.fillRect(
+											this.SLIP_WIDTH + (wi * this.GRID_SIZE),
+											Math.floor(this.player.z + (this.GAME_HEIGHT / 2) - ((spriteHeight / 2) + (this.calculatePercentage(spriteHeight, sprite.z))) + (h * this.GRID_SIZE)),
+											this.GRID_SIZE,
+											Math.ceil(this.GRID_SIZE)
+										);
+									}
+								}
+							}
+						}
+						wi++
+					}
+				}
 			}
 		}
 	}

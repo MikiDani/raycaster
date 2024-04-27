@@ -81,10 +81,6 @@ function checkDirection(angle, speed) {
     }
 }
 
-function spriteDistanceCalc(sprite) {
-	return Math.sqrt(Math.pow(player.y - sprite.y, 2) + Math.pow(player.x - sprite.x, 2));
-}
-
 function playerWalk() {
 	const amplitude = (Math.abs(graphicsClass.WALKINTERVAL) - graphicsClass.WALKINTERVAL) / 2;
 	const offset = (Math.abs(graphicsClass.WALKINTERVAL) + graphicsClass.WALKINTERVAL) / 2;
@@ -265,33 +261,35 @@ function moveAction(sprite, check) {
 
 function spritesCheck() {
 	// ARRANGE SPRITES
+
 	spritesClass.nearSprites.forEach((nearData) => {
-				
-		let sprite = spritesClass.sprites[nearData]		
+
+		let sprite = spritesClass.sprites[nearData]
+
 		if (typeof sprite == 'undefined') return;
 
-		sprite.distance = spriteDistanceCalc(sprite)
-
+		sprite.distance = graphicsClass.spriteDistanceCalc(sprite)
+		
+		// spritesClass.sprites = spritesClass.sprites.sort((a, b) => b.distance - a.distance)
+		
 		if (sprite.active) {
 			let getActualTexture = sprite.dirConstruction[1]	// Standard texture
 
 			// IF CREATURES
 			if (sprite.type == 'creature') {
 				
-				if(sprite.animation != false) {
-					if(!sprite.anim_function) {
-						sprite.anim_actFrame = sprite.anim_frames[0]
-						sprite.anim_function = setInterval(() => {
-							sprite.anim_actFrame++
-							if (sprite.anim_actFrame>sprite.anim_frames.length)
-								sprite.anim_actFrame = sprite.anim_frames[0]
-						}, sprite.anim_speed)
-					}
-				}
+				if(!sprite.anim_function) {
+					sprite.anim_actFrame = sprite.anim_frames[0]
+					sprite.anim_function = setInterval(() => {
+						sprite.anim_actFrame++
+						if (sprite.anim_actFrame>sprite.anim_frames.length)
+							sprite.anim_actFrame = sprite.anim_frames[0]
+					}, sprite.anim_speed)
+				}				
 
 				if(sprite.moveType == 'mode1') {
 					getActualTexture = creatureSpriteSelect(sprite)
-					moveCreature(sprite)			// !!!! HIBA !!!!
+					moveCreature(sprite)
 				}
 
 				if(sprite.moveType == 'levitation') {
@@ -408,10 +406,16 @@ async function loadindDatas() {
 	
 	// Load SKY Texture
 	let sky = mapData.skys[0]
+	mapDataClass.sky = sky
+	console.log(sky);
+	
 	await texturesClass.loadTexturesPicture(sky, 'skys', texturesClass.skyTexture)
 
 	// Load Floor Texture
 	let floor = mapData.floors[0]
+	mapDataClass.floor = floor
+	console.log(floor);
+	
 	await texturesClass.loadTexturesPicture(floor, 'floors', texturesClass.floorTexture)
 
 	// Load Wall Textures
@@ -443,12 +447,7 @@ async function loadindDatas() {
 			data.id = sprite.id
 			for (const [key, value] of Object.entries(insertSprite)) data[key] = value;
 			sprite = {...data, ...sprite}
-			if (sprite.type == 'creature') 
-			{
-				console.log('ÁÁÁÁÁÁTTTTTVÁÁÁÁLLLL');
-				
-				sprite.angle = graphicsClass.toRadians(sprite.angle)
-			}
+			if (sprite.type == 'creature') sprite.angle = graphicsClass.toRadians(sprite.angle)
 		}
 		
 		let dirConstruction = await texturesClass.loadTextureToArray(sprite.textures, dirName, texturesClass.spriteTextures)		
@@ -460,7 +459,7 @@ async function gameMenu() {
 	if(menu.menuactive) {
 		//// MENU
 		clearInterval(gamePlay.game)
-		gamePlay.game = null		
+		gamePlay.game = null
 		inputClass.moveMenuStar()
 		document.getElementById('canvas-container').style.display='none'
 		document.getElementById('loading').style.display='none'
@@ -501,10 +500,15 @@ function gameLoop() {
 
 	movePlayer(player)
 	graphicsClass.rays = graphicsClass.getRays()
-	graphicsClass.renderScreen()
 	spritesClass.sprites = spritesClass.sprites.sort((a, b) => b.distance - a.distance)
+	graphicsClass.renderScreen()
 	spritesClass.selectNearSprites()
+	
 	spritesCheck()
+	spritesClass.sprites.forEach(sprite => {
+		sprite.distance = graphicsClass.spriteDistanceCalc(sprite)
+	});
+	
 	graphicsClass.screenColorizeAction()
 
 	if (menu.mapSwitch) graphicsClass.renderMinimap(graphicsClass.rays)

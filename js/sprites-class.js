@@ -10,7 +10,7 @@ export default class SpritesClass {
         this.player = player
         this.CELL_SIZE = CELL_SIZE
         //--------------------------------
-        this.lookDistance = 25
+        this.lookDistance = 24
         this.sprites = []
         this.nearSprites = []
         this.weponsSprites = []
