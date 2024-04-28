@@ -234,8 +234,7 @@ export default class GaphicsClass {
 							<select id="graphicsratio-select" name="graphicsratio" class="form-control form-control-sm control-small-width ms-5 invisible-pointer">
 								<option value="10" ${graphicsratioSelected(10, this.GRAPHICS_RATIO)}>Low</option>
 								<option value="8" ${graphicsratioSelected(8, this.GRAPHICS_RATIO)}>Medium</option>
-								<option value="6" ${graphicsratioSelected(6, this.GRAPHICS_RATIO)}>Normal</option>
-								<option value="4" ${graphicsratioSelected(4, this.GRAPHICS_RATIO)}>Best</option>
+								<option value="6" ${graphicsratioSelected(6, this.GRAPHICS_RATIO)}>Best</option>
 							</select>
 						</div>
 					</div>`;
@@ -911,13 +910,10 @@ export default class GaphicsClass {
 
 					let actPixel = ((n + mod) % this.CELL_SIZE)
 
-					var shadowDisMod
-					if (this.menu.shadowsSwitch) {
-						shadowDisMod = (ray.vertical) ? this.calcShadowDistance(distance + 200) : this.calcShadowDistance(distance);
-					} else {
-						shadowDisMod = this.context.fillStyle = actualTexture.data[actPixel][ray.start]
-					}
-
+					var shadowDisMod = (this.menu.shadowsSwitch)
+					? (ray.vertical) ? this.calcShadowDistance(distance + 225) : this.calcShadowDistance(distance)
+					: this.context.fillStyle = actualTexture.data[actPixel][ray.start];
+					
 					this.context.fillStyle = this.colorDarkening(actualTexture.data[actPixel][ray.start], shadowDisMod)
 
 					if (this.SLIP_WIDTH + (i * this.GRID_SIZE) + this.GRID_SIZE > 0) {
@@ -1053,7 +1049,7 @@ export default class GaphicsClass {
 					let wi = isOnTheScreen - Math.floor(brick_number / 2)
 					for(let w=0; w<brick_number; w++) {
 
-						if (typeof this.rays[wi] != 'undefined' && this.rays[wi].distance > sprite.distance) {
+						if (typeof this.rays[wi] != 'undefined' && this.rays[wi].distance > sprite.distance && sprite.distance >= 50) {
 							
 							for (let h=0; h < brick_number; h++) {
 								let colorX = Math.floor(((w * this.GRID_SIZE) / color_num))

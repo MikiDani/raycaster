@@ -8,7 +8,7 @@ import TexturesClass from './textures-class.js'
 import MapDataClass from './mapdata-class.js'
 import SpritesClass from './sprites-class.js'
 
-const CLOCKSIGNAL = 15
+const CLOCKSIGNAL = 10
 const CELL_SIZE = 64
 
 const player = {
@@ -209,8 +209,6 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 }
 
 function moveCreature(creature) {
-	
-	
 	if (typeof creature.speed != 'undefined' && creature.speed != 0) {
 		
 		let cCheck = checkMoveSprite(creature)
@@ -221,22 +219,37 @@ function moveCreature(creature) {
 		let playerActX = Math.floor(player.x / CELL_SIZE)
 		let playerActY = Math.floor(player.y / CELL_SIZE)
 
-		if ((playerActX == cCheck.checkX) && (playerActY == cCheck.checkY)) {
+		if ((playerActX == cCheck.checkX) && (playerActY == cCheck.checkY) && !creature.anim_die_actFrame) {
 
 			console.log('PLAYER TALÁLAT!!!')
-			creature.move = false
-			creature.animation = false
 
-			let colorizeOption = { color: "255, 0, 0", alpha: 0.5, time: 200 }
+			creature.move = false
+			
+			if(!creature.anim_attack_function) {
+				creature.anim_attack_actFrame = `${creature.dirConstruction[0]}_E1`
+				creature.anim_attack_function = setInterval(() => {
+					creature.anim_attack_actFrame = (creature.anim_attack_actFrame == `${creature.dirConstruction[0]}_E1`) ? `${creature.dirConstruction[0]}_E2` : `${creature.dirConstruction[0]}_E1`;
+				}, creature.anim_speed)
+			}
+
+			let colorizeOption = { color: "255, 0, 0", alpha: 0.1, time: 200 }
 			graphicsClass.screenColorizeOptions(colorizeOption);
 
 			// clearInterval(creature.anim_function)
 		} else {
+			// DIE CREATURE
+			if (creature.anim_die_function) return;
+
+			// ATTACK CREATURE
+			if (creature.anim_attack_function) {
+				clearInterval(creature.anim_attack_function)
+				creature.anim_attack_function = null
+			}
+
+			// MOVE CREATURE
 			creature.move = true
-			creature.animation = true
 			creature.angle += 0.03
 		}
-
 		moveAction(creature, cCheck)
 	}
 }
@@ -244,7 +257,17 @@ function moveCreature(creature) {
 function moveAmmo(ammoSprite, nearData) {
 	if (ammoSprite.speed != 0) {
 		let ammoCheck = checkMoveSprite(ammoSprite)
-
+		let checkSprites = spritesClass.sprites.filter(obj => Math.floor(obj.y / CELL_SIZE) == ammoCheck.checkY && Math.floor(obj.x / CELL_SIZE) == ammoCheck.checkX)
+		checkSprites.forEach((findSprite) => {
+			if (findSprite.type == 'creature') {
+				findSprite.energy--
+				console.log('Energy: ' + findSprite.energy)
+				// DELETE AMMO
+				let ammoIndex = spritesClass.sprites.indexOf(ammoSprite);
+				if (ammoIndex !== -1) spritesClass.sprites.splice(ammoIndex, 1)
+			}
+		});
+		
 		if (ammoCheck.moveX == false || ammoCheck.moveY == false) ammoSprite.active = false
 
 		moveAction(ammoSprite, ammoCheck)
@@ -252,7 +275,7 @@ function moveAmmo(ammoSprite, nearData) {
 	return true
 }
 
-function moveAction(sprite, check) {	
+function moveAction(sprite, check) {
 	if (sprite.move) {
 		(check.moveX) ? sprite.x += Math.cos(sprite.angle) * sprite.speed : false;
 		(check.moveY) ? sprite.y += Math.sin(sprite.angle) * sprite.speed : false;
@@ -263,15 +286,28 @@ function spritesCheck() {
 	// ARRANGE SPRITES
 
 	spritesClass.nearSprites.forEach((nearData) => {
-
 		let sprite = spritesClass.sprites[nearData]
-
 		if (typeof sprite == 'undefined') return;
 
+		// CHECK CREATURE DIE
+		if (sprite.energy < 1) {
+			sprite.move = false
+			sprite.material = 'ghost'
+			if(!sprite.anim_die_function) {
+				clearInterval(sprite.anim_attack_function); sprite.anim_attack_function = null
+
+				sprite.anim_die_actFrame = `${sprite.dirConstruction[0]}_F1`
+				sprite.anim_die_actFrame_count = 1
+				sprite.anim_die_function = setInterval(() => {					
+					if (sprite.anim_die_actFrame_count < 4) sprite.anim_die_actFrame_count++
+					if (sprite.anim_die_actFrame == 5) return;
+					sprite.anim_die_actFrame = `${sprite.dirConstruction[0]}_F${sprite.anim_die_actFrame_count}`
+				}, sprite.anim_speed)
+			}
+		}
+
 		sprite.distance = graphicsClass.spriteDistanceCalc(sprite)
-		
-		// spritesClass.sprites = spritesClass.sprites.sort((a, b) => b.distance - a.distance)
-		
+				
 		if (sprite.active) {
 			let getActualTexture = sprite.dirConstruction[1]	// Standard texture
 
@@ -279,16 +315,23 @@ function spritesCheck() {
 			if (sprite.type == 'creature') {
 				
 				if(!sprite.anim_function) {
+					// ATTACK ANIM, DIE ANIM
+					if (sprite.anim_attack_function != null || sprite.anim_die_function != null) return;
+					// BASIC ANIM
 					sprite.anim_actFrame = sprite.anim_frames[0]
 					sprite.anim_function = setInterval(() => {
 						sprite.anim_actFrame++
 						if (sprite.anim_actFrame>sprite.anim_frames.length)
 							sprite.anim_actFrame = sprite.anim_frames[0]
 					}, sprite.anim_speed)
-				}				
+				}
 
 				if(sprite.moveType == 'mode1') {
-					getActualTexture = creatureSpriteSelect(sprite)
+					// DIE OR ATTACK OR BASIC ANIM
+					if (sprite.anim_die_function) getActualTexture = sprite.anim_die_actFrame
+					else if (sprite.anim_attack_function) getActualTexture = sprite.anim_attack_actFrame
+					else getActualTexture = creatureSpriteSelect(sprite)
+					
 					moveCreature(sprite)
 				}
 
@@ -407,14 +450,12 @@ async function loadindDatas() {
 	// Load SKY Texture
 	let sky = mapData.skys[0]
 	mapDataClass.sky = sky
-	console.log(sky);
 	
 	await texturesClass.loadTexturesPicture(sky, 'skys', texturesClass.skyTexture)
 
 	// Load Floor Texture
 	let floor = mapData.floors[0]
 	mapDataClass.floor = floor
-	console.log(floor);
 	
 	await texturesClass.loadTexturesPicture(floor, 'floors', texturesClass.floorTexture)
 
@@ -469,8 +510,6 @@ async function gameMenu() {
 	} else {
 		//// GAME
 
-		console.log(graphicsClass.GRAPHICS_RATIO);
-		
 		// LOADING
 		if (!gamePlay.gameLoaded) {
 			document.getElementById('menu-bg').style.display='none'
@@ -516,7 +555,7 @@ function gameLoop() {
 	if (menu.clearGameSwitch) clearInterval(gamePlay.game)
 
 	szamol++;
-	//if (szamol == 3) clearInterval(gamePlay.game)
+	// if (szamol == 3) clearInterval(gamePlay.game)
 
 	if (player.poison) graphicsClass.poison()
 }

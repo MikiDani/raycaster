@@ -150,6 +150,7 @@ export default class InputClass {
 		document.addEventListener('keydown', (event) => {
 			// TOGETHER
 			if (event.key == ' ') {
+
 				console.log('Space');
 
 				// Check MAP
@@ -183,12 +184,15 @@ export default class InputClass {
 					}
 
 					if (mapData.mode == 'key2') {
-						let content = `<div class="text-center"><h3 class='text-center'>You need the gold key to open this wall!</h3><div class="info-key2-container mx-auto"></div></div>`
-						this.graphicsClass.scrollInfoMaker(content, 3000)
+						if (this.player.key2) mapData.anim_switch = true;
+						else {
+							let content = `<div class="text-center"><h3 class='text-center'>You need the gold key to open this wall!</h3><div class="info-key2-container mx-auto"></div></div>`
+							this.graphicsClass.scrollInfoMaker(content, 3000)
+						}
 					}
 				}
 			
-				// Check Blocks			
+				// CHECK BLOCKS		
 				
 				// OPEN DOOR
 				let checkingBlock = this.spritesClass.sprites.find(block => block.type == 'block' && (block.mode == 'door' || block.mode == 'key1' || block.mode == 'key2')		// Type check
@@ -337,7 +341,6 @@ export default class InputClass {
 		});
 
 		$("#canvas").on('click', (event) => {
-
 			$("body").css({cursor: "crosshair"});
 			if(this.mouseMoveSwitsh) {
 				if (event.pageX > (this.graphicsClass.SCREEN_WIDTH / 2)) {
@@ -415,18 +418,10 @@ export default class InputClass {
 		});
 
 		$('#shadows-select, #sky-select, #floor-select, #infopanel-select').on('change', function(event) {
-			
 			let variableName = $(this).attr('data-variablename')
-			
-			console.log(variableName)
-
 			event.preventDefault();
 			var selectedValue = $(this).val();
-			if (selectedValue == '0') {
-				clone.menu[variableName] = false;
-			} else if (selectedValue == '1') {
-				clone.menu[variableName] = true;
-			}
+			if (selectedValue == '0') clone.menu[variableName] = false; else if (selectedValue == '1') clone.menu[variableName] = true;
 			$(this).blur();
 
 			console.log(clone.menu[variableName])
@@ -440,19 +435,16 @@ export default class InputClass {
 		} else if (selectedValue == '8') {
 			clone.graphicsClass.GRAPHICS_RATIO = 6; cloneThis.val(6)
 		} else if (selectedValue == '6') {
-			clone.graphicsClass.GRAPHICS_RATIO = 4; cloneThis.val(4)
-		} else if (selectedValue == '4') {
 			clone.graphicsClass.GRAPHICS_RATIO = 10; cloneThis.val(10)
 		}
 		cloneThis.blur()
+		// RESIZE SCREEN
 		clone.graphicsClass.gameResize()
-
 		$('#graphicsratio-select').on('change', function(event) {
 			event.preventDefault()
 			let cloneThis = $(this)
 			clone.graphicsratioSelectAction(clone, cloneThis)
 		});
-
 		clone.moveMenuStar(0)
 	}
 

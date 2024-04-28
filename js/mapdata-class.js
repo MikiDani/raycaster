@@ -34,24 +34,14 @@ export default class MapDataClass {
             || wallData.mode == 'ammo'
             || wallData.mode == 'creature') {
                 wallArray.anim_switch = wallData.anim_switch
-                wallArray.anim_function = wallData.anim_function
+                wallArray.anim_actFrame = wallData.anim_actFrame
                 wallArray.anim_speed = wallData.anim_speed
                 wallArray.anim_repeat = wallData.anim_repeat
                 wallArray.anim_repeatCount = wallData.anim_repeatCount
                 wallArray.anim_repeatEnd = wallData.anim_repeatEnd
                 wallArray.anim_startFrame = wallData.anim_startFrame
                 wallArray.anim_maxFrame = dirConstruction.length-1
-                wallArray.anim_actFrame = wallData.anim_actFrame
             }
-            if (wallData.type == 'block') {
-                wallArray.open_switch = wallData.open_switch
-                wallArray.open_function = wallData.open_function
-                wallArray.open_positionValue = wallData.open_positionValue
-            }
-            // if (wallData.type == 'creature') {
-            //     wallArray.anim_frames = wallData.anim_frames
-            //     wallArray.rotate_frames = wallData.rotate_frames
-            // }
         }        
         this.walls.push(wallArray)
     }

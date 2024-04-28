@@ -121,6 +121,15 @@ class Editor {
 		if (findSpriteIndex !== -1) this.levelData.sprites.splice(findSpriteIndex, 1)
 	}
 
+	borderDrawer(element, time, color) {
+		element.css({"background-image": "", "background-size": "" });
+		element.css('background-color', color)
+		setTimeout(function() {
+			element.css('background-color', '#0a0a0a')
+			element.addClass('brick')
+		}, time);
+	}
+
 	buttonOptions() {
 		var clone = this
 		// LOAD DATAS IN VARIABLE WHEN CLICKED TEXTURE	
@@ -157,9 +166,13 @@ class Editor {
 				}
 			}
 
+			// Player dont deleting
 			if (y == Math.floor(clone.levelData.player.y) && x == Math.floor(clone.levelData.player.x)) return;
 
 			if (clone.selectedElementData) {
+				
+				clone.borderDrawer($(this), 200, '#00800077')
+				
 				for(const [dir, filename] of Object.entries(clone.selectedElementData.textures)) {
 					$(this).css('background-image', `url(./img/${clone.objectName}/${dir}/${filename[0]}.png)`);
 					$(this).css('background-size', 'cover')
@@ -256,7 +269,9 @@ class Editor {
 				
 				// Map delete
 				clone.map[y][x] = 0
-				$(this).css("background-image","").css("background-size", "").css("border", "");
+				//$(this).css("background-image","").css("background-size", "").css("border", "");
+				clone.borderDrawer($(this), 200, '#ff000077')
+
 				// Sprite delete
 				let findSpriteIndex = levelData.sprites.findIndex(sprite => y == Math.floor(sprite.y) && x == Math.floor(sprite.x))
 				if (findSpriteIndex !== -1) levelData.sprites.splice(findSpriteIndex, 1)
