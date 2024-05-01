@@ -7,6 +7,7 @@ class Editor {
 	objects;
 	selectedElementData;
 	objectName;
+	effects;
 	constructor () {
 		this.mapSize = 64
 		this.mapContainerWidth = 4000
@@ -35,6 +36,7 @@ class Editor {
 		this.blocks = []
 		this.objects = []
 		this.creatures = []
+		this.effects = []
 
 		this.objectName = null
 		// ---------------
@@ -92,6 +94,14 @@ class Editor {
 					data.x = parseInt(x) + 0.5
 				}
 			}
+			if (!insertObject) {
+				insertObject = clone.effects.find(effect => parseInt(effect.id) == parseInt(clone.selectedElementData.id))
+				if (insertObject) {
+					insertType = 'effect'
+					data.y = parseInt(y)
+					data.x = parseInt(x)
+				}
+			}
 		}
 
 		if(typeof insertObject != 'undefined') {
@@ -121,7 +131,7 @@ class Editor {
 		if (findSpriteIndex !== -1) this.levelData.sprites.splice(findSpriteIndex, 1)
 	}
 
-	borderDrawer(element, time, color) {
+	clickedBgDrawing(element, time, color) {
 		element.css({"background-image": "", "background-size": "" });
 		element.css('background-color', color)
 		setTimeout(function() {
@@ -133,8 +143,7 @@ class Editor {
 	buttonOptions() {
 		var clone = this
 		// LOAD DATAS IN VARIABLE WHEN CLICKED TEXTURE	
-		$("#textures-selected").on('input', () => this.loadElementsDatas(this.selectedElementData.textures))
-		
+		$("#textures-selected").on('input', () => this.loadElementsData(this.selectedElementData.textures))
 		////////////////////////////////
 		// 			CLICK MAP
 		////////////////////////////////
@@ -171,15 +180,21 @@ class Editor {
 
 			if (clone.selectedElementData) {
 				
-				clone.borderDrawer($(this), 200, '#00800077')
+				clone.clickedBgDrawing($(this), 200, '#00800077')
 				
-				for(const [dir, filename] of Object.entries(clone.selectedElementData.textures)) {
-					$(this).css('background-image', `url(./img/${clone.objectName}/${dir}/${filename[0]}.png)`);
+				if (clone.selectedElementData.type == 'effect') {
+					$(this).css('background-image', `url(./img/editor/direction-${clone.selectedElementData.angle}.png)`);
 					$(this).css('background-size', 'cover')
-					$(this).css('border', 'none')
-					if (typeof clone.selectedElementData.height != 'undefined' && clone.selectedElementData.height == 'big') $(this).css('border', '3px solid gray')
-					break;
+				} else {
+					for(const [dir, filename] of Object.entries(clone.selectedElementData.textures)) {
+						$(this).css('background-image', `url(./img/${clone.objectName}/${dir}/${filename[0]}.png)`);
+						$(this).css('background-size', 'cover')
+						$(this).css('border', 'none')
+						if (typeof clone.selectedElementData.height != 'undefined' && clone.selectedElementData.height == 'big') $(this).css('border', '3px solid gray')
+						break;
+					}
 				}
+
 				let insertedData = clone.insertedOptions(clone, y, x)
 
 				function insertBlockFrame(clone, y, x, angle) {
@@ -233,7 +248,7 @@ class Editor {
 					// insert wall
 					clone.map[y][x] = insertedData.data;
 				}
-				if (insertedData && (insertedData.insertType == 'object' || insertedData.insertType == 'block' || insertedData.insertType == 'creature')) {
+				if (insertedData && (insertedData.insertType == 'object' || insertedData.insertType == 'block' || insertedData.insertType == 'creature' || insertedData.insertType == 'effect')) {
 					if (insertedData.insertType == 'block') insertBlockFrame(clone, Math.floor(insertedData.data.y), Math.floor(insertedData.data.x), clone.selectedElementData.angle)
 					delete insertedData.insertType
 					delete insertedData.dirName
@@ -270,7 +285,7 @@ class Editor {
 				// Map delete
 				clone.map[y][x] = 0
 				//$(this).css("background-image","").css("background-size", "").css("border", "");
-				clone.borderDrawer($(this), 200, '#ff000077')
+				clone.clickedBgDrawing($(this), 200, '#ff000077')
 
 				// Sprite delete
 				let findSpriteIndex = levelData.sprites.findIndex(sprite => y == Math.floor(sprite.y) && x == Math.floor(sprite.x))
@@ -423,7 +438,6 @@ class Editor {
 		if (typeof mapData.skys != 'undefined') this.levelData.skys = mapData.skys
 		if (typeof mapData.floors != 'undefined') this.levelData.floors = mapData.floors
 		this.selectedElementsBorderDraw(this)
-		
 		// Load walls
 		for (let y = 0; y < this.map.length; y++) {
 			for (let x = 0; x < this.map[0].length; x++) {
@@ -468,8 +482,13 @@ class Editor {
 					insertSprite = this.creatures.find(creatures => parseInt(creatures.id) == parseInt(sprite.id))
 					if (insertSprite) {
 						insertSprite.dirName = 'creatures';
+					} else {
+						insertSprite = this.effects.find(effects => parseInt(effects.id) == parseInt(sprite.id))
+						if (insertSprite) {
+							insertSprite.dirName = 'effects';
+						}
 					}
-				}
+				} 
 			}
 						
 			if (insertSprite) {
@@ -486,11 +505,21 @@ class Editor {
 			let y = Math.floor(sprite.y)
 			let x = Math.floor(sprite.x)
 
-			for(const [dir, filename] of Object.entries(insertSprite.textures)) {				
+			
+			
+			if (sprite.type == 'effect') {
+				console.log(sprite.type);
+				console.log(sprite.angle);
 				let mapBrickElment = $(".map-container").find(`[map-x='${x}'][map-y='${y}']`)
-				mapBrickElment.css('background-image', `url(./img/${insertSprite.dirName}/${dir}/${filename[0]}.png)`);
+				mapBrickElment.css('background-image', `url(./img/editor/direction-${sprite.angle}.png)`);
 				mapBrickElment.css('background-size', 'cover')
-				break;
+			} else {
+				for(const [dir, filename] of Object.entries(insertSprite.textures)) {				
+					let mapBrickElment = $(".map-container").find(`[map-x='${x}'][map-y='${y}']`)
+					mapBrickElment.css('background-image', `url(./img/${insertSprite.dirName}/${dir}/${filename[0]}.png)`);
+					mapBrickElment.css('background-size', 'cover')
+					break;
+				}
 			}
 		});
 	}
@@ -558,16 +587,12 @@ class Editor {
 			}
 
 			if (objectData.inputType == 'select') {
-				
 				function checkChecked(value) {
 					if (fileValue == value) return ' selected'; else return '';
 				}
 				
 				let checkDisabled = (fileKey == 'type') ? 'disabled' : '';
 				let checkBg = (fileKey == 'type') ? 'bg-disabled' : '';
-
-				console.log(checkDisabled);
-				
 
 				returnElement = `
 				<div class="data-title col-6 p-0 m-0"><span class="align-middle">${fileKey}:</span></div>
@@ -591,10 +616,8 @@ class Editor {
 		return '';
 	}
 
-	loadElementsDatas(textures) {
-
-		if (typeof this.selectedElementData != 'undefined' 
-			&& this.selectedElementData != null
+	loadElementsData(textures) {
+		if (typeof this.selectedElementData != 'undefined' && this.selectedElementData != null
 			&& typeof this.selectedElementData.player != 'undefined') return;	// Ha Player akkor már van benne adat
 
 		let data = {}
@@ -613,8 +636,7 @@ class Editor {
 			data[name] = value
 		});
 
-		if(data.id) data.id = parseInt(data.id)
-
+		if (data.id) data.id = parseInt(data.id)
 		this.selectedElementData = data
 
 		console.log('------------------');
@@ -634,10 +656,10 @@ class Editor {
 			let fileData = await connectFile.json()
 
 			function checkPicType(fileName) {
+				if (fileName.includes('wall') || fileName.includes('door')) return '-wall';
 				if (fileName.includes('sky')) return '-sky';
 				if (fileName.includes('ceiling')) return '-ceiling';
 				if (fileName.includes('floor')) return '-floor';
-				if (fileName.includes('wall')) return '-wall';
 				if (fileName.includes('block')) return '-block';
 				if (fileName.includes('object')) return '-object';
 				if (fileName.includes('creature')) return '-creature';
@@ -662,7 +684,14 @@ class Editor {
 			return fileData;
 		}
 		// Load Menu Elements
-		this.loadMenuPlayer()
+		this.loadMenuPlayer('Player orientation', 'player')
+
+		let effectsFile = await fetch(`./data/effects/effects.JSON`)
+		clone.effects = await effectsFile.json()
+
+		console.log(clone.effects);
+		
+		this.loadMenuPlayer('Creatures walking direction', 'direction')
 		
 		// Load textures
 		this.walls = await loadAction('walls')
@@ -678,22 +707,22 @@ class Editor {
 		clone.clickTexture(clone)
 	}
 
-	loadMenuPlayer() {
+	loadMenuPlayer(title, name) {
 		let angles = [0, 90, 180, 270]
-		let playerElement = `
+		let newElement = `
 		<div class="tools-title p-0 m-0">
-			<h4>Player</h4>
+			<h4>${title}</h4>
 		</div>
 		<div class="p-0 px-1 m-0">
-			<div class="textures-pic-container textures-pic-container_player p-0 m-0 mt-2">`
+			<div class="textures-pic-container textures-pic-container_${name} p-0 m-0 mt-2">`
 			angles.forEach(angle => {
-				playerElement += `
-				<img src="./img/editor/player-${angle}.png" alt="player-${angle}" data-angle="${angle}" data-player="true" class="list-pic-player p-0 m-0 me-2 mb-2 border border-primary border-0" data-name="player-${angle}" data-filename="player-${angle}.png" id="selected-player">`;
+				newElement += `
+				<img src="./img/editor/${name}-${angle}.png" alt="${name}-${angle}" data-angle="${angle}" data-${name}="true" class="list-pic-${name} p-0 m-0 me-2 mb-2 border border-primary border-0" data-name="${name}-${angle}" data-filename="${name}-${angle}.png" id="selected-${name}">`;
 			});
-			playerElement += `
+			newElement += `
 			</div>
 		</div>`;
-		$("#textures-list").append(playerElement);
+		$("#textures-list").append(newElement);
 	}
 
 	clickTexture(clone) {
@@ -710,19 +739,33 @@ class Editor {
 			if(elementName == 'skys' || elementName == 'floors') {
 				$(`.textures-pic-container_${elementName}`).find('img').addClass('border-0')
 				$(this).removeClass('border-0').addClass('border-2')
-
 				if (!clone.levelData[elementName]) clone.levelData[elementName]
-
 				clone.levelData[elementName] = []
 				clone.levelData[elementName].push(clone[elementName][elementIndex])
-				
 				return;
 			}
 
-			// WALLS, OBJECTS
-			$("[id^='selected-']").each(function() { $(this).addClass('border-0'); })
-			$(this).removeClass('border-0').addClass('border-2');
+			// Effects
+			if (elementName.includes('direction-')) {
 
+				console.log(elementName);
+				
+				if (elementName.includes('-0')) clone.selectedElementData = clone.effects.filter(effect => (effect.id == '2000'));
+				else if (elementName.includes('-90')) clone.selectedElementData = clone.effects.filter(effect => (effect.id == '2005'));
+				else if (elementName.includes('-180')) clone.selectedElementData = clone.effects.filter(effect => (effect.id == '2010'));
+				else if (elementName.includes('-270')) clone.selectedElementData = clone.effects.filter(effect => (effect.id == '2015'));
+				else {
+					console.log('NEM TALÁLT SEMMIT !!!!! VALAMI GEBASZ...');
+				}
+
+				clone.selectedElementData = clone.selectedElementData[0]
+				console.log(clone.selectedElementData);
+				
+
+				return;
+			}
+
+			// PLAYER ORIENTATION
 			if ($(this).attr('data-player') == 'true') {
 				let playerAngle = $(this).attr('data-angle')
 
@@ -732,6 +775,10 @@ class Editor {
 				}
 				return;
 			}
+
+			// WALLS, OBJECTS
+			$("[id^='selected-']").each(function() { $(this).addClass('border-0'); })
+			$(this).removeClass('border-0').addClass('border-2');
 			
 			let fileData = []
 
@@ -742,10 +789,7 @@ class Editor {
 			if (elementName == 'objects') fileData = clone.objects;
 			if (elementName == 'blocks') fileData = clone.blocks;
 			if (elementName == 'creatures') fileData = clone.creatures;
-
-			console.log(fileData);
 			
-
 			let selectedElements = `
 			<div id="selected-container" class="p-0 m-0 px-1">
 				<div class="p-2 m-0 texture-class_ border border-secondary">
@@ -779,7 +823,7 @@ class Editor {
 
 			clone.selectedElementsBorderDraw(clone)
 						
-			clone.loadElementsDatas(fileData[elementIndex].textures)
+			clone.loadElementsData(fileData[elementIndex].textures)
 		});
 	}
 

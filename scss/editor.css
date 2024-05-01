@@ -98,6 +98,13 @@ body {
   cursor: pointer;
 }
 
+.list-pic-direction {
+  width: 48px;
+}
+.list-pic-direction:hover {
+  cursor: pointer;
+}
+
 .list-pic-wall {
   width: 48px;
 }
@@ -127,14 +134,14 @@ body {
 }
 
 .list-pic-sky {
-  width: 139.2px;
+  width: 129.6px;
 }
 .list-pic-sky:hover {
   cursor: pointer;
 }
 
 .list-pic-ceiling, .list-pic-floor {
-  width: 139.2px;
+  width: 129.6px;
   height: 19px;
   background-size: cover;
   background-repeat: repeat-x;

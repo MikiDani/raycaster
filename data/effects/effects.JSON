@@ -1,0 +1,30 @@
+[
+    {
+        "id": 2000,
+        "active": true,
+        "type": "effect",
+        "mode": "direction",
+        "angle": 0
+    },
+    {
+        "id": 2005,
+        "active": true,
+        "type": "effect",
+        "mode": "direction",
+        "angle": 90
+    },
+    {
+        "id": 2010,
+        "active": true,
+        "type": "effect",
+        "mode": "direction",
+        "angle": 180
+    },
+    {
+        "id": 2015,
+        "active": true,
+        "type": "effect",
+        "mode": "direction",
+        "angle": 270
+    }
+]

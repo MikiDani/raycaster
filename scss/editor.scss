@@ -102,6 +102,13 @@ $listPicSize: 48px;
     }
 }
 
+.list-pic-direction {
+    width: $listPicSize;
+    &:hover{
+        cursor: pointer;
+    }
+}
+
 .list-pic-wall {
     width: $listPicSize;
     &:hover{
@@ -131,14 +138,14 @@ $listPicSize: 48px;
 }
 
 .list-pic-sky {
-    width: $listPicSize * 2.9;
+    width: $listPicSize * 2.7;
     &:hover{
         cursor: pointer;
     }
 }
 
 .list-pic-ceiling, .list-pic-floor {
-    width: $listPicSize * 2.9;
+    width: $listPicSize * 2.7;
     height: 19px;
     background-size: cover;
     background-repeat: repeat-x;

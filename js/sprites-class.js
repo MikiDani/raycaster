@@ -83,8 +83,8 @@ export default class SpritesClass {
         if (findAmmo) {
             let ammo = { ...findAmmo };
             ammo.active = true
-            ammo.x = this.player.x + Math.cos(this.player.angle) * 64;
-            ammo.y = this.player.y + Math.sin(this.player.angle) * 64;
+            ammo.x = this.player.x + Math.cos(this.player.angle) * 16;
+            ammo.y = this.player.y + Math.sin(this.player.angle) * 16;
             ammo.angle = this.player.angle
             this.sprites.push(ammo)
         }

@@ -22,10 +22,10 @@
         "anim_switch": true,
         "anim_frames": [1, 2, 3, 4],
         "anim_actFrame": 0,
-        "anim_speed": 150,
+        "anim_speed": 250,
         "anim_repeat": false,
         "anim_repeatCount": 0,
-        "anim_startFrame": 1,
+        "anim_startFrame": 0,
         "rotate_switch": true,
         "rotate_frames": ["B", "D", "A", "C"]
     },
@@ -55,7 +55,7 @@
         "anim_speed": 150,
         "anim_repeat": false,
         "anim_repeatCount": 0,
-        "anim_startFrame": 1,
+        "anim_startFrame": 0,
         "rotate_switch": true,
         "rotate_frames": ["B", "D", "A", "C"]
     }

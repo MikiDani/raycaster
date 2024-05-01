@@ -959,8 +959,7 @@ export default class GaphicsClass {
 				let checkY = Math.floor(sprite.y / this.CELL_SIZE);
 				let checkX = Math.floor(sprite.x / this.CELL_SIZE);
 				
-				this.rays.forEach((ray, i) => {
-									
+				this.rays.forEach((ray, i) => {				
 					let blockDistance
 					if (sprite.angle == 90) blockDistance = this.getHCrash(ray.angle, true, checkY, checkX)
 					if (sprite.angle == 0) blockDistance = this.getVCrash(ray.angle, true, checkY, checkX)
