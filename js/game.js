@@ -208,11 +208,14 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 	return pCheck;
 }
 
-function checkSpriteData(y, x, type) {
+function checkSpriteData(y, x, attr, name) {
+	y = Math.floor(y / CELL_SIZE)
+	x = Math.floor(x / CELL_SIZE)
 
-	console.log(x,y);
-	
-	return check = spritesClass.sprites.find(sprite => (sprite.type == type && y == Math.floor(sprite.y / CELL_SIZE) && x == Math.floor(sprite.x / CELL_SIZE)))
+	let check = spritesClass.sprites.find(sprite => (sprite[attr] == name && y == Math.floor(sprite.y / CELL_SIZE) && x == Math.floor(sprite.x / CELL_SIZE)))
+
+	let returnValue = (check) ? check : false;
+	return returnValue;
 }
 
 function moveCreature(creature) {
@@ -248,6 +251,13 @@ function moveCreature(creature) {
 		} else {
 			// NORMAL CREATURE WALK
 
+			// MOVE CREATURE
+			creature.move = true
+
+			// IF BLOCK DOOR
+			let checkDoor = checkSpriteData(creature.y, creature.x, 'mode', 'door')
+			if (checkDoor && checkDoor.material == 'fix') creature.angle += (Math.PI / 2)
+
 			// DELETE ATTACK CREATURE
 			if (creature.anim_attack_function) {
 				clearInterval(creature.anim_attack_function)
@@ -256,11 +266,7 @@ function moveCreature(creature) {
 	
 			// DIE CREATURE
 			if (creature.anim_die_function) return;
-	
-			// MOVE CREATURE
-			creature.move = true
-			//creature.angle += 0.05
-			
+				
 			if (!cCheck.moveY || !cCheck.moveX) {
 				creature.x = Math.floor((creature.x / CELL_SIZE)) * CELL_SIZE + (CELL_SIZE / 2)
 				creature.y = Math.floor((creature.y / CELL_SIZE)) * CELL_SIZE + (CELL_SIZE / 2)
@@ -269,13 +275,14 @@ function moveCreature(creature) {
 				if (!cCheck.moveX) creature.angle = (Math.floor(Math.random() * 2)) ? graphicsClass.toRadians(90) : graphicsClass.toRadians(270);		
 			}
 
-			//let check = checkSpriteData(cCheck.checkY, cCheck.checkX, 'effect')
-			//console.log(check);
+			// IF EFFECT
+			let checkEffect = checkSpriteData(creature.y, creature.x, 'type', 'effect')
+			if (checkEffect) if (checkEffect.mode == 'direction') {
+				if ((creature.inY >=30 && creature.inY <=34) && (creature.inX >=30 && creature.inX <=34)) creature.angle = checkEffect.angle;
+			}
 			
-
 			moveAction(creature, cCheck)
 		}
-
 	}
 }
 

@@ -637,7 +637,7 @@ export default class GaphicsClass {
 		});
 		
 		// FOV RAYS
-		if (false) {
+		if (true) {
 			rays.forEach(ray => {
 				this.context.strokeStyle = 'yellow'
 				this.context.lineWidth = 1;
@@ -653,7 +653,7 @@ export default class GaphicsClass {
 		}
 
 		// BLOCK RAYS CHECK	
-		if (false) {
+		if (true) {
 			this.checkDistance.forEach(ray => {
 				//console.log( ray.distance);
 				this.context.strokeStyle = 'lime'
@@ -696,7 +696,6 @@ export default class GaphicsClass {
 		}
 
 		// --------------------
-
 		// MEROLEGES
 		const merolegesHossz = this.PLAYER_SIZE * 5;
 	
@@ -980,14 +979,13 @@ export default class GaphicsClass {
 
 						let BRICK_SIZE = wallHeight / this.CELL_SIZE
 
-						if (sprite.open_switch) {							
-							if (sprite.open_positionValue == 0) {
-								//sprite.active = true
-								this.doorOpenOrClose(sprite, -5)
-							} else {
-								//sprite.active = true
-								this.doorOpenOrClose(sprite, 5)
-							}
+						console.log(sprite.open_switch);
+						
+
+						if (sprite.open_switch) {				
+							(sprite.open_positionValue == 0)
+							? this.doorOpenOrClose(sprite, -5)
+							: this.doorOpenOrClose(sprite, 5)
 						}
 
 						this.context.fillStyle = "rgba(0, 0, 0, 0)";
@@ -1081,17 +1079,11 @@ export default class GaphicsClass {
 
 	doorOpenOrClose(sprite, open_moveValue) {
 		if (sprite.open_function == null) {
-
 			sprite.anim_switch = true
-
 			sprite.open_function = setInterval(() => {
-				
 				sprite.open_positionValue = sprite.open_positionValue + open_moveValue
-
 				if (sprite.open_positionValue >= 0) {
-					console.log('CLOSED DOOR')
-					console.log(sprite.open_positionValue);
-
+					//console.log('CLOSED DOOR')
 					sprite.open_positionValue = 0
 					
 					clearInterval(sprite.open_function)
@@ -1105,12 +1097,10 @@ export default class GaphicsClass {
 					console.log(sprite.open_positionValue);
 
 					sprite.open_positionValue = -58
-					console.log('OPENED DOOR')
 					
 					clearInterval(sprite.open_function)
 					sprite.open_function = null
 					sprite.open_switch = false
-					//sprite.active = false
 					
 					sprite.material = 'ghost'
 				}	

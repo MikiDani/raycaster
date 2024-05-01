@@ -505,11 +505,7 @@ class Editor {
 			let y = Math.floor(sprite.y)
 			let x = Math.floor(sprite.x)
 
-			
-			
 			if (sprite.type == 'effect') {
-				console.log(sprite.type);
-				console.log(sprite.angle);
 				let mapBrickElment = $(".map-container").find(`[map-x='${x}'][map-y='${y}']`)
 				mapBrickElment.css('background-image', `url(./img/editor/direction-${sprite.angle}.png)`);
 				mapBrickElment.css('background-size', 'cover')
