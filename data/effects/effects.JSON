@@ -30,5 +30,12 @@
         "mode": "direction",
         "material": "ghost",
         "angle": 270
+    },
+    {
+        "id": 2020,
+        "active": true,
+        "type": "effect",
+        "mode": "exit",
+        "material": "ghost"
     }
 ]

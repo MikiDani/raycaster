@@ -193,6 +193,21 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 					graphicsClass.screenColorizeOptions(colorizeOption);
 					return;
 				}
+
+				// PICKUP SCROLLS
+				if (sprite.active == true && sprite.mode == 'message') {
+					sprite.active = false
+					let content = `<div class="text-center"><h3 class='text-center'>${sprite.message}</h3></div>`
+					let useButton = (sprite.time == 0) ? true : false;
+					graphicsClass.scrollInfoMaker(content, sprite.time, useButton)
+					return;
+				}
+			}
+
+			// EXIT
+			let checkExit = checkSpriteData(player.y, player.x, 'mode', 'exit')
+			if (checkExit) {
+				console.log('EXITEN ÁLLSZ ! JEE ! : )')
 			}
 		})
 
@@ -254,19 +269,38 @@ function moveCreature(creature) {
 			// MOVE CREATURE
 			creature.move = true
 
-			// IF BLOCK DOOR
-			let checkDoor = checkSpriteData(creature.y, creature.x, 'mode', 'door')
-			if (checkDoor && checkDoor.material == 'fix') creature.angle += (Math.PI / 2)
-
 			// DELETE ATTACK CREATURE
 			if (creature.anim_attack_function) {
 				clearInterval(creature.anim_attack_function)
 				creature.anim_attack_function = null
 			}
+
+			// IF FIX SPRITE
+			let checkMapSprite = checkSpriteData(creature.y, creature.x, 'type', 'object')
+			if (checkMapSprite && checkMapSprite.material == 'fix') creature.angle += (Math.PI / 2)
+
+			// IF BLOCK DOOR
+			let checkDoor = checkSpriteData(creature.y, creature.x, 'mode', 'door')
+			if (checkDoor && checkDoor.material == 'fix') creature.angle += (Math.PI / 2)
 	
 			// DIE CREATURE
 			if (creature.anim_die_function) return;
-				
+			
+			// MOVE MODES
+			if (creature.moveType == 'stay') return;
+
+			if (creature.moveType == 'levitation') {
+				creature.z = playerWalk()
+				return;
+			}			
+
+			if (creature.moveType == 'attack') {
+				let distanceX = player.x - creature.x;
+				let distanceY = player.y - creature.y;
+				creature.angle = Math.atan2(distanceY, distanceX);
+			}
+
+			// MOVE END OF WALLS
 			if (!cCheck.moveY || !cCheck.moveX) {
 				creature.x = Math.floor((creature.x / CELL_SIZE)) * CELL_SIZE + (CELL_SIZE / 2)
 				creature.y = Math.floor((creature.y / CELL_SIZE)) * CELL_SIZE + (CELL_SIZE / 2)
@@ -295,6 +329,21 @@ function moveAmmo(ammoSprite) {
 			if (findSprite.type == 'creature' && findSprite.material == 'enemy') {
 				findSprite.energy--
 				console.log('Energy: ' + findSprite.energy)
+
+				findSprite.moveType = 'attack'
+				findSprite.speed += 2
+
+				if(!findSprite.anim_demage_function) {
+					findSprite.anim_demage_actFrame = `${findSprite.dirConstruction[0]}_E3`
+					
+					findSprite.anim_demage_function = setInterval(() => {
+						console.log('Lejárt!');
+						clearInterval(findSprite.anim_demage_function)
+						findSprite.anim_demage_function = null
+						findSprite.anim_demage_actFrame = null
+					},findSprite.anim_speed)
+				}
+				
 				// DELETE AMMO
 				let ammoIndex = spritesClass.sprites.indexOf(ammoSprite);
 				if (ammoIndex !== -1) spritesClass.sprites.splice(ammoIndex, 1)
@@ -326,8 +375,10 @@ function spritesCheck() {
 			sprite.move = false
 			sprite.material = 'ghost'
 			if(!sprite.anim_die_function) {
+				clearInterval(sprite.anim_function); sprite.anim_function = null
 				clearInterval(sprite.anim_attack_function); sprite.anim_attack_function = null
-				//clearInterval(creature.anim_function); sprite.anim_die_actFrame = null	// Ezt jó lenne letörölni...
+				clearInterval(sprite.anim_damage_function); sprite.anim_damage_function = null
+				// MAJD TÖRÖLNI AZ INTERVALOKAT A KÖVETKEZŐ MAP TÖLTÉSÉNÉL!!!!				
 				sprite.anim_die_actFrame = `${sprite.dirConstruction[0]}_F1`
 				sprite.anim_die_actFrame_count = 1
 				sprite.anim_die_function = setInterval(() => {					
@@ -345,30 +396,25 @@ function spritesCheck() {
 
 			// IF CREATURES
 			if (sprite.type == 'creature') {
-				
-				if(!sprite.anim_function) {
-					// ATTACK ANIM, DIE ANIM
-					if (sprite.anim_attack_function != null || sprite.anim_die_function != null) return;
-					// BASIC ANIM
+				// CREATURE DIE
+				if (sprite.anim_die_function) getActualTexture = sprite.anim_die_actFrame
+				// CREATURE DEMAGE
+				else if (sprite.anim_demage_function) getActualTexture = sprite.anim_demage_actFrame
+				// CREATURE ATTACK
+				else if (sprite.anim_attack_function) getActualTexture = sprite.anim_attack_actFrame
+				// BASIC ANIM START
+				else if (!sprite.anim_function) {
 					sprite.anim_actFrame = sprite.anim_frames[0]
 					sprite.anim_function = setInterval(() => {
 						sprite.anim_actFrame++
 						if (sprite.anim_actFrame > sprite.anim_frames.length) sprite.anim_actFrame = sprite.anim_frames[sprite.anim_startFrame]
 					}, sprite.anim_speed)
+				// BASIC ANIM
+				} else {
+					getActualTexture = creatureSpriteSelect(sprite)
 				}
 
-				if(sprite.moveType == 'mode1') {
-					// DIE OR ATTACK OR BASIC ANIM
-					if (sprite.anim_die_function) getActualTexture = sprite.anim_die_actFrame
-					else if (sprite.anim_attack_function) getActualTexture = sprite.anim_attack_actFrame
-					else getActualTexture = creatureSpriteSelect(sprite)
-					
-					moveCreature(sprite)
-				}
-
-				if(sprite.moveType == 'levitation') {
-					sprite.z = playerWalk()
-				}
+				moveCreature(sprite)
 			}
 
 			// IF AMMO
@@ -450,30 +496,30 @@ async function loadindData() {
 		spritesClass.createSprite(ammo, dirConstruction, spritesClass.weponsSprites)
 	}
 	
-	const mapDataResponse = await fetch('./data/maps/map.JSON');
-    const mapData = await mapDataResponse.json();
-	console.log(mapData);
+	const mapDataResponse = await fetch('./data/maps/map.JSON')
+    const mapData = await mapDataResponse.json()
+	// console.log(mapData)
 	
-	const wallsDataResponse = await fetch('./data/walls/walls.JSON');
-    const wallsData = await wallsDataResponse.json();
-	console.log(wallsData);
+	const wallsDataResponse = await fetch('./data/walls/walls.JSON')
+    const wallsData = await wallsDataResponse.json()
+	// console.log(wallsData)
 
 	const blocksDataResponse = await fetch('./data/blocks/blocks.JSON');
-    const blocksData = await blocksDataResponse.json();
-	console.log(blocksData);
+    const blocksData = await blocksDataResponse.json()
+	// console.log(blocksData)
 
-	const objectsDataResponse = await fetch('./data/objects/objects.JSON');
-    const objectsData = await objectsDataResponse.json();
-	console.log(objectsData);
+	const objectsDataResponse = await fetch('./data/objects/objects.JSON')
+    const objectsData = await objectsDataResponse.json()
+	// console.log(objectsData)
 
-	const creaturesDataResponse = await fetch('./data/creatures/creatures.JSON');
-    const creaturesData = await creaturesDataResponse.json();
-	console.log(creaturesData);
+	const creaturesDataResponse = await fetch('./data/creatures/creatures.JSON')
+    const creaturesData = await creaturesDataResponse.json()
+	// console.log(creaturesData)
 
-	const effectsDataResponse = await fetch('./data/effects/effects.JSON');
-    const effectsData = await effectsDataResponse.json();
-	console.log('effectsData');
-	console.log(effectsData);
+	const effectsDataResponse = await fetch('./data/effects/effects.JSON')
+    const effectsData = await effectsDataResponse.json()
+	// console.log('effectsData')
+	// console.log(effectsData)
 	
 	player.x = mapData.player.x * CELL_SIZE
 	player.y = mapData.player.y * CELL_SIZE
@@ -520,20 +566,17 @@ async function loadindData() {
 					insertSprite = effectsData.find(effect => parseInt(effect.id) == parseInt(sprite.id))
 					if (insertSprite) { 
 						dirName = 'effects';
-						console.log('TALÁLT EFFECTET');
-						console.log(insertSprite);
 					}
 				}
 			}
 		}
+
 		if(typeof insertSprite != 'undefined') {
 			let data = {}
 			data.id = sprite.id
 			for (const [key, value] of Object.entries(insertSprite)) data[key] = value;
 			sprite = {...data, ...sprite}
 			if (sprite.type == 'creature' || sprite.type == 'effect') sprite.angle = graphicsClass.toRadians(sprite.angle)
-
-			if(sprite.type =='effect') console.log(data);
 		}
 		
 		var dirConstruction

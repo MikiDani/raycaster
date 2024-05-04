@@ -48,7 +48,6 @@
         "height": "normal",
         "active": true,
         "anim_switch": false,
-        "anim_action": "push",
         "anim_repeat": false,
         "anim_repeatCount": 0,
         "anim_repeatEnd": 9,
@@ -67,7 +66,6 @@
         "height": "normal",
         "active": true,
         "anim_switch": false,
-        "anim_action": "push",
         "anim_repeat": false,
         "anim_repeatCount": 0,
         "anim_repeatEnd": 9,
@@ -86,7 +84,6 @@
         "height": "normal",
         "active": true,
         "anim_switch": false,
-        "anim_action": "push",
         "anim_repeat": false,
         "anim_repeatCount": 0,
         "anim_repeatEnd": 9,
@@ -103,5 +100,23 @@
         "mode": "normal",
         "material": "fix",
         "height": "normal"
+    },
+    {
+        "id": 40,
+        "textures": {
+            "cellar": ["wall1-secret", "wall1-secret-a1", "wall1-secret-a2"]
+        },
+        "type": "wall",
+        "mode": "secret",
+        "material": "fix",
+        "height": "normal",
+        "active": true,
+        "anim_switch": false,
+        "anim_repeat": false,
+        "anim_repeatCount": 0,
+        "anim_repeatEnd": 9,
+        "anim_startFrame": 1,
+        "anim_actFrame": 1,
+        "anim_speed": 180
     }
 ]

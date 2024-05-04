@@ -183,13 +183,22 @@ class Editor {
 				clone.clickedBgDrawing($(this), 200, '#00800077')
 				
 				if (clone.selectedElementData.type == 'effect') {
-					$(this).css('background-image', `url(./img/editor/direction-${clone.selectedElementData.angle}.png)`);
+					let imgVal
+					if (clone.selectedElementData.mode == 'direction') imgVal = clone.selectedElementData.angle
+					if (clone.selectedElementData.mode == 'exit') imgVal = clone.selectedElementData.mode
+
+					$(this).css('background-image', `url(./img/editor/direction-${imgVal}.png)`);
 					$(this).css('background-size', 'cover')
 				} else {
 					for(const [dir, filename] of Object.entries(clone.selectedElementData.textures)) {
 						$(this).css('background-image', `url(./img/${clone.objectName}/${dir}/${filename[0]}.png)`);
 						$(this).css('background-size', 'cover')
 						$(this).css('border', 'none')
+
+						console.log(clone.selectedElementData.mode);
+						console.log($(this));
+						
+						if (clone.selectedElementData.mode == 'secret') $(this).css('border', '2px solid white')
 						if (typeof clone.selectedElementData.height != 'undefined' && clone.selectedElementData.height == 'big') $(this).css('border', '3px solid gray')
 						break;
 					}
@@ -208,11 +217,11 @@ class Editor {
 					function drawTexture(clone, y, x, obj) {
 						let loadingTexture = clone.walls.find(wall => wall.id == obj.id)
 
-						console.log(loadingTexture);
+						// console.log(loadingTexture);
 						
 						let mapBrick = $(".map-container").find(`[id^='map_'][map-y='${y}'][map-x='${x}']`);
 
-						console.log(mapBrick);
+						// console.log(mapBrick);
 						
 						for(const [dir, filename] of Object.entries(loadingTexture.textures)) {
 							mapBrick.css('background-image', `url(./img/walls/${dir}/${filename[0]}.png)`);
@@ -261,9 +270,9 @@ class Editor {
 					// insert sprite
 					clone.levelData.sprites.push(insertedData.data);
 				}
-				
-				console.log('ezt írja bele:')
-				console.log(insertedData.data)
+
+				// console.log('ezt írja bele:')
+				// console.log(insertedData.data)
 			} else {
 				alert('Nincsen kiválasztva semmi!')
 			}
@@ -284,7 +293,8 @@ class Editor {
 				
 				// Map delete
 				clone.map[y][x] = 0
-				//$(this).css("background-image","").css("background-size", "").css("border", "");
+
+				$(this).css("background-image","").css("background-size", "").css("border", "");
 				clone.clickedBgDrawing($(this), 200, '#ff000077')
 
 				// Sprite delete
@@ -421,12 +431,11 @@ class Editor {
 	async loadMap(mapfileName) {
 		const mapDataWait = await fetch(`./data/maps/${mapfileName}.JSON`)
 		const mapData = await mapDataWait.json()
-		console.log(mapData)
 
 		await new Promise(resolve => setTimeout(resolve, 300))
+		console.log('Eltelt')
 
 		// LOADING SUCCESS
-		console.log('Eltelt')
 
 		this.levelData.player.y = mapData.player.y
 		this.levelData.player.x = mapData.player.x
@@ -461,6 +470,7 @@ class Editor {
 							mapBrickElment.css('background-size', 'cover')
 							// delete loadingTexture.dirName
 							mapBrickElment.css('border', 'none')
+							if (loadingTexture.mode == 'secret') mapBrickElment.css('border', '2px solid white')
 							if (typeof loadingTexture.height != 'undefined' && loadingTexture.height == 'big') mapBrickElment.css('border', '3px solid gray');
 							break;
 						}
@@ -506,8 +516,12 @@ class Editor {
 			let x = Math.floor(sprite.x)
 
 			if (sprite.type == 'effect') {
+				let imgVal
+				if (sprite.mode == 'direction') imgVal = sprite.angle
+				if (sprite.mode == 'exit') imgVal = sprite.mode
+
 				let mapBrickElment = $(".map-container").find(`[map-x='${x}'][map-y='${y}']`)
-				mapBrickElment.css('background-image', `url(./img/editor/direction-${sprite.angle}.png)`);
+				mapBrickElment.css('background-image', `url(./img/editor/direction-${imgVal}.png)`);
 				mapBrickElment.css('background-size', 'cover')
 			} else {
 				for(const [dir, filename] of Object.entries(insertSprite.textures)) {				
@@ -559,6 +573,12 @@ class Editor {
 				returnElement = `
 				<div class="data-title col-6 p-0 m-0"><span class="align-middle">${fileKey}:</span></div>
 				<div class="data-data col-6 p-0 m-0"><input id="text_${fileKey}" name="${fileKey}" type="text" input-type="${objectData.inputType}" value="${fileValue}" id="text_${fileKey}" maxlength="50" class="form-control form-control-sm"></div>`;
+			}
+
+			if (objectData.inputType == 'textarea') {
+				returnElement = `
+				<div class="data-title col-6 p-0 m-0"><span class="align-middle">${fileKey}:</span></div>
+				<div class="data-data col-6 p-0 m-0 mb-2"><textarea name="${fileKey}" id="message_${fileKey}" input-type="${objectData.inputType}" cols="30" rows="4" class="form-control form-control-sm">${fileValue}</textarea></div>`;
 			}
 
 			if (objectData.inputType == 'array') {	// no modify
@@ -680,14 +700,11 @@ class Editor {
 			return fileData;
 		}
 		// Load Menu Elements
-		this.loadMenuPlayer('Player orientation', 'player')
+		this.loadMenuPlayer('Player orientation', 'player', false)
 
 		let effectsFile = await fetch(`./data/effects/effects.JSON`)
 		clone.effects = await effectsFile.json()
-
-		console.log(clone.effects);
-		
-		this.loadMenuPlayer('Creatures walking direction', 'direction')
+		this.loadMenuPlayer('Creatures walking direction', 'direction', true)
 		
 		// Load textures
 		this.walls = await loadAction('walls')
@@ -697,14 +714,11 @@ class Editor {
 		this.skys = await loadAction('skys')
 		this.floors = await loadAction('floors')
 
-		console.log(this.walls);
-		
-
 		clone.clickTexture(clone)
 	}
 
-	loadMenuPlayer(title, name) {
-		let angles = [0, 90, 180, 270]
+	loadMenuPlayer(title, name, exitOn) {
+		let angles = (exitOn) ? [0, 90, 180, 270, 'exit'] : [0, 90, 180, 270];
 		let newElement = `
 		<div class="tools-title p-0 m-0">
 			<h4>${title}</h4>
@@ -742,22 +756,17 @@ class Editor {
 			}
 
 			// Effects
-			if (elementName.includes('direction-')) {
-
-				console.log(elementName);
-				
+			if (elementName.includes('direction-')) {				
 				if (elementName.includes('-0')) clone.selectedElementData = clone.effects.filter(effect => (effect.id == '2000'));
 				else if (elementName.includes('-90')) clone.selectedElementData = clone.effects.filter(effect => (effect.id == '2005'));
 				else if (elementName.includes('-180')) clone.selectedElementData = clone.effects.filter(effect => (effect.id == '2010'));
 				else if (elementName.includes('-270')) clone.selectedElementData = clone.effects.filter(effect => (effect.id == '2015'));
-				else {
-					console.log('NEM TALÁLT SEMMIT !!!!! VALAMI GEBASZ...');
-				}
-
+				else if (elementName.includes('-exit')) clone.selectedElementData = clone.effects.filter(effect => (effect.id == '2020'));
+				
 				clone.selectedElementData = clone.selectedElementData[0]
+
 				console.log(clone.selectedElementData);
 				
-
 				return;
 			}
 

@@ -72,9 +72,6 @@ export default class GaphicsClass {
 		}
 
 		this.gameResize()
-
-		console.log(this.GRAPHICS_RATIO);
-		
 	}
 
 	gameResize() {
@@ -315,7 +312,7 @@ export default class GaphicsClass {
 		$("#menu-bg").append(menuElementContent)
 	}
 
-	async scrollInfoMaker(htmlElements, time) {
+	async scrollInfoMaker(htmlElements, time, useButton) {
 		var GAME_HEIGHT = this.GAME_HEIGHT
 		let imgTopUrl = "./img/menu/info-scroll-top-pix.png";
 		let imgBottomUrl = "./img/menu/info-scroll-bottom-pix.png";
@@ -330,10 +327,20 @@ export default class GaphicsClass {
 			});
 		}
 
+		var hideScrollInfoBoxAction = function() { $("#scroll-info-box-content-text").html(''); $("#scroll-info-box").hide(); }
+
 		try {
 			await Promise.all([
 				new Promise(resolve => {
+					if (useButton) htmlElements += '<div class="text-center"><button type="button" id="scroll-button" class="btn btn-primary">Ok</button></div>'
 					$("#scroll-info-box-content-text").html(htmlElements);
+
+					if (useButton) {						
+						$("#scroll-info-box-content-text").find('#scroll-button').on('click', hideScrollInfoBoxAction);
+						function handleEnterKeyPress(event) { if (event.key === "Enter") { hideScrollInfoBoxAction(); document.removeEventListener('keydown', handleEnterKeyPress) }	}
+						document.addEventListener('keydown', handleEnterKeyPress);
+					}
+
 					resolve();
 				}),
 				loadImage(imgTopUrl),
@@ -349,10 +356,8 @@ export default class GaphicsClass {
 		} catch (error) { console.error(error); }
 		
 		// Hide Info
-		setTimeout(() => {
-			$("#scroll-info-box-content-text").html('')
-			$("#scroll-info-box").hide()
-		}, time);
+		if (!useButton) setTimeout(() => hideScrollInfoBoxAction(), time);
+		
 	}
 
 	spriteDistanceCalc(sprite) {
@@ -955,8 +960,8 @@ export default class GaphicsClass {
 		if (sprite.active) {
 			// BLOCK SPRITE draw
 			if (sprite.type == 'block') {
-				let checkY = Math.floor(sprite.y / this.CELL_SIZE);
-				let checkX = Math.floor(sprite.x / this.CELL_SIZE);
+				let checkY = Math.floor(sprite.y / this.CELL_SIZE)
+				let checkX = Math.floor(sprite.x / this.CELL_SIZE)
 				
 				this.rays.forEach((ray, i) => {				
 					let blockDistance
@@ -977,10 +982,7 @@ export default class GaphicsClass {
 						? ((this.CELL_SIZE) / distance) * 1450 + this.poisonModValue 
 						: ((this.CELL_SIZE) / distance) * 1450;
 
-						let BRICK_SIZE = wallHeight / this.CELL_SIZE
-
-						console.log(sprite.open_switch);
-						
+						let BRICK_SIZE = wallHeight / this.CELL_SIZE					
 
 						if (sprite.open_switch) {				
 							(sprite.open_positionValue == 0)
@@ -1094,8 +1096,6 @@ export default class GaphicsClass {
 				}
 				
 				if (sprite.open_positionValue <= -58) {
-					console.log(sprite.open_positionValue);
-
 					sprite.open_positionValue = -58
 					
 					clearInterval(sprite.open_function)
@@ -1103,7 +1103,7 @@ export default class GaphicsClass {
 					sprite.open_switch = false
 					
 					sprite.material = 'ghost'
-				}	
+				}
 			}, 10);
 		}
 	}

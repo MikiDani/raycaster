@@ -265,7 +265,7 @@ export default class InputClass {
 					console.log(this.graphicsClass.colorCache);
 				}
 
-				if (event.ctrlKey) {  console.log('CONTROL'); this.spritesClass.startShot() }
+				if (event.ctrlKey) { this.spritesClass.startShot() }
 			}
 		});
 
