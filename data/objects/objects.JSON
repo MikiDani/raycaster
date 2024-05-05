@@ -114,7 +114,7 @@
         "type": "object",
         "mode": "message",
         "time": 3000,
-        "message": "01. Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates delectus dolore corporis fugit voluptate hic tempora odio laborum quas nisi dolor optio, error deleniti eius, deserunt soluta quibusdam atque earum? Aspernatur temporibus vero quas ab odio obcaecati distinctio doloribus, est hic atque ipsum quod assumenda voluptatibus quibusdam.",
+        "message": "Message. For time.",
         "material": "ghost",
         "z": 0
     },
@@ -127,7 +127,7 @@
         "type": "object",
         "mode": "message",
         "time": 0,
-        "message": "03. Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates delectus dolore corporis fugit voluptate hic tempora odio laborum quas nisi dolor optio, error deleniti eius, deserunt soluta quibusdam atque earum? Aspernatur temporibus vero quas ab odio obcaecati distinctio doloribus, est hic atque ipsum quod assumenda voluptatibus quibusdam.",
+        "message": "Message. Button press.",
         "material": "ghost",
         "z": 0
     }

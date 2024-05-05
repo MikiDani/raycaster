@@ -173,6 +173,16 @@ class Editor {
 					
 					return;
 				}
+
+				if (clone.selectedElementData.mode == 'exit') {
+					let mapElement = $("div.brick[style*='direction-exit.png']");
+					let searchExit = clone.levelData.sprites.filter(sprite => sprite.mode == 'exit');
+
+					if (searchExit.length != 0 || mapElement.length > 0) {
+						alert('The exit is already placed!')
+						return;
+					}
+				}
 			}
 
 			// Player dont deleting
@@ -198,7 +208,7 @@ class Editor {
 						console.log(clone.selectedElementData.mode);
 						console.log($(this));
 						
-						if (clone.selectedElementData.mode == 'secret') $(this).css('border', '2px solid white')
+						if (clone.selectedElementData.mode == 'secret') $(this).css('border', '3px solid white')
 						if (typeof clone.selectedElementData.height != 'undefined' && clone.selectedElementData.height == 'big') $(this).css('border', '3px solid gray')
 						break;
 					}
@@ -470,7 +480,7 @@ class Editor {
 							mapBrickElment.css('background-size', 'cover')
 							// delete loadingTexture.dirName
 							mapBrickElment.css('border', 'none')
-							if (loadingTexture.mode == 'secret') mapBrickElment.css('border', '2px solid white')
+							if (loadingTexture.mode == 'secret') mapBrickElment.css('border', '3px solid white')
 							if (typeof loadingTexture.height != 'undefined' && loadingTexture.height == 'big') mapBrickElment.css('border', '3px solid gray');
 							break;
 						}
@@ -553,9 +563,7 @@ class Editor {
 	loadInput(fileKey, fileValue, elementName) {
 		// Action function
 		function elementCreator(objectData, fileKey, fileValue) {
-
-			let returnElement = `<div>Még nincsen megcsinálva! ${fileKey} ${fileKey}</div>`;
-
+			let returnElement;
 			if (objectData.inputType == 'null') returnElement = ``;
 
 			if (objectData.inputType == 'hidden') {
@@ -573,12 +581,6 @@ class Editor {
 				returnElement = `
 				<div class="data-title col-6 p-0 m-0"><span class="align-middle">${fileKey}:</span></div>
 				<div class="data-data col-6 p-0 m-0"><input id="text_${fileKey}" name="${fileKey}" type="text" input-type="${objectData.inputType}" value="${fileValue}" id="text_${fileKey}" maxlength="50" class="form-control form-control-sm"></div>`;
-			}
-
-			if (objectData.inputType == 'textarea') {
-				returnElement = `
-				<div class="data-title col-6 p-0 m-0"><span class="align-middle">${fileKey}:</span></div>
-				<div class="data-data col-6 p-0 m-0 mb-2"><textarea name="${fileKey}" id="message_${fileKey}" input-type="${objectData.inputType}" cols="30" rows="4" class="form-control form-control-sm">${fileValue}</textarea></div>`;
 			}
 
 			if (objectData.inputType == 'array') {	// no modify
@@ -701,16 +703,17 @@ class Editor {
 		}
 		// Load Menu Elements
 		this.loadMenuPlayer('Player orientation', 'player', false)
-
-		let effectsFile = await fetch(`./data/effects/effects.JSON`)
-		clone.effects = await effectsFile.json()
-		this.loadMenuPlayer('Creatures walking direction', 'direction', true)
 		
 		// Load textures
 		this.walls = await loadAction('walls')
 		this.blocks = await loadAction('blocks')
 		this.objects = await loadAction('objects')
 		this.creatures = await loadAction('creatures')
+
+		let effectsFile = await fetch(`./data/effects/effects.JSON`)
+		clone.effects = await effectsFile.json()
+		this.loadMenuPlayer('Creatures walking direction', 'direction', true)
+
 		this.skys = await loadAction('skys')
 		this.floors = await loadAction('floors')
 

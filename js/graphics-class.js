@@ -658,7 +658,7 @@ export default class GaphicsClass {
 		}
 
 		// BLOCK RAYS CHECK	
-		if (true) {
+		if (false) {
 			this.checkDistance.forEach(ray => {
 				//console.log( ray.distance);
 				this.context.strokeStyle = 'lime'
@@ -685,7 +685,7 @@ export default class GaphicsClass {
 		)
 	
 		// PLAYER RAY
-		if (true) {
+		if (false) {
 			const rayLength = this.PLAYER_SIZE * 5;
 		
 			this.context.strokeStyle = 'orange'
@@ -731,8 +731,7 @@ export default class GaphicsClass {
 		const spriteRayLength = 50;
 
 		// SPRITES DRAW
-		//this.spritesClass.nearSprites.forEach(nearIndex => {
-		this.spritesClass.sprites.forEach(nearIndex => {
+		this.spritesClass.nearSprites.forEach(nearIndex => {
 			let sprite = this.spritesClass.sprites[nearIndex]
 
 			if (typeof sprite != 'undefined' && sprite.active) {
@@ -744,7 +743,7 @@ export default class GaphicsClass {
 					this.SPRITE_SIZE,
 				)
 		
-				// SPRITE RAY	
+				// SPRITE RAY
 				this.context.strokeStyle = 'deeppink'
 				this.context.lineWidth = 1;
 				this.context.beginPath()

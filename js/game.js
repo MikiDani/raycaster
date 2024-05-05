@@ -279,9 +279,13 @@ function moveCreature(creature) {
 			let checkMapSprite = checkSpriteData(creature.y, creature.x, 'type', 'object')
 			if (checkMapSprite && checkMapSprite.material == 'fix') creature.angle += (Math.PI / 2)
 
-			// IF BLOCK DOOR
+			// IF DOOR
 			let checkDoor = checkSpriteData(creature.y, creature.x, 'mode', 'door')
 			if (checkDoor && checkDoor.material == 'fix') creature.angle += (Math.PI / 2)
+	
+			// IF BLOCK
+			let checkBlock = checkSpriteData(creature.y, creature.x, 'type', 'block')
+			if (checkBlock && checkBlock.mode != 'door') creature.angle += (Math.PI / 2)
 	
 			// DIE CREATURE
 			if (creature.anim_die_function) return;
@@ -294,19 +298,16 @@ function moveCreature(creature) {
 				return;
 			}			
 
-			if (creature.moveType == 'attack') {
-				let distanceX = player.x - creature.x;
-				let distanceY = player.y - creature.y;
-				creature.angle = Math.atan2(distanceY, distanceX);
-			}
+			// MOVE CREATURE
+			if (creature.moveType == 'patrol') {
+				if (!cCheck.moveY || !cCheck.moveX) {
+					// CENTER CREATURE
+					creature.x = Math.floor((creature.x / CELL_SIZE)) * CELL_SIZE + (CELL_SIZE / 2)
+					creature.y = Math.floor((creature.y / CELL_SIZE)) * CELL_SIZE + (CELL_SIZE / 2)
 
-			// MOVE END OF WALLS
-			if (!cCheck.moveY || !cCheck.moveX) {
-				creature.x = Math.floor((creature.x / CELL_SIZE)) * CELL_SIZE + (CELL_SIZE / 2)
-				creature.y = Math.floor((creature.y / CELL_SIZE)) * CELL_SIZE + (CELL_SIZE / 2)
-
-				if (!cCheck.moveY) creature.angle = (Math.floor(Math.random() * 2)) ? graphicsClass.toRadians(180) : graphicsClass.toRadians(0);
-				if (!cCheck.moveX) creature.angle = (Math.floor(Math.random() * 2)) ? graphicsClass.toRadians(90) : graphicsClass.toRadians(270);		
+					if (!cCheck.moveY) creature.angle = (Math.floor(Math.random() * 2)) ? graphicsClass.toRadians(180) : graphicsClass.toRadians(0);
+					if (!cCheck.moveX) creature.angle = (Math.floor(Math.random() * 2)) ? graphicsClass.toRadians(90) : graphicsClass.toRadians(270);		
+				}
 			}
 
 			// IF EFFECT
@@ -315,7 +316,26 @@ function moveCreature(creature) {
 				if ((creature.inY >=30 && creature.inY <=34) && (creature.inX >=30 && creature.inX <=34)) creature.angle = checkEffect.angle;
 			}
 			
-			moveAction(creature, cCheck)
+			// IF ATTACK CREATURE
+			if (creature.moveType == 'attack') {
+				let distanceX = player.x - creature.x;
+				let distanceY = player.y - creature.y;
+				creature.angle = Math.atan2(distanceY, distanceX);
+
+				if (!cCheck.moveX && !((creature.inY >=32 && creature.inY <=32) && cCheck.moveY)) {
+					cCheck.moveY = false
+				} 
+				if (!cCheck.moveY && !((creature.inX >=32 && creature.inX <=32) && cCheck.moveX)) {
+					cCheck.moveX = false
+				}
+
+				if (!cCheck.moveY && !cCheck.moveX) {
+					creature.moveType = 'patrol'
+					creature.speed = 3
+				}
+			}
+
+			moveAction(creature, cCheck)			
 		}
 	}
 }

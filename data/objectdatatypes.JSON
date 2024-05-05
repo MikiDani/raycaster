@@ -18,7 +18,7 @@
                                                            "blocks": ["fix", "ghost", "health-plus", "health-minus"],
                                                            "creatures": ["enemy", "fix", "ghost"] },
     { "name": "height",             "inputType": "select", "walls": ["normal", "big"] },
-    { "name": "message",            "inputType": "textarea" },
+    { "name": "message",            "inputType": "text" },
     { "name": "time",               "inputType": "number" },
     { "name": "animation",          "inputType": "boolean" },
     { "name": "x",                  "inputType": "number" },
