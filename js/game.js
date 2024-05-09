@@ -31,7 +31,7 @@ const menu = {
 	optionsActive: false,
 	clearGameSwitch: false,
 	infoSwitch: false,
-	mapSwitch: false,
+	mapSwitch: true,
 	shadowsSwitch: true,
 	spriteShadowsSwitch: true,
 	mouseSwitch: true,
@@ -49,6 +49,8 @@ var gamePlay = {
 var check = {
 	playerCheckX: 0,
 	playerCheckY: 0,
+	playerCheckX2: 0,
+	playerCheckY2: 0,
 	creatureCheckX: null,
 	creatureCheckY: null,
 }
@@ -59,7 +61,8 @@ var keyPressed = {};
 
 function checkDirection(angle, speed) {
     angle = graphicsClass.toRadians(angle);
-    let sign = (speed > 0) ? 1 : -1;
+    // let sign = (speed > 0) ? 1 : -1;			// !!!
+    let sign = 1;
     if (angle >= 0 && angle < Math.PI / 8) {
         return { y: 0, x: 1 * sign };      			// Right
     } else if (angle >= Math.PI / 8 && angle < 3 * Math.PI / 8) {
@@ -117,8 +120,10 @@ function checkMoveSprite(spriteObj) {
 
 	let spriteObjAngleDirection = checkDirection(graphicsClass.toAngle(spriteObj.angle), spriteObj.speed)
 
-	let checkX = check.spriteObjCheckX = actX + spriteObjAngleDirection.x
-	let checkY = check.spriteObjCheckY = actY + spriteObjAngleDirection.y
+	console.log(spriteObjAngleDirection);
+	
+	let checkX = actX + spriteObjAngleDirection.x
+	let checkY = actY + spriteObjAngleDirection.y
 
 	return {
 		moveX: moveX,
@@ -130,96 +135,105 @@ function checkMoveSprite(spriteObj) {
 
 function movePlayer(bringPlayer, inputStrafeCheck) {
 	var pCheck = false
-	if (bringPlayer.speed != 0 || inputStrafeCheck) {
-		let playerActX = Math.floor(bringPlayer.x / CELL_SIZE)
-		let playerActY = Math.floor(bringPlayer.y / CELL_SIZE)
+	
+	let playerActX = Math.floor(bringPlayer.x / CELL_SIZE)
+	let playerActY = Math.floor(bringPlayer.y / CELL_SIZE)
 
-		pCheck = checkMoveSprite(bringPlayer)
+	pCheck = checkMoveSprite(bringPlayer)
 
-		// PLAYER WAY ATMOSPHERE (DOOR)
-		check.playerCheckX = pCheck.checkX
-		check.playerCheckY = pCheck.checkY
+	// PLAYER WAY ATMOSPHERE (DOOR)
+	check.playerCheckX = pCheck.checkX
+	check.playerCheckY = pCheck.checkY
 
-		// Controlling the sprite relative to the player's movement.
-		spritesClass.sprites.forEach((sprite,i) => {
+	// Controlling the sprite relative to the player's movement.
+	spritesClass.sprites.forEach((sprite,i) => {
 
-			let spriteActX = Math.floor(sprite.x / CELL_SIZE)
-			let spriteActY = Math.floor(sprite.y / CELL_SIZE)
+		let spriteActX = Math.floor(sprite.x / CELL_SIZE)
+		let spriteActY = Math.floor(sprite.y / CELL_SIZE)
 
-			// WAY PLAYER BRICK
-			if ((pCheck.checkX == spriteActX) && (pCheck.checkY == spriteActY)) {
-				console.log('SPRITE A KÖVETKEZŐ!!!')
-				if (sprite.material == 'ghost') return;
-				
-				// CRASH AND STOP PLAYER
-				pCheck.moveX = false
-				pCheck.moveY = false
+		// WAY PLAYER BRICK
+		if ((pCheck.checkX == spriteActX) && (pCheck.checkY == spriteActY)) {
+			console.log('SPRITE A KÖVETKEZŐ!!!')
+			if (sprite.material == 'ghost') return;
+			
+			// CRASH AND STOP PLAYER
+			pCheck.moveX = false
+			pCheck.moveY = false
 
-				let colorizeOption = { color: "0, 255, 0", alpha: 0.1, time: 100 }
+			let colorizeOption = { color: "0, 255, 0", alpha: 0.1, time: 100 }
+			graphicsClass.screenColorizeOptions(colorizeOption);
+		}
+
+		// ACTUAL PLAYER BRICK
+		if ((spriteActX == playerActX) && (spriteActY == playerActY)) {
+
+			// PICKUP COINS
+			if (sprite.active == true && sprite.mode.includes("coin")) {
+				sprite.active = false
+				bringPlayer.score = parseInt(bringPlayer.score) + parseInt(sprite.value)
+				console.log('PICK UP COIN!!!' + bringPlayer.score)
+				// COLORIZE SCREEN
+				let colorizeOption = {}
+				if (sprite.mode=='coin1') colorizeOption = { color: "255, 180, 50", alpha: 0.5, time: 200 }
+				if (sprite.mode=='coin2') colorizeOption = { color: "255, 255, 255", alpha: 0.5, time: 200 }
+				if (sprite.mode=='coin3') colorizeOption = { color: "200, 100, 0", alpha: 0.5, time: 200 }
 				graphicsClass.screenColorizeOptions(colorizeOption);
+				return;
+			}
+			
+			// PICKUP KEYS
+			if (sprite.active == true && sprite.mode.includes("key")) {
+				sprite.active = false
+				let colorizeOption = {}
+				if (sprite.mode=='key1') {
+					bringPlayer.key1 = true
+					console.log('PICK UP cellar KEY1')
+					colorizeOption = { color: "255, 255, 255", alpha: 0.5, time: 200 }
+				}
+				if (sprite.mode=='key2') {
+					bringPlayer.key2 = true
+					console.log('PICK UP cellar KEY2')
+					colorizeOption = { color: "255, 180, 50", alpha: 0.5, time: 200 }
+				}
+				graphicsClass.screenColorizeOptions(colorizeOption);
+				return;
 			}
 
-			// ACTUAL PLAYER BRICK
-			if ((spriteActX == playerActX) && (spriteActY == playerActY)) {
-
-				// PICKUP COINS
-				if (sprite.active == true && sprite.mode.includes("coin")) {
-					sprite.active = false
-					bringPlayer.score = parseInt(bringPlayer.score) + parseInt(sprite.value)
-					console.log('PICK UP COIN!!!' + bringPlayer.score)
-					// COLORIZE SCREEN
-					let colorizeOption = {}
-					if (sprite.mode=='coin1') colorizeOption = { color: "255, 180, 50", alpha: 0.5, time: 200 }
-					if (sprite.mode=='coin2') colorizeOption = { color: "255, 255, 255", alpha: 0.5, time: 200 }
-					if (sprite.mode=='coin3') colorizeOption = { color: "200, 100, 0", alpha: 0.5, time: 200 }
-					graphicsClass.screenColorizeOptions(colorizeOption);
-					return;
-				}
-				
-				// PICKUP KEYS
-				if (sprite.active == true && sprite.mode.includes("key")) {
-					sprite.active = false
-					let colorizeOption = {}
-					if (sprite.mode=='key1') {
-						bringPlayer.key1 = true
-						console.log('PICK UP cellar KEY1')
-						colorizeOption = { color: "255, 255, 255", alpha: 0.5, time: 200 }
-					}
-					if (sprite.mode=='key2') {
-						bringPlayer.key2 = true
-						console.log('PICK UP cellar KEY2')
-						colorizeOption = { color: "255, 180, 50", alpha: 0.5, time: 200 }
-					}
-					graphicsClass.screenColorizeOptions(colorizeOption);
-					return;
-				}
-
-				// PICKUP SCROLLS
-				if (sprite.active == true && sprite.mode == 'message') {
-					sprite.active = false
-					let content = `<div class="text-center"><h3 class='text-center'>${sprite.message}</h3></div>`
-					let useButton = (sprite.time == 0) ? true : false;
-					graphicsClass.scrollInfoMaker(content, sprite.time, useButton)
-					return;
-				}
+			// PICKUP SCROLLS
+			if (sprite.active == true && sprite.mode == 'message') {
+				sprite.active = false
+				let content = `<div class="text-center"><h3 class='text-center'>${sprite.message}</h3></div>`
+				let useButton = (sprite.time == 0) ? true : false;
+				graphicsClass.scrollInfoMaker(content, sprite.time, useButton)
+				return;
 			}
+		}
 
-			// EXIT
-			let checkExit = checkSpriteData(player.y, player.x, 'mode', 'exit')
-			if (checkExit) {
-				console.log('EXITEN ÁLLSZ ! JEE ! : )')
-			}
-		})
+		// EXIT
+		let checkExit = checkSpriteData(player.y, player.x, 'mode', 'exit')
+		if (checkExit) {
+			console.log('EXITEN ÁLLSZ ! JEE ! : )')
+		}
+	})
 
+	if (false) {
 		// 45° CHECK
 		let psPlayerX = Math.floor((bringPlayer.x + Math.cos(bringPlayer.angle) * bringPlayer.speed) / CELL_SIZE)
 		let psPlayerY = Math.floor((bringPlayer.y + Math.sin(bringPlayer.angle) * bringPlayer.speed) / CELL_SIZE)
 		if (mapDataClass.map[psPlayerY][psPlayerX]) { pCheck.moveX = false; pCheck.moveY = false; }
 
+		check.playerCheckY2 = psPlayerY
+		check.playerCheckX2 = psPlayerX
+	}
+
+
+	if (bringPlayer.speed != 0 || inputStrafeCheck) {
+
 		moveAction(bringPlayer, pCheck)
-		
 		bringPlayer.z = playerWalk()
 	}
+
+
 	return pCheck;
 }
 

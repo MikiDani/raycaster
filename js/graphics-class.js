@@ -766,6 +766,15 @@ export default class GaphicsClass {
 			cellSize,
 		);
 
+		// CHECK Player BRICK2
+		this.context.fillStyle = 'red'
+		this.context.fillRect(
+			this.MINIMAP_X + (this.check.playerCheckX2 * cellSize),
+			this.MINIMAP_Y + (this.check.playerCheckY2 * cellSize),
+			cellSize,
+			cellSize,
+		);
+
 		// CHECK Creatures BRICK
 		this.context.fillStyle = '#FFA50055'
 		this.context.fillRect(
