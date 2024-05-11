@@ -766,14 +766,48 @@ export default class GaphicsClass {
 			cellSize,
 		);
 
-		// CHECK Player BRICK2
-		this.context.fillStyle = 'red'
+		// CHECK Player BRICK2	RED
+		this.context.fillStyle = '#ff000055'
 		this.context.fillRect(
 			this.MINIMAP_X + (this.check.playerCheckX2 * cellSize),
 			this.MINIMAP_Y + (this.check.playerCheckY2 * cellSize),
 			cellSize,
 			cellSize,
 		);
+
+		// CHECK Player BRICK3	BLUE
+		this.context.fillStyle = '#00ff0055'
+		this.context.fillRect(
+			this.MINIMAP_X + (this.check.playerCheckX3 * cellSize),
+			this.MINIMAP_Y + (this.check.playerCheckY3 * cellSize),
+			cellSize,
+			cellSize,
+		);
+
+		if (this.check.playerCheckX4 != null) {
+			// CHECK Player BRICK4	BLUE
+			this.context.fillStyle = 'orange'
+			this.context.fillRect(
+				this.MINIMAP_X + (this.check.playerCheckX4 * cellSize),
+				this.MINIMAP_Y + (this.check.playerCheckY4 * cellSize),
+				cellSize,
+				cellSize,
+			);
+		}
+
+		if(this.check.playerCheckY5 != null) {
+			// CHECK Player BRICK5	BLUE
+			this.context.fillStyle = 'olive'
+			this.context.fillRect(
+				this.MINIMAP_X + (this.check.playerCheckX5 * cellSize),
+				this.MINIMAP_Y + (this.check.playerCheckY5 * cellSize),
+				cellSize,
+				cellSize,
+			);
+		}
+
+
+		//--
 
 		// CHECK Creatures BRICK
 		this.context.fillStyle = '#FFA50055'

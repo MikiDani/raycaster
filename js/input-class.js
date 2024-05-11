@@ -22,6 +22,33 @@ export default class InputClass {
 		this.loadInputs()
 		this.moveMenuStar()
 	}
+
+	checkDirection(angle, speed) {
+		angle = this.graphicsClass.toRadians(angle);
+		let sign = (speed > 0) ? 1 : -1;
+		//let sign = 1;
+		if (angle >= 0 && angle < Math.PI / 8) {
+			return { y: 0, x: 1 * sign, way: 'right', sign: sign };      				// Right
+		} else if (angle >= Math.PI / 8 && angle < 3 * Math.PI / 8) {
+			return { y: 1 * sign, x: 1 * sign, way: 'right-down', sign: sign };      	// Right-Down
+		} else if (angle >= 3 * Math.PI / 8 && angle < 5 * Math.PI / 8) {
+			return { y: 1 * sign, x: 0, way: 'down', sign: sign };      				// Down
+		} else if (angle >= 5 * Math.PI / 8 && angle < 7 * Math.PI / 8) {
+			return { y: 1 * sign, x: -1 * sign, way: 'left-down', sign: sign };      	// Left-Down
+		} else if (angle >= 7 * Math.PI / 8 && angle < 9 * Math.PI / 8) {
+			return { y: 0, x: -1 * sign, way: 'left', sign: sign };      				// Left
+		} else if (angle >= 9 * Math.PI / 8 && angle < 11 * Math.PI / 8) {
+			return { y: -1 * sign, x: -1 * sign, way: 'left-up', sign: sign };      	// Left-Up
+		} else if (angle >= 11 * Math.PI / 8 && angle < 13 * Math.PI / 8) {
+			return { y: -1 * sign, x: 0, way: 'up', sign: sign };      					// Up
+		} else if (angle >= 13 * Math.PI / 8 && angle < 15 * Math.PI / 8) {
+			return { y: -1 * sign, x: 1 * sign, way: 'right-up', sign: sign };   		// Up-Right
+		} else {
+			return { y: 0, x: 1 * sign, way: 'right-up-default', sign: sign };			// Up-Right-Default
+		}
+	}
+
+	
 	
 	menuGameJumpAction() {
 		this.menu.menuactive = !this.menu.menuactive;
