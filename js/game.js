@@ -31,7 +31,7 @@ const menu = {
 	optionsActive: false,
 	clearGameSwitch: false,
 	infoSwitch: false,
-	mapSwitch: true,
+	mapSwitch: false,
 	shadowsSwitch: true,
 	spriteShadowsSwitch: true,
 	mouseSwitch: true,
@@ -74,77 +74,79 @@ function playerWalk() {
 	return Math.floor(value);
 }
 
-function checkMoveSprite(spriteObj) {
+function checkMoveSprite(spriteObj, type = null, inputStrafeCheck = null) {
+
 	let actX = Math.floor(spriteObj.x / CELL_SIZE)
 	let actY = Math.floor(spriteObj.y / CELL_SIZE)
 	spriteObj.inX =  Math.floor(spriteObj.x - (actX * CELL_SIZE))
 	spriteObj.inY =  Math.floor(spriteObj.y - (actY * CELL_SIZE))
+
+	let soAngleDirection = []
+
+	let moveX = true
+	let moveY = true
+	let pseudoMoveX = true
+	let pseudoMoveY = true
+	var direction = null
 		
 	let firstAngleDirection = inputClass.checkDirection(graphicsClass.toAngle(spriteObj.angle), spriteObj.speed)
 	
-	let soAngleDirection = []
-		
-	if(firstAngleDirection.way == 'right' || firstAngleDirection.way == 'right-up-default') {
+	if(firstAngleDirection.way == 'right') {
 		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, blockX: true, blockY: false}
-		soAngleDirection[1] = {x: actX, y: actY - 1, blockX: false, blockY: true}
-		soAngleDirection[2] = {x: actX, y: actY + 1, blockX: false, blockY: true}
+		soAngleDirection[1] = {x: actX, y: actY - 1, blockX: false, blockY: true, direction: 'up'}
+		soAngleDirection[2] = {x: actX, y: actY + 1, blockX: false, blockY: true, direction: 'down'}
 	} else
 	if(firstAngleDirection.way == 'right-down') {
-		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, blockX: false, blockY: false} // !! Y
+		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, blockX: false, blockY: false, direction: 'corner'}
 		soAngleDirection[1] = {x: soAngleDirection[0].x, y: soAngleDirection[0].y + (- 1 * firstAngleDirection.sign), blockX: true, blockY: false}
 		soAngleDirection[2] = {x: soAngleDirection[0].x  + (- 1 * firstAngleDirection.sign), y: soAngleDirection[0].y, blockX: false , blockY: true}
 	} else
 	if(firstAngleDirection.way == 'down') {
 		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, blockX: false, blockY: true}
-		soAngleDirection[1] = {x: actX + 1, y: actY, blockX: true, blockY: false}
-		soAngleDirection[2] = {x: actX - 1, y: actY, blockX: true, blockY: false}
+		soAngleDirection[1] = {x: actX + 1, y: actY, blockX: true, blockY: false, direction: 'right'}
+		soAngleDirection[2] = {x: actX - 1, y: actY, blockX: true, blockY: false, direction: 'left'}
 	} else
 	if(firstAngleDirection.way == 'left-down') {
-		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, blockX: false, blockY: false} //  !! Y
+		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, blockX: false, blockY: false, direction: 'corner'}
 		soAngleDirection[1] = {x: soAngleDirection[0].x, y: soAngleDirection[0].y + (- 1 * firstAngleDirection.sign), blockX: true, blockY: false}
 		soAngleDirection[2] = {x: soAngleDirection[0].x  - (- 1 * firstAngleDirection.sign), y: soAngleDirection[0].y, blockX: false, blockY: true}
 	} else
 	if(firstAngleDirection.way == 'left') {
 		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, blockX: true, blockY: false}
-		soAngleDirection[1] = {x: actX, y: actY - 1, blockX: false, blockY: true}
-		soAngleDirection[2] = {x: actX, y: actY + 1, blockX: false, blockY: true}
+		soAngleDirection[1] = {x: actX, y: actY - 1, blockX: false, blockY: true, direction: 'up'}
+		soAngleDirection[2] = {x: actX, y: actY + 1, blockX: false, blockY: true, direction: 'down'}
 	} else
 	if(firstAngleDirection.way == 'left-up') {
-		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, blockX: false, blockY: false} // !! Y
-		soAngleDirection[1] = {x: soAngleDirection[0].x, y: soAngleDirection[0].y - (- 1 * firstAngleDirection.sign), blockX: true, blockY: false}
-		soAngleDirection[2] = {x: soAngleDirection[0].x  - (- 1 * firstAngleDirection.sign), y: soAngleDirection[0].y, blockX: false, blockY: true}
+		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, blockX: false, blockY: false, direction: 'corner'}
+		soAngleDirection[1] = {x: soAngleDirection[0].x, y: soAngleDirection[0].y - (- 1 * firstAngleDirection.sign), blockX: true, blockY: false, direction: 'left'}
+		soAngleDirection[2] = {x: soAngleDirection[0].x  - (- 1 * firstAngleDirection.sign), y: soAngleDirection[0].y, blockX: false, blockY: true, direction: 'up'}
 	} else
 	if(firstAngleDirection.way == 'up') {
 		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, blockX: false, blockY: true}
-		soAngleDirection[1] = {x: actX + 1, y: actY, blockX: true, blockY: false}
-		soAngleDirection[2] = {x: actX - 1, y: actY, blockX: true, blockY: false}
+		soAngleDirection[1] = {x: actX + 1, y: actY, blockX: true, blockY: false, direction: 'right'}
+		soAngleDirection[2] = {x: actX - 1, y: actY, blockX: true, blockY: false, direction: 'left'}
 	} else
 	if(firstAngleDirection.way == 'right-up') {
-		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, blockX: false, blockY: false} // !! Y
+		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, blockX: false, blockY: false, direction: 'corner'}
 		soAngleDirection[1] = {x: soAngleDirection[0].x, y: soAngleDirection[0].y - (- 1 * firstAngleDirection.sign), blockX: true, blockY: false}
 		soAngleDirection[2] = {x: soAngleDirection[0].x  + (- 1 * firstAngleDirection.sign), y: soAngleDirection[0].y, blockX: false, blockY: true}
 	}
 
-	check.playerCheckY = soAngleDirection[0].y
-	check.playerCheckX = soAngleDirection[0].x
-
-	check.playerCheckY2 = soAngleDirection[1].y
-	check.playerCheckX2 = soAngleDirection[1].x
-
-	check.playerCheckY3 = soAngleDirection[2].y
-	check.playerCheckX3 = soAngleDirection[2].x
-		
 	let checkX = soAngleDirection[0].x
 	let checkY = soAngleDirection[0].y
+
+	if (type == 'player') {
+		check.playerCheckY = soAngleDirection[0].y
+		check.playerCheckX = soAngleDirection[0].x
 	
-	let moveX = true
-	let moveY = true
-
-	let pseudoMoveX = true
-	let pseudoMoveY = true
-
+		check.playerCheckY2 = soAngleDirection[1].y
+		check.playerCheckX2 = soAngleDirection[1].x
+	
+		check.playerCheckY3 = soAngleDirection[2].y
+		check.playerCheckX3 = soAngleDirection[2].x
+	}
+	
 	soAngleDirection.forEach(brick => {
-		console.log(brick);
 
 		let checkMap = mapDataClass.map[brick.y][brick.x] != 0
 
@@ -156,52 +158,70 @@ function checkMoveSprite(spriteObj) {
 
 		let checkCreatures = checkSpriteData(brick.y, brick.x, 'type', 'creature')
 		let checkCreaturesValue = (checkCreatures && checkCreatures.material != 'ghost') ? true : false;
-	
-
-		if(checkMap || checkBlockValue || checkObjectValue || checkCreaturesValue) {
-			if(brick.blockX == true) pseudoMoveX = false
+		
+		if (checkMap) {
 			if(brick.blockY == true) pseudoMoveY = false
+			if(brick.blockX == true) pseudoMoveX = false
 		}
-		
-		let mapValue = (mapDataClass.map[brick.y][brick.x]) ? 1 : 0;
-		console.log(`map[${brick.y}][${brick.x}] : ${mapValue}`);
 
-		
+		if (checkBlockValue || checkObjectValue || checkCreaturesValue) {
+			
+			if (inputStrafeCheck) {	moveY = false; moveX = false; player.speed = 0;	}
+
+			if(typeof brick.direction != 'undefined') direction = brick.direction
+			console.log('firstAngleDirection: ' + firstAngleDirection.way)
+
+			if(spriteObj.inY >= CELL_SIZE - inputClass.WALL_DISTANCE && firstAngleDirection.way.includes('down')) {
+				if(brick.blockY == true) pseudoMoveY = false
+				if(direction == 'corner') pseudoMoveX = false
+			} else 
+			if(spriteObj.inY < inputClass.WALL_DISTANCE && firstAngleDirection.way.includes('up')) {
+				if(brick.blockY == true) pseudoMoveY = false
+				if(direction == 'corner') pseudoMoveX = false
+			}
+			
+			if(spriteObj.inX >= CELL_SIZE - inputClass.WALL_DISTANCE && firstAngleDirection.way.includes('right')) {
+				if(brick.blockX == true) pseudoMoveX = false
+				if(direction == 'corner') pseudoMoveY = false
+			} else
+			if(spriteObj.inX < inputClass.WALL_DISTANCE && firstAngleDirection.way.includes('left')) {
+				if(brick.blockX == true) pseudoMoveX = false
+				if(direction == 'corner') pseudoMoveY = false
+			}
+		}	
 	});
-
-	console.log('spriteObj.inX: ' + spriteObj.inX + ' | spriteObj.inX: ' + spriteObj.inX);
 	
 	if(firstAngleDirection.way.includes('left')) {
 		if(firstAngleDirection.sign == 1) {
 			if(spriteObj.inX <= inputClass.WALL_DISTANCE) moveX = pseudoMoveX
 			if(graphicsClass.toAngle(player.angle) <= 180) {
-				if (!pseudoMoveY && spriteObj.inY >= CELL_SIZE - inputClass.WALL_DISTANCE) moveY = pseudoMoveY
+				if (!pseudoMoveY && direction == 'down' && spriteObj.inY >= CELL_SIZE - inputClass.WALL_DISTANCE) moveY = pseudoMoveY
 			} else {
-				if (!pseudoMoveY && spriteObj.inY <= inputClass.WALL_DISTANCE) moveY = pseudoMoveY
+				if (!pseudoMoveY && direction == 'up' && spriteObj.inY <= inputClass.WALL_DISTANCE) moveY = pseudoMoveY
 			}
 		} else {
 			if(spriteObj.inX >= CELL_SIZE - inputClass.WALL_DISTANCE) moveX = pseudoMoveX
 			if(graphicsClass.toAngle(player.angle) <= 180) {
-				if (!pseudoMoveY && spriteObj.inY <= inputClass.WALL_DISTANCE) moveY = pseudoMoveY
+				if (!pseudoMoveY && direction == 'up' && spriteObj.inY <= inputClass.WALL_DISTANCE) moveY = pseudoMoveY
 			} else {
-				if (!pseudoMoveY && spriteObj.inY >= CELL_SIZE - inputClass.WALL_DISTANCE) moveY = pseudoMoveY
+				if (!pseudoMoveY && direction == 'down' && spriteObj.inY >= CELL_SIZE - inputClass.WALL_DISTANCE) moveY = pseudoMoveY
 			}
 		}
 	} else 
 	if(firstAngleDirection.way.includes('right')) {
 		if(firstAngleDirection.sign == 1) {
 			if(spriteObj.inX >= CELL_SIZE - inputClass.WALL_DISTANCE) moveX = pseudoMoveX
-			if(graphicsClass.toAngle(player.angle) > 294 && graphicsClass.toAngle(player.angle) <= 360) {
-				if (!pseudoMoveY && spriteObj.inY <= inputClass.WALL_DISTANCE) moveY = pseudoMoveY
-			} else {
-				if (!pseudoMoveY && spriteObj.inY >= CELL_SIZE - inputClass.WALL_DISTANCE) moveY = pseudoMoveY
+			if(graphicsClass.toAngle(player.angle) >= 180 && graphicsClass.toAngle(player.angle) <= 360) {
+				if (!pseudoMoveY && direction == 'up' && spriteObj.inY <= inputClass.WALL_DISTANCE) moveY = pseudoMoveY
+			} else if (graphicsClass.toAngle(player.angle) >= 0 && graphicsClass.toAngle(player.angle) <= 180) {
+				if (!pseudoMoveY && direction == 'down' && spriteObj.inY >= CELL_SIZE - inputClass.WALL_DISTANCE) moveY = pseudoMoveY
 			}
 		} else {
 			if(spriteObj.inX <= inputClass.WALL_DISTANCE) moveX = pseudoMoveX
-			if(graphicsClass.toAngle(player.angle) > 294 && graphicsClass.toAngle(player.angle) <= 360) {
-				if (!pseudoMoveY && spriteObj.inY >= CELL_SIZE - inputClass.WALL_DISTANCE) moveY = pseudoMoveY
-			} else {
-				if (!pseudoMoveY && spriteObj.inY <= inputClass.WALL_DISTANCE) moveY = pseudoMoveY
+			if(graphicsClass.toAngle(player.angle) >= 180 && graphicsClass.toAngle(player.angle) <= 360) {
+				if (!pseudoMoveY && direction == 'down' && spriteObj.inY >= CELL_SIZE - inputClass.WALL_DISTANCE) moveY = pseudoMoveY
+			} else if (graphicsClass.toAngle(player.angle) >= 0 && graphicsClass.toAngle(player.angle) <= 180) {
+				if (!pseudoMoveY && direction == 'up' && spriteObj.inY <= inputClass.WALL_DISTANCE) moveY = pseudoMoveY
 			}
 		}
 	}
@@ -210,41 +230,37 @@ function checkMoveSprite(spriteObj) {
 		if(firstAngleDirection.sign == 1) {
 			if(spriteObj.inY <= inputClass.WALL_DISTANCE) moveY = pseudoMoveY
 			if(graphicsClass.toAngle(player.angle) <= 270) {
-				if (!pseudoMoveX && spriteObj.inX <= inputClass.WALL_DISTANCE) moveX = pseudoMoveX
+				if (!pseudoMoveX && direction == 'left' && spriteObj.inX <= inputClass.WALL_DISTANCE) moveX = pseudoMoveX
 			} else {
-				if (!pseudoMoveX && spriteObj.inX >= CELL_SIZE - inputClass.WALL_DISTANCE) moveX = pseudoMoveX
+				if (!pseudoMoveX && direction == 'right' && spriteObj.inX >= CELL_SIZE - inputClass.WALL_DISTANCE) moveX = pseudoMoveX
 			}
 		} else {
 			if(spriteObj.inY >= CELL_SIZE - inputClass.WALL_DISTANCE) moveY = pseudoMoveY
 			if(graphicsClass.toAngle(player.angle) <= 270) {
-				if (!pseudoMoveX && spriteObj.inX >= CELL_SIZE - inputClass.WALL_DISTANCE) moveX = pseudoMoveX
+				if (!pseudoMoveX && direction == 'right' && spriteObj.inX >= CELL_SIZE - inputClass.WALL_DISTANCE) moveX = pseudoMoveX
 			} else {
-				if (!pseudoMoveX && spriteObj.inX <= inputClass.WALL_DISTANCE) moveX = pseudoMoveX
+				if (!pseudoMoveX && direction == 'left' && spriteObj.inX <= inputClass.WALL_DISTANCE) moveX = pseudoMoveX
 			}
 		}
 	} else 
 	if(firstAngleDirection.way.includes('down')) {
-		console.log('DOWN! MOVEY');
-
 		if(firstAngleDirection.sign == 1) {
 			if(spriteObj.inY >= CELL_SIZE - inputClass.WALL_DISTANCE) moveY = pseudoMoveY
 			if(graphicsClass.toAngle(player.angle) <= 90) {
-				if (!pseudoMoveX && spriteObj.inX >= CELL_SIZE - inputClass.WALL_DISTANCE) moveX = pseudoMoveX
+				if (!pseudoMoveX && direction == 'right' && spriteObj.inX >= CELL_SIZE - inputClass.WALL_DISTANCE) moveX = pseudoMoveX
 			} else {
-				if (!pseudoMoveX && spriteObj.inX <= inputClass.WALL_DISTANCE) moveX = pseudoMoveX
+				if (!pseudoMoveX && direction == 'left' && spriteObj.inX <= inputClass.WALL_DISTANCE) moveX = pseudoMoveX
 			}
 		} else {
 			if(spriteObj.inY <= inputClass.WALL_DISTANCE) moveY = pseudoMoveY
 			if(graphicsClass.toAngle(player.angle) <= 90) {
-				if (!pseudoMoveX && spriteObj.inX <= inputClass.WALL_DISTANCE) moveX = pseudoMoveX
+				if (!pseudoMoveX && direction == 'left' && spriteObj.inX <= inputClass.WALL_DISTANCE) moveX = pseudoMoveX
 			} else {
-				if (!pseudoMoveX && spriteObj.inX >= CELL_SIZE - inputClass.WALL_DISTANCE) moveX = pseudoMoveX
+				if (!pseudoMoveX && direction == 'right' && spriteObj.inX >= CELL_SIZE - inputClass.WALL_DISTANCE) moveX = pseudoMoveX
 			}
 		}
 	}
-	
-	console.log('moveX:'+ moveX + ' | moveY: ' + moveY);
-	
+		
 	return {
 		moveX: moveX,
 		moveY: moveY,
@@ -262,7 +278,14 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 		let playerActX = Math.floor(bringPlayer.x / CELL_SIZE)
 		let playerActY = Math.floor(bringPlayer.y / CELL_SIZE)
 
-		pCheck = checkMoveSprite(bringPlayer)
+		pCheck = checkMoveSprite(bringPlayer, 'player', inputStrafeCheck)
+
+		if (true) {
+			// 45° CHECK
+			let psPlayerX = Math.floor((bringPlayer.x + Math.cos(bringPlayer.angle) * bringPlayer.speed) / CELL_SIZE)
+			let psPlayerY = Math.floor((bringPlayer.y + Math.sin(bringPlayer.angle) * bringPlayer.speed) / CELL_SIZE)
+			if (mapDataClass.map[psPlayerY][psPlayerX]) { pCheck.moveX = false; pCheck.moveY = false; }
+		}
 
 		// Controlling the sprite relative to the player's movement.
 		spritesClass.sprites.forEach((sprite,i) => {
@@ -271,7 +294,7 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 			let spriteActY = Math.floor(sprite.y / CELL_SIZE)
 
 			// WAY PLAYER BRICK
-			if (false && (pCheck.checkX == spriteActX) && (pCheck.checkY == spriteActY)) {
+			if ((pCheck.checkX == spriteActX) && (pCheck.checkY == spriteActY)) {
 
 				console.log('SPRITE A KÖVETKEZŐ!!!')
 				
@@ -287,7 +310,7 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 			}
 
 			// ACTUAL PLAYER BRICK
-			if (false && (spriteActX == playerActX) && (spriteActY == playerActY)) {
+			if ((spriteActX == playerActX) && (spriteActY == playerActY)) {
 
 				// PICKUP COINS
 				if (sprite.active == true && sprite.mode.includes("coin")) {
@@ -338,17 +361,9 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 			}
 		})
 
-		if (false) {
-			// 45° CHECK
-			let psPlayerX = Math.floor((bringPlayer.x + Math.cos(bringPlayer.angle) * bringPlayer.speed) / CELL_SIZE)
-			let psPlayerY = Math.floor((bringPlayer.y + Math.sin(bringPlayer.angle) * bringPlayer.speed) / CELL_SIZE)
-			if (mapDataClass.map[psPlayerY][psPlayerX]) { pCheck.moveX = false; pCheck.moveY = false; }
-		}
-
 		moveAction(bringPlayer, pCheck)
 		bringPlayer.z = playerWalk()
 	}
-
 
 	return pCheck;
 }
@@ -368,7 +383,7 @@ function checkSpriteData(y, x, attr, name, type = null) {
 function moveCreature(creature) {
 	if (typeof creature.speed != 'undefined' && creature.speed != 0) {
 		
-		let cCheck = checkMoveSprite(creature)
+		let cCheck = checkMoveSprite(creature, 'creature')
 						
 		if(mapDataClass.map[cCheck.checkY][cCheck.checkX] != 0 && mapDataClass.map[cCheck.checkY][cCheck.checkX].type == 'effect') {
 			console.log(mapDataClass.map[cCheck.checkY][cCheck.checkX].type);
@@ -474,7 +489,7 @@ function moveCreature(creature) {
 
 function moveAmmo(ammoSprite) {
 	if (ammoSprite.speed != 0) {
-		let ammoCheck = checkMoveSprite(ammoSprite)
+		let ammoCheck = checkMoveSprite(ammoSprite, 'ammo')
 		// CHECK HIT SPRITES
 		let checkSprites = spritesClass.sprites.filter(obj => Math.floor(obj.y / CELL_SIZE) == ammoCheck.checkY && Math.floor(obj.x / CELL_SIZE) == ammoCheck.checkX)
 		checkSprites.forEach((findSprite) => {

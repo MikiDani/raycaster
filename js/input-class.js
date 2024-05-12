@@ -25,7 +25,7 @@ export default class InputClass {
 
 	checkDirection(angle, speed) {
 		angle = this.graphicsClass.toRadians(angle);
-		let sign = (speed > 0) ? 1 : -1;
+		let sign = (speed < 0) ? -1 : 1;
 		//let sign = 1;
 		if (angle >= 0 && angle < Math.PI / 8) {
 			return { y: 0, x: 1 * sign, way: 'right', sign: sign };      				// Right
@@ -44,7 +44,7 @@ export default class InputClass {
 		} else if (angle >= 13 * Math.PI / 8 && angle < 15 * Math.PI / 8) {
 			return { y: -1 * sign, x: 1 * sign, way: 'right-up', sign: sign };   		// Up-Right
 		} else {
-			return { y: 0, x: 1 * sign, way: 'right-up-default', sign: sign };			// Up-Right-Default
+			return { y: 0, x: 1 * sign, way: 'right', sign: sign };						// Up-Right-Default
 		}
 	}
 
@@ -180,8 +180,14 @@ export default class InputClass {
 
 				console.log('Space');
 
+				console.log("this.check.playerCheckY: " + this.check.playerCheckY);
+				console.log("this.check.playerCheckX: " + this.check.playerCheckX);
+				
+
 				// Check MAP
 				var mapData = this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX]
+
+				console.log(mapData);
 
 				if (mapData) {
 					// type

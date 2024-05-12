@@ -35,7 +35,7 @@ export default class GaphicsClass {
 		// this.MINIMAP_SCALE = 0.25
 		// this.MINIMAP_X = (this.GAME_WIDTH / 2) - (this.MINIMAP_SCALE * CELL_SIZE) * 30
 		// this.MINIMAP_Y = (this.GAME_HEIGHT / 2) - (this.GAME_HEIGHT / 2.5)
-		this.MINIMAP_SCALE = 1.3
+		this.MINIMAP_SCALE = 0.6
 		this.MINIMAP_X = 100
 		this.MINIMAP_Y = 50
 		this.PLAYER_SIZE = 10
