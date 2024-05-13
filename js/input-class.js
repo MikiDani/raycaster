@@ -5,7 +5,7 @@ export default class InputClass {
 		this.graphicsClass = graphicsClass
 		this.movePlayer = movePlayer
 		//--------------------------------------------------------------------
-		this.MOVE_SPEED = 10
+		this.MOVE_SPEED = 6	// !!
 		this.MOVE_ANGLE = 5
 		this.MOVE_ANGLE_SLOW = 1
 		this.WALL_DISTANCE = (graphicsClass.CELL_SIZE / 100) * 40

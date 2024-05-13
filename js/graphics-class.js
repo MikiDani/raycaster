@@ -26,7 +26,7 @@ export default class GaphicsClass {
 		this.SCREEN_WIDTH = window.innerWidth
 		this.SCREEN_HEIGHT = window.innerHeight
 		this.GAME_WIDTH = 1250
-		this.GAME_HEIGHT = 700
+		this.GAME_HEIGHT = 620		// old 700
 		this.GRAPHICS_RATIO = 6	// 4, Best, 6 Normal, 8, Medim, 10 Low, 
 
 		this.CELL_SIZE = CELL_SIZE
@@ -64,10 +64,11 @@ export default class GaphicsClass {
 			action: null,
 		}
 
-		if (false) {
+		if (true) {
 			window.addEventListener("resize", () => {
 				document.body.style.backgroundColor = "black";
 				this.gameResize()
+				this.menu.menuactive = true
 			});
 		}
 
@@ -115,15 +116,15 @@ export default class GaphicsClass {
 	makeScreen() {
 		if($("#container").length > 0) {
 			$('#container').html('')
-			const container = document.getElementById('container')
+			var container = document.getElementById('container')
 		} else {
-			const container = document.createElement('div')
+			var container = document.createElement('div')
 			container.setAttribute('id', 'container')
 			container.style.width = this.SCREEN_WIDTH + 'px'
 			container.style.height = this.SCREEN_HEIGHT + 'px'
 			document.body.appendChild(container)
 		}
-		const loading = document.createElement("div")
+		var loading = document.createElement("div")
 		loading.setAttribute('id', 'loading')
 		loading.style.display = 'none'
 		loading.style.width = '300px'
@@ -153,6 +154,18 @@ export default class GaphicsClass {
 		canvasContainer.style.display='none'
 		canvasContainer.style.position='relative'
 		container.appendChild(canvasContainer)
+
+		let infoBar = document.createElement("div");
+		infoBar.setAttribute('id', 'info-bar');
+		infoBar.style.width = this.GAME_WIDTH + 'px'; // A width CSS tulajdonság beállítása
+		infoBar.style.height = '64px';
+		infoBar.style.display = 'block';
+		infoBar.style.backgroundColor = '#d4b279';
+		infoBar.style.position = 'absolute';
+		infoBar.style.bottom = '-60px';
+		infoBar.innerHTML = 'Ez lesz az InfoBár!';
+		canvasContainer.appendChild(infoBar);
+		
 
 		const canvas = document.createElement("canvas")
 		canvas.setAttribute('id', 'canvas')
