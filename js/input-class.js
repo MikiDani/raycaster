@@ -8,7 +8,7 @@ export default class InputClass {
 		this.MOVE_SPEED = 6	// !!
 		this.MOVE_ANGLE = 5
 		this.MOVE_ANGLE_SLOW = 1
-		this.WALL_DISTANCE = Math.floor((graphicsClass.CELL_SIZE / 100) * 20)	// 40 eredeti
+		this.WALL_DISTANCE = Math.floor((graphicsClass.CELL_SIZE / 100) * 25)	// 40 eredeti
 		//--------------------------------------------------------------------
 		this.menu = menu
 		this.gameMenu = gameMenu
@@ -21,6 +21,17 @@ export default class InputClass {
 
 		this.loadInputs()
 		this.moveMenuStar()
+		this.gameResizeListener()
+	}
+
+	gameResizeListener() {
+		var clone = this
+		window.addEventListener("resize", () => {
+			document.body.style.backgroundColor = "black";
+			clone.graphicsClass.gameResize()
+			clone.menu.menuactive = true
+			clone.moveMenuStar(0)
+		});
 	}
 
 	checkDirection(angle, speed) {
@@ -177,17 +188,10 @@ export default class InputClass {
 		document.addEventListener('keydown', (event) => {
 			// TOGETHER
 			if (event.key == ' ') {
-
 				console.log('Space');
-
-				console.log("this.check.playerCheckY0: " + this.check.playerCheckY0);
-				console.log("this.check.playerCheckX0: " + this.check.playerCheckX0);
 				
-
 				// Check MAP
-				var mapData = this.mapDataClass.map[this.check.playerCheckY0][this.check.playerCheckX0]
-
-				console.log(mapData);
+				var mapData = this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX]
 
 				if (mapData) {
 					// type
@@ -196,15 +200,12 @@ export default class InputClass {
 
 					if (mapData.mode == 'door') {
 						console.log('DOOR ANIM SWITCH');
-						
 						mapData.anim_switch = true
 					}
 
 					if (mapData.mode == 'secret') {
-						
 						let content = `<h3 class='text-center'>Your found a secret!</h3><p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Cupiditate, nostrum.</p>`
 						this.graphicsClass.scrollInfoMaker(content, 3000)
-						
 						mapData.anim_switch = true
 					}
 
@@ -228,8 +229,8 @@ export default class InputClass {
 				// CHECK BLOCKS		
 				
 				// OPEN DOOR
-				let checkingBlock = this.spritesClass.sprites.find(block => block.type == 'block' && (block.mode == 'door' || block.mode == 'key1' || block.mode == 'key2')		// Type check
-					&& Math.floor(block.x/this.graphicsClass.CELL_SIZE) == this.check.playerCheckX0 && Math.floor(block.y/this.graphicsClass.CELL_SIZE) == this.check.playerCheckY0	// Position check
+				let checkingBlock = this.spritesClass.sprites.find(block => block.type == 'block' && (block.mode == 'door' || block.mode == 'key1' || block.mode == 'key2')			// Type check
+					&& Math.floor(block.x/this.graphicsClass.CELL_SIZE) == this.check.playerCheckX && Math.floor(block.y/this.graphicsClass.CELL_SIZE) == this.check.playerCheckY	// Position check
 					&& block.open_function == null)		// not active
 
 				if (checkingBlock) {
@@ -245,7 +246,7 @@ export default class InputClass {
 						return;
 					}
 
-					console.log('DOOR OPEN KEZD');
+					console.log('START DOOR OPENING');
 					checkingBlock.open_switch = true
 				}
 			}
@@ -307,11 +308,9 @@ export default class InputClass {
 		////////////////////////////////
 		if (!this.menu.menuactive) {
 			// GAME
-
 			console.log('EVENT KEY : ');
 			console.log(event.key);
 			
-
 			this.keyPressed[event.key] = true
 			if (event.key == 'm') this.menu.mapSwitch = !this.menu.mapSwitch;
 			if (event.key == 'i') this.menu.infoSwitch = !this.menu.infoSwitch;

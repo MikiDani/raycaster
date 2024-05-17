@@ -46,23 +46,9 @@ var gamePlay = {
 }
 
 var check = {
-	playerCheckX0: 0,
-	playerCheckY0: 0,
-	playerCheckX1: 0,
-	playerCheckY1: 0,
-	playerCheckX2: 0,
-	playerCheckY2: 0,
-	playerCheckX3: 0,
-	playerCheckY3: 0,
-	playerCheckX4: 0,
-	playerCheckY4: 0,
+	playerCheckX: 0,
+	playerCheckY: 0,
 
-	playerCheckX5: 0,
-	playerCheckY5: 0,
-	playerCheckX6: 0,
-	playerCheckY6: 0,
-	playerCheckX7: 0,
-	playerCheckY7: 0,
 	creatureCheckX: null,
 	creatureCheckY: null,
 }
@@ -95,31 +81,7 @@ function checkMoveSprite(spriteObj, type = null, inputStrafeCheck = null) {
 	let firstAngleDirection = []
 		
 	firstAngleDirection = inputClass.checkDirection(graphicsClass.toAngle(spriteObj.angle), spriteObj.speed)
-	
-	check.playerCheckY0 = 0
-	check.playerCheckX0 = 0
-	
-	check.playerCheckY1 = 0
-	check.playerCheckX1 = 0
-
-	check.playerCheckY2 = 0
-	check.playerCheckX2 = 0
-
-	check.playerCheckY3 = 0
-	check.playerCheckX3 = 0
-
-	check.playerCheckY4 = 0
-	check.playerCheckX4 = 0
-
-	check.playerCheckY5 = 0
-	check.playerCheckX5 = 0
-
-	check.playerCheckY6 = 0
-	check.playerCheckX6 = 0
-
-	check.playerCheckY7 = 0
-	check.playerCheckX7 = 0
-
+		
 	if(inputStrafeCheck) {
 		soAngleDirection[0] = {x: actX, y: actY - 1, numberF:2, stopF:2, numberB:6, stopB:6}
 		soAngleDirection[1] = {x: actX - 1, y: actY - 1, numberF:3, stopF:3, numberB:5, stopB:5}
@@ -185,35 +147,13 @@ function checkMoveSprite(spriteObj, type = null, inputStrafeCheck = null) {
 	let checkY = soAngleDirection[0].y
 
 	if (type == 'player') {
-		if (typeof soAngleDirection[0] !='undefined' && typeof soAngleDirection[0].y != 'undefined') check.playerCheckY0 = soAngleDirection[0].y
-		if (typeof soAngleDirection[0] !='undefined' && typeof soAngleDirection[0].x != 'undefined') check.playerCheckX0 = soAngleDirection[0].x
-	
-		if (typeof soAngleDirection[1] !='undefined' && typeof soAngleDirection[1].y != 'undefined') check.playerCheckY1 = soAngleDirection[1].y
-		if (typeof soAngleDirection[1] !='undefined' && typeof soAngleDirection[1].x != 'undefined') check.playerCheckX1 = soAngleDirection[1].x
-	
-		if (typeof soAngleDirection[2] !='undefined' && typeof soAngleDirection[2].y != 'undefined') check.playerCheckY2 = soAngleDirection[2].y
-		if (typeof soAngleDirection[2] !='undefined' && typeof soAngleDirection[2].x != 'undefined') check.playerCheckX2 = soAngleDirection[2].x
-
-		if (typeof soAngleDirection[3] !='undefined' && typeof soAngleDirection[3].y != 'undefined') check.playerCheckY3 = soAngleDirection[3].y
-		if (typeof soAngleDirection[3] !='undefined' && typeof soAngleDirection[3].x != 'undefined') check.playerCheckX3 = soAngleDirection[3].x
-
-		if (typeof soAngleDirection[4] !='undefined' && typeof soAngleDirection[4].y != 'undefined') check.playerCheckY4 = soAngleDirection[4].y
-		if (typeof soAngleDirection[4] !='undefined' && typeof soAngleDirection[4].x != 'undefined') check.playerCheckX4 = soAngleDirection[4].x
-
-		if (typeof soAngleDirection[5] !='undefined' && typeof soAngleDirection[5].y != 'undefined') check.playerCheckY5 = soAngleDirection[5].y
-		if (typeof soAngleDirection[5] !='undefined' && typeof soAngleDirection[5].x != 'undefined') check.playerCheckX5 = soAngleDirection[5].x
-
-		if (typeof soAngleDirection[6] !='undefined' && typeof soAngleDirection[6].y != 'undefined') check.playerCheckY6 = soAngleDirection[6].y
-		if (typeof soAngleDirection[6] !='undefined' && typeof soAngleDirection[6].x != 'undefined') check.playerCheckX6 = soAngleDirection[6].x
-
-		if (typeof soAngleDirection[7] !='undefined' && typeof soAngleDirection[7].y != 'undefined') check.playerCheckY7 = soAngleDirection[7].y
-		if (typeof soAngleDirection[7] !='undefined' && typeof soAngleDirection[7].x != 'undefined') check.playerCheckX7 = soAngleDirection[7].x
+		if (typeof soAngleDirection[0] !='undefined' && typeof soAngleDirection[0].y != 'undefined') check.playerCheckY = soAngleDirection[0].y
+		if (typeof soAngleDirection[0] !='undefined' && typeof soAngleDirection[0].x != 'undefined') check.playerCheckX = soAngleDirection[0].x
 	}
 	
 	var playerBarrier = []
 	
 	soAngleDirection.forEach(brick => {
-
 		let checkMap = (mapDataClass.map[brick.y][brick.x] != 0) ? true : false;
 
 		let checkBlock = checkSpriteData(brick.y, brick.x, 'type', 'block')
@@ -224,9 +164,7 @@ function checkMoveSprite(spriteObj, type = null, inputStrafeCheck = null) {
 
 		let checkCreatures = checkSpriteData(brick.y, brick.x, 'type', 'creature')
 		let checkCreaturesValue = (checkCreatures && checkCreatures.material != 'ghost') ? true : false;
-		
-		// console.log(brick.stopF, brick.stopB)
-		
+				
 		if (checkMap || checkBlockValue || checkObjectValue || checkCreaturesValue) {
 			let actualNumber = (firstAngleDirection.sign > 0) ? brick.stopF : brick.stopB;
 			if (!playerBarrier.includes(actualNumber)) playerBarrier.push(actualNumber)
@@ -236,7 +174,6 @@ function checkMoveSprite(spriteObj, type = null, inputStrafeCheck = null) {
 	let valueX = spriteObj.x
 	let valueY = spriteObj.y
 	let valueAngleRad = spriteObj.angle
-	let valueAngleAng = graphicsClass.toAngle(spriteObj.angle)
 	let valueSpeed = spriteObj.speed
 
 	let testX = valueX += Math.cos(valueAngleRad) * valueSpeed
@@ -251,11 +188,16 @@ function checkMoveSprite(spriteObj, type = null, inputStrafeCheck = null) {
 	testInX = (testInX == CELL_SIZE) ? 0 : testInX
 	testInY = (testInY == CELL_SIZE) ? 0 : testInY
 
-	console.log('testInX: ' + testInX, 'testInY: ' + testInY);
+	
 
 	var deleteBarier = function(playerBarrier, barrierId) {
 		let findId = playerBarrier.findIndex(barrier => barrier == barrierId)
 		if(findId != -1) playerBarrier.splice(findId, 1)
+	}
+
+	if(type == 'player') {
+		console.log('testInX: ' + testInX, 'testInY: ' + testInY);
+		console.log(playerBarrier)
 	}
 
 	playerBarrier.forEach((barrier) => {
@@ -282,32 +224,11 @@ function checkMoveSprite(spriteObj, type = null, inputStrafeCheck = null) {
 		if (barrier == 8 && (testInX <= inputClass.WALL_DISTANCE)) moveX = false;
 		if (barrier == 6 && (testInY >= CELL_SIZE - inputClass.WALL_DISTANCE)) moveY = false;
 		if (barrier == 2 && (testInY <= inputClass.WALL_DISTANCE)) moveY = false;
-		
-		// if ((barrier == 4 || barrier == 8 || barrier == 6 || barrier == 2 ) && inputStrafeCheck) { moveY = false; moveX = false; player.speed = 0; }
-
-		if (barrier == 3 && (testInY <= inputClass.WALL_DISTANCE && testInX >= CELL_SIZE - inputClass.WALL_DISTANCE)) {
-			moveX = false;
-			moveY = false;
-		}
-
-		if (barrier == 5 && (testInY >= CELL_SIZE - inputClass.WALL_DISTANCE && testInX >= CELL_SIZE - inputClass.WALL_DISTANCE)) {
-			moveX = false;
-			moveY = false;
-		}
-
-		if (barrier == 7 && (testInY >= CELL_SIZE - inputClass.WALL_DISTANCE && testInX <= inputClass.WALL_DISTANCE)) {
-			moveX = false;
-			moveY = false;
-		}
-
-		if (barrier == 1 && (testInY <= inputClass.WALL_DISTANCE && testInX <= inputClass.WALL_DISTANCE)) {
-			moveX = false;
-			moveY = false;
-		}
+		if (barrier == 3 && (testInY <= inputClass.WALL_DISTANCE && testInX >= CELL_SIZE - inputClass.WALL_DISTANCE)) {	moveX = false; moveY = false; }
+		if (barrier == 5 && (testInY >= CELL_SIZE - inputClass.WALL_DISTANCE && testInX >= CELL_SIZE - inputClass.WALL_DISTANCE)) { moveX = false; moveY = false; }
+		if (barrier == 7 && (testInY >= CELL_SIZE - inputClass.WALL_DISTANCE && testInX <= inputClass.WALL_DISTANCE)) {	moveX = false; moveY = false; }
+		if (barrier == 1 && (testInY <= inputClass.WALL_DISTANCE && testInX <= inputClass.WALL_DISTANCE)) { moveX = false; moveY = false; }
 	});
-
-	console.log('playerBarrier: ' + playerBarrier)
-	console.log('X: ' + moveX, ' Y: ' + moveY)
 
 	return {
 		moveX: moveX,
@@ -328,14 +249,7 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 
 		pCheck = checkMoveSprite(bringPlayer, 'player', inputStrafeCheck)
 
-		if (false) {
-			// 45° CHECK
-			let psPlayerX = Math.floor((bringPlayer.x + Math.cos(bringPlayer.angle) * bringPlayer.speed) / CELL_SIZE)
-			let psPlayerY = Math.floor((bringPlayer.y + Math.sin(bringPlayer.angle) * bringPlayer.speed) / CELL_SIZE)
-			if (mapDataClass.map[psPlayerY][psPlayerX]) { pCheck.moveX = false; pCheck.moveY = false; }
-		}
-
-		if (false) {
+		if (true) {
 			// Controlling the sprite relative to the player's movement.
 			spritesClass.sprites.forEach((sprite,i) => {
 
