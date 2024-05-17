@@ -770,26 +770,34 @@ export default class GaphicsClass {
 			}
 		});
 		
-		// CHECK Player BRICK
+		// CHECK Player BRICK	0 BLUE
 		this.context.fillStyle = '#0000ff55'
 		this.context.fillRect(
-			this.MINIMAP_X + (this.check.playerCheckX * cellSize),
-			this.MINIMAP_Y + (this.check.playerCheckY * cellSize),
+			this.MINIMAP_X + (this.check.playerCheckX0 * cellSize),
+			this.MINIMAP_Y + (this.check.playerCheckY0 * cellSize),
 			cellSize,
 			cellSize,
 		);
 
-		// CHECK Player BRICK2	RED
+		// CHECK Player BRICK1	1 RED
 		this.context.fillStyle = '#ff000055'
+		this.context.fillRect(
+			this.MINIMAP_X + (this.check.playerCheckX1 * cellSize),
+			this.MINIMAP_Y + (this.check.playerCheckY1 * cellSize),
+			cellSize,
+			cellSize,
+		);
+
+		// CHECK Player BRICK2	2 GREEN
+		this.context.fillStyle = '#00ff0055'
 		this.context.fillRect(
 			this.MINIMAP_X + (this.check.playerCheckX2 * cellSize),
 			this.MINIMAP_Y + (this.check.playerCheckY2 * cellSize),
 			cellSize,
 			cellSize,
 		);
-
-		// CHECK Player BRICK3	BLUE
-		this.context.fillStyle = '#00ff0055'
+		// CHECK Player BRICK3	3 YELLOW
+		this.context.fillStyle = '#ffff0055'
 		this.context.fillRect(
 			this.MINIMAP_X + (this.check.playerCheckX3 * cellSize),
 			this.MINIMAP_Y + (this.check.playerCheckY3 * cellSize),
@@ -797,28 +805,38 @@ export default class GaphicsClass {
 			cellSize,
 		);
 
-		if (this.check.playerCheckX4 != null) {
-			// CHECK Player BRICK4	BLUE
-			this.context.fillStyle = 'orange'
-			this.context.fillRect(
-				this.MINIMAP_X + (this.check.playerCheckX4 * cellSize),
-				this.MINIMAP_Y + (this.check.playerCheckY4 * cellSize),
-				cellSize,
-				cellSize,
-			);
-		}
-
-		if(this.check.playerCheckY5 != null) {
-			// CHECK Player BRICK5	BLUE
-			this.context.fillStyle = 'olive'
-			this.context.fillRect(
-				this.MINIMAP_X + (this.check.playerCheckX5 * cellSize),
-				this.MINIMAP_Y + (this.check.playerCheckY5 * cellSize),
-				cellSize,
-				cellSize,
-			);
-		}
-
+		// CHECK Player BRICK4	4 TURQUE
+		this.context.fillStyle = '#00ffff55'
+		this.context.fillRect(
+			this.MINIMAP_X + (this.check.playerCheckX4 * cellSize),
+			this.MINIMAP_Y + (this.check.playerCheckY4 * cellSize),
+			cellSize,
+			cellSize,
+		);
+		// CHECK Player BRICK4	5 
+		this.context.fillStyle = 'pink'
+		this.context.fillRect(
+			this.MINIMAP_X + (this.check.playerCheckX5 * cellSize),
+			this.MINIMAP_Y + (this.check.playerCheckY5 * cellSize),
+			cellSize,
+			cellSize,
+		);
+		// CHECK Player BRICK4	6
+		this.context.fillStyle = 'olive'
+		this.context.fillRect(
+			this.MINIMAP_X + (this.check.playerCheckX6 * cellSize),
+			this.MINIMAP_Y + (this.check.playerCheckY6 * cellSize),
+			cellSize,
+			cellSize,
+		);
+		// CHECK Player BRICK4	7
+		this.context.fillStyle = 'orange'
+		this.context.fillRect(
+			this.MINIMAP_X + (this.check.playerCheckX7 * cellSize),
+			this.MINIMAP_Y + (this.check.playerCheckY7 * cellSize),
+			cellSize,
+			cellSize,
+		);
 
 		//--
 

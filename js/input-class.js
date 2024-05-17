@@ -8,7 +8,7 @@ export default class InputClass {
 		this.MOVE_SPEED = 6	// !!
 		this.MOVE_ANGLE = 5
 		this.MOVE_ANGLE_SLOW = 1
-		this.WALL_DISTANCE = (graphicsClass.CELL_SIZE / 100) * 40
+		this.WALL_DISTANCE = Math.floor((graphicsClass.CELL_SIZE / 100) * 20)	// 40 eredeti
 		//--------------------------------------------------------------------
 		this.menu = menu
 		this.gameMenu = gameMenu
@@ -180,12 +180,12 @@ export default class InputClass {
 
 				console.log('Space');
 
-				console.log("this.check.playerCheckY: " + this.check.playerCheckY);
-				console.log("this.check.playerCheckX: " + this.check.playerCheckX);
+				console.log("this.check.playerCheckY0: " + this.check.playerCheckY0);
+				console.log("this.check.playerCheckX0: " + this.check.playerCheckX0);
 				
 
 				// Check MAP
-				var mapData = this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX]
+				var mapData = this.mapDataClass.map[this.check.playerCheckY0][this.check.playerCheckX0]
 
 				console.log(mapData);
 
@@ -229,7 +229,7 @@ export default class InputClass {
 				
 				// OPEN DOOR
 				let checkingBlock = this.spritesClass.sprites.find(block => block.type == 'block' && (block.mode == 'door' || block.mode == 'key1' || block.mode == 'key2')		// Type check
-					&& Math.floor(block.x/this.graphicsClass.CELL_SIZE) == this.check.playerCheckX && Math.floor(block.y/this.graphicsClass.CELL_SIZE) == this.check.playerCheckY	// Position check
+					&& Math.floor(block.x/this.graphicsClass.CELL_SIZE) == this.check.playerCheckX0 && Math.floor(block.y/this.graphicsClass.CELL_SIZE) == this.check.playerCheckY0	// Position check
 					&& block.open_function == null)		// not active
 
 				if (checkingBlock) {
