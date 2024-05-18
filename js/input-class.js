@@ -186,6 +186,7 @@ export default class InputClass {
 		//////////
 		var clone = this
 		document.addEventListener('keydown', (event) => {
+			if (event.shiftKey) this.keyPressed = []
 			// TOGETHER
 			if (event.key == ' ') {
 				console.log('Space');
@@ -312,10 +313,11 @@ export default class InputClass {
 			console.log(event.key);
 			
 			this.keyPressed[event.key] = true
+
 			if (event.key == 'm') this.menu.mapSwitch = !this.menu.mapSwitch;
 			if (event.key == 'i') this.menu.infoSwitch = !this.menu.infoSwitch;
 			if (event.key == 'g') this.menu.shadowsSwitch = !this.menu.shadowsSwitch;
-			if (event.key == 'h') this.menu.spriteShadowsSwitch = !this.menu.spriteShadowsSwitch;            
+			if (event.key == 'h') this.menu.spriteShadowsSwitch = !this.menu.spriteShadowsSwitch;
 		}
 
 		////////

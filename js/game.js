@@ -31,7 +31,7 @@ const menu = {
 	optionsActive: false,
 	clearGameSwitch: false,
 	infoSwitch: false,
-	mapSwitch: true,
+	mapSwitch: false,
 	shadowsSwitch: true,
 	spriteShadowsSwitch: true,
 	mouseSwitch: true,
@@ -250,9 +250,14 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 		pCheck = checkMoveSprite(bringPlayer, 'player', inputStrafeCheck)
 
 		if (true) {
-			// Controlling the sprite relative to the player's movement.
-			spritesClass.sprites.forEach((sprite,i) => {
+			let psPlayerX = Math.floor((bringPlayer.x + Math.cos(bringPlayer.angle) * bringPlayer.speed) / CELL_SIZE)
+			let psPlayerY = Math.floor((bringPlayer.y + Math.sin(bringPlayer.angle) * bringPlayer.speed) / CELL_SIZE)
+			if (mapDataClass.map[psPlayerY][psPlayerX]) { pCheck.moveX = false; pCheck.moveY = false; }
+		}
 
+		// Controlling the sprite relative to the player's movement.
+		if (true) {
+			spritesClass.sprites.forEach((sprite) => {
 				let spriteActX = Math.floor(sprite.x / CELL_SIZE)
 				let spriteActY = Math.floor(sprite.y / CELL_SIZE)
 
@@ -318,7 +323,7 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 				}
 
 				// EXIT
-				let checkExit = checkSpriteData(player.y, player.x, 'mode', 'exit')
+				let checkExit = checkSpriteData(player.y, player.x, 'mode', 'exit', 'position')				
 				if (checkExit) {
 					console.log('EXITEN ÁLLSZ ! JEE ! : )')
 				}
@@ -462,7 +467,7 @@ function moveAmmo(ammoSprite) {
 				console.log('Energy: ' + findSprite.energy)
 
 				findSprite.moveType = 'attack'
-				findSprite.speed += 2
+				findSprite.speed += 3	// + 2
 
 				if(!findSprite.anim_demage_function) {
 					findSprite.anim_demage_actFrame = `${findSprite.dirConstruction[0]}_E3`

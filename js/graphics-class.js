@@ -64,14 +64,6 @@ export default class GaphicsClass {
 			action: null,
 		}
 
-		// if (true) {
-		// 	window.addEventListener("resize", () => {
-		// 		document.body.style.backgroundColor = "black";
-		// 		this.gameResize()
-		// 		this.menu.menuactive = true
-		// 	});
-		// }
-
 		this.gameResize()
 	}
 
