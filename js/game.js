@@ -188,16 +188,9 @@ function checkMoveSprite(spriteObj, type = null, inputStrafeCheck = null) {
 	testInX = (testInX == CELL_SIZE) ? 0 : testInX
 	testInY = (testInY == CELL_SIZE) ? 0 : testInY
 
-	
-
 	var deleteBarier = function(playerBarrier, barrierId) {
 		let findId = playerBarrier.findIndex(barrier => barrier == barrierId)
 		if(findId != -1) playerBarrier.splice(findId, 1)
-	}
-
-	if(type == 'player') {
-		console.log('testInX: ' + testInX, 'testInY: ' + testInY);
-		console.log(playerBarrier)
 	}
 
 	playerBarrier.forEach((barrier) => {
@@ -229,6 +222,12 @@ function checkMoveSprite(spriteObj, type = null, inputStrafeCheck = null) {
 		if (barrier == 7 && (testInY >= CELL_SIZE - inputClass.WALL_DISTANCE && testInX <= inputClass.WALL_DISTANCE)) {	moveX = false; moveY = false; }
 		if (barrier == 1 && (testInY <= inputClass.WALL_DISTANCE && testInX <= inputClass.WALL_DISTANCE)) { moveX = false; moveY = false; }
 	});
+
+	if(false && type == 'player') {
+		console.log('testInX: ' + testInX, 'testInY: ' + testInY);
+		console.log(playerBarrier)
+		console.log('moveX:' + moveX + ' moveY' + moveY)
+	}
 
 	return {
 		moveX: moveX,

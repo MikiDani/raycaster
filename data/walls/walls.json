@@ -29,7 +29,6 @@
         "material": "fix",
         "height": "normal",
         "anim_switch": true,
-        "anim_action": "start",
         "anim_repeat": true,
         "anim_repeatCount": 0,
         "anim_repeatEnd": 40,
