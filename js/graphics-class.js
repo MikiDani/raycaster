@@ -35,10 +35,10 @@ export default class GaphicsClass {
 		// this.MINIMAP_SCALE = 0.25
 		// this.MINIMAP_X = (this.GAME_WIDTH / 2) - (this.MINIMAP_SCALE * CELL_SIZE) * 30
 		// this.MINIMAP_Y = (this.GAME_HEIGHT / 2) - (this.GAME_HEIGHT / 2.5)
-		this.MINIMAP_SCALE = 0.6
+		this.MINIMAP_SCALE = 1
 		this.MINIMAP_X = 100
 		this.MINIMAP_Y = 50
-		this.PLAYER_SIZE = 10
+		this.PLAYER_SIZE = Math.floor(CELL_SIZE / 4)
 		this.SPRITE_SIZE = 10
 		//--------------------------------------------------------------------
 		this.map = []
@@ -629,160 +629,104 @@ export default class GaphicsClass {
 
 	renderMinimap(rays) {
 		const cellSize = this.MINIMAP_SCALE * this.CELL_SIZE;
-		// WALLS
-		this.mapDataClass.map.forEach((row, y) => {
-			row.forEach((cell, x) => {
-				if(cell) {
-					if (cell.mode == 'door') this.context.fillStyle = 'gold'
-					else this.context.fillStyle = 'gray'
+		let mapSizeX = 6
+		let mapSizeY = 4
 
-					this.context.fillRect(
-						this.MINIMAP_X + (x * cellSize),
-						this.MINIMAP_Y + (y * cellSize),
-						cellSize,
-						cellSize,
-					);
+		let actX = Math.floor(this.player.x / cellSize)
+		let actY = Math.floor(this.player.y / cellSize)
+		let mapPlayerInX = Math.floor(this.player.x - (actX * cellSize))
+		let mapPlayerInY = Math.floor(this.player.y - (actY * cellSize))
+
+		let playerBrickX = (this.GAME_WIDTH / 2) - mapPlayerInX
+		let playerBrickY = (this.GAME_HEIGHT / 2) - mapPlayerInY
+
+		var widthY
+		var widthX
+		for(let y = -mapSizeY; y<mapSizeY; y++) {
+			for(let x = -mapSizeX; x<mapSizeX; x++) {
+				var modFirstBrickY = 0
+				var modFirstBrickX = 0
+
+				if (y == -mapSizeY) {
+					widthY = cellSize - mapPlayerInY
+					modFirstBrickY = mapPlayerInY
+				} else if (y == mapSizeY-1) widthY = mapPlayerInY 
+				else widthY = cellSize
+				if (x == -mapSizeX) {
+					widthX = cellSize - mapPlayerInX
+					modFirstBrickX = mapPlayerInX
+				} else if (x == mapSizeX-1) widthX = mapPlayerInX
+				else widthX = cellSize
+
+				// STROKE
+				this.context.strokeStyle = '#80808033'
+				this.context.lineWidth = 2;
+				this.context.strokeRect(
+					playerBrickX + (cellSize * x) + modFirstBrickX,
+					playerBrickY + (cellSize * y) + modFirstBrickY,
+					widthX,
+					widthY,
+				);
+
+				this.context.fillStyle = '#ffffff77'
+
+				if (actY + y == this.check.playerCheckY && actX + x == this.check.playerCheckX) this.context.fillStyle = '#0000ff55'
+
+				this.context.fillRect(
+					playerBrickX + (cellSize * x) + modFirstBrickX,
+					playerBrickY + (cellSize * y) + modFirstBrickY,
+					widthX,
+					widthY,
+				);
+
+				if (this.mapDataClass.map[actY + y] != undefined) {
+					if (this.mapDataClass.map[actY + y][actX + x] != undefined) {
+
+						var cellValue = this.mapDataClass.map[actY + y][actX + x]
+
+						if (cellValue) {
+
+							this.context.fillStyle = 'orange'
+							
+							this.context.fillRect(
+								playerBrickX + (cellSize * x) + modFirstBrickX,
+								playerBrickY + (cellSize * y) + modFirstBrickY,
+								widthX,
+								widthY,
+							);
+						}
+					}
 				}
-			});
-		});
-		
-		// FOV RAYS
-		if (true) {
-			rays.forEach(ray => {
-				this.context.strokeStyle = 'yellow'
-				this.context.lineWidth = 1;
-				this.context.beginPath()
-				this.context.moveTo(this.MINIMAP_X +(this.player.x * this.MINIMAP_SCALE), this.MINIMAP_Y + (this.player.y * this.MINIMAP_SCALE))
-				this.context.lineTo(
-					this.MINIMAP_X + ((this.player.x + (Math.cos(ray.angle) * ray.distance)) * this.MINIMAP_SCALE),
-					this.MINIMAP_Y + ((this.player.y + (Math.sin(ray.angle) * ray.distance)) * this.MINIMAP_SCALE),
-				)
-				this.context.closePath()
-				this.context.stroke()
-			});
+			}
 		}
-
-		// BLOCK RAYS CHECK	
-		if (false) {
-			this.checkDistance.forEach(ray => {
-				//console.log( ray.distance);
-				this.context.strokeStyle = 'lime'
-				this.context.lineWidth = 1;
-				this.context.beginPath()
-				this.context.moveTo(this.MINIMAP_X +(this.player.x * this.MINIMAP_SCALE), this.MINIMAP_Y + (this.player.y * this.MINIMAP_SCALE))
-				this.context.lineTo(
-					this.MINIMAP_X + ((this.player.x + (Math.cos(ray.angle) * ray.distance)) * this.MINIMAP_SCALE),
-					this.MINIMAP_Y + ((this.player.y + (Math.sin(ray.angle) * ray.distance)) * this.MINIMAP_SCALE),
-				)
-				this.context.closePath()
-				this.context.stroke()
-			});
-			this.checkDistance = []
-		}
-	
+					
 		// PLAYER
-		this.context.fillStyle = 'blue';
-		this.context.fillRect(
-			this.MINIMAP_X + (this.player.x * this.MINIMAP_SCALE) - (this.PLAYER_SIZE/2),
-			this.MINIMAP_Y + (this.player.y * this.MINIMAP_SCALE) - (this.PLAYER_SIZE/2),
-			this.PLAYER_SIZE,
-			this.PLAYER_SIZE,
-		)
-	
-		// PLAYER RAY
-		if (false) {
-			const rayLength = this.PLAYER_SIZE * 5;
-		
+		if (true) {
+			// RAY
+			const rayLength = this.PLAYER_SIZE * 3;
 			this.context.strokeStyle = 'orange'
 			this.context.lineWidth = 4;
 			this.context.beginPath()
-			this.context.moveTo(this.MINIMAP_X + (this.player.x * this.MINIMAP_SCALE), this.MINIMAP_Y + (this.player.y * this.MINIMAP_SCALE))
+			this.context.moveTo((this.GAME_WIDTH / 2), (this.GAME_HEIGHT / 2))
 			this.context.lineTo(
-				this.MINIMAP_X + ((this.player.x + (Math.cos(this.player.angle) * rayLength)) * this.MINIMAP_SCALE),
-				this.MINIMAP_Y + ((this.player.y + (Math.sin(this.player.angle) * rayLength)) * this.MINIMAP_SCALE),
+				(this.GAME_WIDTH / 2) + ((Math.cos(this.player.angle) * rayLength) * this.MINIMAP_SCALE),
+				(this.GAME_HEIGHT / 2) + ((Math.sin(this.player.angle) * rayLength) * this.MINIMAP_SCALE),
 			)
 			this.context.closePath()
 			this.context.stroke()
+			// CIRCLE
+			this.context.fillStyle = 'blue';
+			this.context.beginPath();
+			this.context.arc(
+				(this.GAME_WIDTH / 2), (this.GAME_HEIGHT / 2),
+				this.PLAYER_SIZE / 2, 0, 2 * Math.PI);
+			this.context.fill();
 		}
-
-		// --------------------
-		// MEROLEGES
-		const merolegesHossz = this.PLAYER_SIZE * 5;
-	
-		this.context.strokeStyle = 'green'
-		this.context.lineWidth = 4;
-		this.context.beginPath()
-		this.context.moveTo(this.MINIMAP_X + (this.player.x * this.MINIMAP_SCALE), this.MINIMAP_Y + (this.player.y * this.MINIMAP_SCALE))
-		this.context.lineTo(
-			this.MINIMAP_X + ((this.player.x + (Math.cos(this.player.angle - this.toRadians(90)) * merolegesHossz)) * this.MINIMAP_SCALE),
-			this.MINIMAP_Y + ((this.player.y + (Math.sin(this.player.angle - this.toRadians(90)) * merolegesHossz)) * this.MINIMAP_SCALE),
-		)
-		this.context.closePath()
-		this.context.stroke()
-
-		this.context.strokeStyle = 'blue'
-		this.context.lineWidth = 4;
-		this.context.beginPath()
-		this.context.moveTo(this.MINIMAP_X + (this.player.x * this.MINIMAP_SCALE), this.MINIMAP_Y + (this.player.y * this.MINIMAP_SCALE))
-		this.context.lineTo(
-			this.MINIMAP_X + ((this.player.x - (Math.cos(this.player.angle - this.toRadians(90)) * merolegesHossz)) * this.MINIMAP_SCALE),
-			this.MINIMAP_Y + ((this.player.y - (Math.sin(this.player.angle - this.toRadians(90)) * merolegesHossz)) * this.MINIMAP_SCALE),
-		)
-		this.context.closePath()
-		this.context.stroke()
-
-		// -----------------------
-	
-		const spriteRayLength = 50;
-
-		// SPRITES DRAW
-		this.spritesClass.nearSprites.forEach(nearIndex => {
-			let sprite = this.spritesClass.sprites[nearIndex]
-
-			if (typeof sprite != 'undefined' && sprite.active) {
-				this.context.fillStyle = 'red';
-				this.context.fillRect(
-					this.MINIMAP_X + (sprite.x * this.MINIMAP_SCALE) - (this.SPRITE_SIZE/2),
-					this.MINIMAP_Y + (sprite.y * this.MINIMAP_SCALE) - (this.SPRITE_SIZE/2),
-					this.SPRITE_SIZE,
-					this.SPRITE_SIZE,
-				)
-		
-				// SPRITE RAY
-				this.context.strokeStyle = 'deeppink'
-				this.context.lineWidth = 1;
-				this.context.beginPath()
-				this.context.moveTo(this.MINIMAP_X + (sprite.x * this.MINIMAP_SCALE), this.MINIMAP_Y + (sprite.y * this.MINIMAP_SCALE))
-				this.context.lineTo(
-					this.MINIMAP_X + ((sprite.x + (Math.cos(this.toRadians(sprite.angle)) * spriteRayLength)) * this.MINIMAP_SCALE),
-					this.MINIMAP_Y + ((sprite.y + (Math.sin(this.toRadians(sprite.angle)) * spriteRayLength)) * this.MINIMAP_SCALE),
-				)
-				this.context.closePath()
-				this.context.stroke()
-			}
-		});
-		
-		// CHECK Player BRICK 0 BLUE
-		this.context.fillStyle = '#0000ff55'
-		this.context.fillRect(
-			this.MINIMAP_X + (this.check.playerCheckX * cellSize),
-			this.MINIMAP_Y + (this.check.playerCheckY * cellSize),
-			cellSize,
-			cellSize,
-		);
-
-		// CHECK Creatures BRICK
-		this.context.fillStyle = '#FFA50055'
-		this.context.fillRect(
-			this.MINIMAP_X + (this.check.creatureCheckX * cellSize),
-			this.MINIMAP_Y + (this.check.creatureCheckY * cellSize),
-			cellSize,
-			cellSize,
-		);
 	}
 	
 	infoPanel() {
 		this.context.fillStyle = 'white';
+		this.context.textAlign = 'left';
 		this.context.fillRect(this.GAME_WIDTH - 230 - 10, 10, 200, 350)
 		const lineheight = 16;
 
@@ -793,8 +737,8 @@ export default class GaphicsClass {
 			------------------------|
 			GAME_WIDTH: ${this.GAME_WIDTH} px |
 			GAME_WIDTH3D: ${this.GAME_WIDTH3D} px |
-			x: ${this.player.x.toFixed(3)} |
-			y: ${this.player.y.toFixed(3)} |
+			Map x: ${Math.floor(this.player.x / this.CELL_SIZE)} |
+			Map y: ${Math.floor(this.player.y / this.CELL_SIZE)} |
 			z: ${this.player.z.toFixed(3)} |
 			inX: ${this.player.inX} |
 			inY: ${this.player.inY} |
