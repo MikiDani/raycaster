@@ -5,7 +5,7 @@ export default class InputClass {
 		this.graphicsClass = graphicsClass
 		this.movePlayer = movePlayer
 		//--------------------------------------------------------------------
-		this.MOVE_SPEED = 6	// !!
+		this.MOVE_SPEED = 10	// !!
 		this.MOVE_ANGLE = 5
 		this.MOVE_ANGLE_SLOW = 1
 		this.WALL_DISTANCE = Math.floor((graphicsClass.CELL_SIZE / 100) * 25)	// 40 eredeti
@@ -18,6 +18,7 @@ export default class InputClass {
 		this.gamePlay = gamePlay
 		this.check = check
 		this.mouseMoveSwitsh = false
+		this.messageTime = 3000
 
 		this.loadInputs()
 		this.moveMenuStar()
@@ -206,7 +207,7 @@ export default class InputClass {
 
 					if (mapData.mode == 'secret') {
 						let content = `<h3 class='text-center'>Your found a secret!</h3><p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Cupiditate, nostrum.</p>`
-						this.graphicsClass.scrollInfoMaker(content, 3000)
+						this.graphicsClass.scrollInfoMaker(content, this.messageTime)
 						mapData.anim_switch = true
 					}
 
@@ -214,7 +215,7 @@ export default class InputClass {
 						if (this.player.key1) mapData.anim_switch = true;
 						else {
 							let content = `<div class="text-center"><h3 class='text-center'>You need the silver key to open this wall!</h3><div class="info-key1-container mx-auto"></div></div>`
-							this.graphicsClass.scrollInfoMaker(content, 3000)
+							this.graphicsClass.scrollInfoMaker(content, this.messageTime)
 						}
 					}
 
@@ -222,7 +223,7 @@ export default class InputClass {
 						if (this.player.key2) mapData.anim_switch = true;
 						else {
 							let content = `<div class="text-center"><h3 class='text-center'>You need the gold key to open this wall!</h3><div class="info-key2-container mx-auto"></div></div>`
-							this.graphicsClass.scrollInfoMaker(content, 3000)
+							this.graphicsClass.scrollInfoMaker(content, this.messageTime)
 						}
 					}
 				}
@@ -237,13 +238,13 @@ export default class InputClass {
 				if (checkingBlock) {
 					if (checkingBlock.mode == 'key1' && (!this.player.key1)) {
 						let content = `<div class="text-center"><h3 class='text-center'>You need the silver key to open this door!</h3><div class="info-key1-container mx-auto"></div></div>`
-							this.graphicsClass.scrollInfoMaker(content, 3000)
+							this.graphicsClass.scrollInfoMaker(content, this.messageTime)
 						return;
 					}
 
 					if (checkingBlock.mode == 'key2' && (!this.player.key2)) { 
 						let content = `<div class="text-center"><h3 class='text-center'>You need the gold key to open this door!</h3><div class="info-key2-container mx-auto"></div></div>`
-						this.graphicsClass.scrollInfoMaker(content, 3000)
+						this.graphicsClass.scrollInfoMaker(content, this.messageTime)
 						return;
 					}
 
