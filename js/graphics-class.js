@@ -5,10 +5,7 @@ export default class GaphicsClass {
 	context;
 	rays;
 	screenColorize;
-
 	checkDistance;
-	mod;
-
 	poisonModValue;
 	poisonModScale;
 	blockMask;
@@ -36,7 +33,7 @@ export default class GaphicsClass {
 		// this.MINIMAP_SCALE = 0.25
 		// this.MINIMAP_X = (this.GAME_WIDTH / 2) - (this.MINIMAP_SCALE * CELL_SIZE) * 30
 		// this.MINIMAP_Y = (this.GAME_HEIGHT / 2) - (this.GAME_HEIGHT / 2.5)
-		this.MINIMAP_SCALE = 1
+		this.MINIMAP_SCALE = 0.7
 		this.MINIMAP_X = 100
 		this.MINIMAP_Y = 50
 		this.PLAYER_SIZE = Math.floor(CELL_SIZE / 4)
@@ -117,7 +114,7 @@ export default class GaphicsClass {
 			container.style.height = this.SCREEN_HEIGHT + 'px'
 			document.body.appendChild(container)
 		}
-		// KELL EZ ??
+		// CASUAL IMG CONTAINER
 		var imgContainer = document.createElement("div")
 		imgContainer.setAttribute('id', 'img-container')
 		imgContainer.style.display = 'none'
@@ -161,15 +158,77 @@ export default class GaphicsClass {
 
 		let infoBar = document.createElement("div");
 		infoBar.setAttribute('id', 'info-bar');
-		infoBar.style.width = this.GAME_WIDTH + 'px'; // A width CSS tulajdonság beállítása
-		infoBar.style.height = '64px';
 		infoBar.style.display = 'block';
-		infoBar.style.backgroundColor = '#d4b279';
 		infoBar.style.position = 'absolute';
-		infoBar.style.bottom = '-60px';
-		infoBar.innerHTML = 'Ez lesz az InfoBár!';
+		infoBar.style.width = this.GAME_WIDTH + 'px';
+		infoBar.style.height = '64px';
+		infoBar.style.margin = '0px';
+		infoBar.style.padding = '0px';
+		// infoBar.style.backgroundColor = '#d4b27922';
+		infoBar.style.bottom = '6px';
 		canvasContainer.appendChild(infoBar);
 		
+		let healtPercentage = document.createElement("div");
+		healtPercentage.setAttribute('id', 'healt-percentage');
+		healtPercentage.style.display = 'inline-block';
+		healtPercentage.style.width = '20%';
+		healtPercentage.style.height = '64px';
+		// healtPercentage.style.backgroundColor = 'red';
+		healtPercentage.style.textAlign = 'center';
+		healtPercentage.style.fontSize = '40px';
+		healtPercentage.style.letterSpacing = '5px'
+		healtPercentage.style.fontFamily = 'Sakurata';
+		healtPercentage.style.textShadow = `-2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000`;
+		healtPercentage.style.fontWeight = 'bold';
+		healtPercentage.innerHTML = '100%';
+		healtPercentage.style.color = 'white';
+		infoBar.append(healtPercentage)
+		
+		let weapons = document.createElement("div");
+		weapons.setAttribute('id', 'weapons-container');
+		weapons.style.position = 'relative';
+		weapons.style.display = 'block';
+		weapons.style.float = 'right';
+		weapons.style.width = '330px';
+		weapons.style.height = '64px';
+		// weapons.style.backgroundColor = '#d4b27922';
+		infoBar.append(weapons)
+
+		let ammoStarText = document.createElement("div");
+		ammoStarText.setAttribute('id', 'ammo-star-text');
+		ammoStarText.innerText="123";
+		weapons.append(ammoStarText)
+		let ammoFireText = document.createElement("div");
+		ammoFireText.setAttribute('id', 'ammo-fire-text');
+		ammoFireText.innerText="23";
+		weapons.append(ammoFireText)
+		let ammoStar = document.createElement("div");
+		ammoStar.setAttribute('id', 'ammo-star');
+		weapons.append(ammoStar)
+		let ammoFire = document.createElement("div");
+		ammoFire.setAttribute('id', 'ammo-fire');
+		weapons.append(ammoFire)
+		let weapon1 = document.createElement("div");
+		weapon1.setAttribute('id', 'weapon1');
+		weapons.append(weapon1)
+		let weapon2 = document.createElement("div");
+		weapon2.setAttribute('id', 'weapon2');
+		weapons.append(weapon2)
+		let weapon3 = document.createElement("div");
+		weapon3.setAttribute('id', 'weapon3');
+		weapons.append(weapon3)
+		let weapon4 = document.createElement("div");
+		weapon4.setAttribute('id', 'weapon4');
+		weapons.append(weapon4)
+
+		let things = document.createElement("div");
+		things.setAttribute('id', 'things-container');
+		things.style.display = 'inline-block';
+		things.style.float = 'right';
+		things.style.width = '20%';
+		things.style.height = '64px';
+		// things.style.backgroundColor = '#00ff0077';
+		infoBar.append(things)
 
 		const canvas = document.createElement("canvas")
 		canvas.setAttribute('id', 'canvas')
@@ -219,7 +278,7 @@ export default class GaphicsClass {
 		$("#menu-bg").html('')
 		let menuElementContent = `
 			<div><img src="./img/menu/menu-logo.png" alt="Yukio Ninja" class="logo-position" style="display:block;"/></div>
-			<div id="menu-box" class="mx-auto col-4 pt-5">`;
+			<div id="menu-box" class="mx-auto col-4 pt-4">`;
 				if (this.menu.optionsActive) {
 					
 					let graphicsratioSelected = function(value, GRAPHICS_RATIO) {
@@ -244,7 +303,7 @@ export default class GaphicsClass {
 					<div id="menu-graphicsratio" class="menu-element row">
 						<div class="menu-row col-2 bg-menu-selector d-flex justify-content-center align-items-center"><img src="./img/menu/star-selector.gif" style="display:none;"></div>
 						<div class="menu-row col d-flex justify-content-between align-items-center">
-							<span>graphicsratio:</span>
+							<span>graphics:</span>
 							<select id="graphicsratio-select" name="graphicsratio" class="form-control form-control-sm control-small-width ms-5 invisible-pointer">
 								<option value="10" ${graphicsratioSelected(10, this.GRAPHICS_RATIO)}>Low</option>
 								<option value="8" ${graphicsratioSelected(8, this.GRAPHICS_RATIO)}>Medium</option>
@@ -639,13 +698,13 @@ export default class GaphicsClass {
 
 	renderMinimap() {
 		const cellSize = this.MINIMAP_SCALE * this.CELL_SIZE;
-		var mapSizeX = 6
-		var mapSizeY = 4
+		var mapSizeX = 10
+		var mapSizeY = 6
 
-		let actX = Math.floor(this.player.x / cellSize)
-		let actY = Math.floor(this.player.y / cellSize)
-		let mapPlayerInX = Math.floor(this.player.x - (actX * cellSize))
-		let mapPlayerInY = Math.floor(this.player.y - (actY * cellSize))
+		let actX = Math.floor(this.player.x / this.CELL_SIZE)
+		let actY = Math.floor(this.player.y / this.CELL_SIZE)
+		let mapPlayerInX = Math.floor(this.player.x - (actX * this.CELL_SIZE)) * this.MINIMAP_SCALE
+		let mapPlayerInY = Math.floor(this.player.y - (actY * this.CELL_SIZE)) * this.MINIMAP_SCALE
 
 		let playerBrickX = (this.GAME_WIDTH / 2) - mapPlayerInX
 		let playerBrickY = (this.GAME_HEIGHT / 2) - mapPlayerInY
@@ -756,9 +815,9 @@ export default class GaphicsClass {
 		// PLAYER
 		if (true) {
 			// RAY
-			const rayLength = this.PLAYER_SIZE * 3;
+			const rayLength = this.PLAYER_SIZE * 2;
 			this.context.strokeStyle = 'orange'
-			this.context.lineWidth = 4;
+			this.context.lineWidth = 3;
 			this.context.beginPath()
 			this.context.moveTo((this.GAME_WIDTH / 2), (this.GAME_HEIGHT / 2))
 			this.context.lineTo(
@@ -895,13 +954,10 @@ export default class GaphicsClass {
 			// WALLS DRAWING
 			let wall = this.mapDataClass.map[ray.wallY][ray.wallX]
 			
-			let mod = 0
-
 			let wallHeightNum; let wallHeightPos;
 			if (wall.height == 'big') {
 				wallHeightNum = this.CELL_SIZE * 1.5
 				wallHeightPos = (wallHeight/2) + (wallHeight / 2)
-				mod = this.CELL_SIZE / 2
 			} else {
 				wallHeightNum = this.CELL_SIZE
 				wallHeightPos = wallHeight / 2
@@ -913,7 +969,11 @@ export default class GaphicsClass {
 			for(let n = 0; n < wallHeightNum; n++) {
 				if (typeof ray.vertical !== 'undefined') {
 
-					let actPixel = ((n + mod) % this.CELL_SIZE)
+					var actPixel = (actualTexture.imgHeight > this.CELL_SIZE)
+					? (wall.height == 'big') 
+						? (n % (this.CELL_SIZE + (this.CELL_SIZE / 2)))
+						: (n % this.CELL_SIZE)
+					: (n % this.CELL_SIZE);
 
 					var shadowDisMod = (this.menu.shadowsSwitch)
 					? (ray.vertical) ? this.calcShadowDistance(distance + 225) : this.calcShadowDistance(distance)

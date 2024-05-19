@@ -647,7 +647,7 @@ class Editor {
 			if (objectData.inputType == 'text') {
 				returnElement = `
 				<div class="data-title col-6 p-0 m-0"><span class="align-middle">${fileKey}:</span></div>
-				<div class="data-data col-6 p-0 m-0"><input id="text_${fileKey}" name="${fileKey}" type="text" input-type="${objectData.inputType}" value="${fileValue}" id="text_${fileKey}" maxlength="50" class="form-control form-control-sm"></div>`;
+				<div class="data-data col-6 p-0 m-0"><input id="text_${fileKey}" name="${fileKey}" type="text" input-type="${objectData.inputType}" value="${fileValue}" id="text_${fileKey}" class="form-control form-control-sm"></div>`;
 			}
 
 			if (objectData.inputType == 'array') {	// no modify

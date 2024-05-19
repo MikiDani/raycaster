@@ -1,3 +1,13 @@
+@font-face {
+    font-family: 'Sakurata';
+    src: url('../fonts/sakurata.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Kashima';
+    src: url('../fonts/kashima.otf') format('opentype');
+}
+
 html {
     box-sizing: border-box;
     overflow: hidden;
@@ -9,6 +19,7 @@ body {
     margin:0;
     user-select: none;
     background-color: black;
+    font-family: 'Sakurata', sans-serif;
 }
 
 #container {
@@ -31,7 +42,7 @@ canvas {
 
 .loading-box {
     background-color: #f49231aa;
-    font-family: 'Alfa Slab One', serif;
+    font-family: 'Sakurata', sans-serif;
     font-size: 18px;
 }
 
@@ -39,12 +50,12 @@ canvas {
     box-sizing: border-box;
     background-color: #c16509aa;
     padding: 25px;
-    margin-top: 20%;
+    margin-top: 16%;
 }
 
 .menu-row {
-    font-family: 'Alfa Slab One', serif;
-    font-size: 18px;
+    font-family: 'Kashima', sans-serif;
+    font-size: 36px;
     background-color: #f49231aa;
     width: 100%;
     height: 40px;
@@ -125,12 +136,106 @@ canvas {
 }
 
 #scroll-button {
-    background-image: url("../img/menu/bg-papirus.png");
-    width: 70px;
-    height: 50px;
-    border: 2px solid #be8254;
+    background-image: url("../img/menu/bg-button.png");
+    width: 142px;
+    height: 62px;
+    border: none;
+    // border: 2px solid #be8254;
     color: #111010;
+    font-family: 'Sakurata', sans-serif;
     font-weight: bold;
-    font-size: 1.2rem;
-    background-repeat: repeat;
+    font-size: 18px;
+    padding-top: 12px;
+}
+
+// HUD
+#ammo-star-text {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 48px;
+    height: 32px;
+    top: 0px;
+    left: 0px;
+    color: #111010;
+    font-family: 'Sakurata', sans-serif;
+    font-weight: bold;
+    font-size: 18px;
+    text-align: center;
+}
+
+#ammo-fire-text {
+    position: absolute;
+    display: inline-block;
+    width: 48px;
+    height: 32px;
+    bottom: 0px;
+    left: 0px;
+    color: #111010;
+    font-family: 'Sakurata', sans-serif;
+    font-weight: bold;
+    font-size: 18px;
+    text-align: center;
+}
+
+#ammo-star {
+    position: absolute;
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    top: 0px;
+    left: 48px;
+    background-image: url("../img/menu/hud/ammo-star.png");
+    background-color: blue;
+}
+
+#ammo-fire {
+    position: absolute;
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    bottom: 0px;
+    left: 48px;
+    background-image: url("../img/menu/hud/ammo-fire.png");
+}
+
+#weapon1 {
+    position: absolute;
+    display: inline-block;
+    width: 91px;
+    height: 36px;
+    top: 0px;
+    left: 80px;
+    background-image: url("../img/menu/hud/bg-weapon1.png");
+}
+
+#weapon2 {
+    position: absolute;
+    display: inline-block;
+    width: 204px;
+    height: 29px;
+    top: 36px;
+    left: 80px;
+    background-image: url("../img/menu/hud/bg-weapon2_off.png");
+}
+
+#weapon3 {
+    position: absolute;
+    display: inline-block;
+    width: 46px;
+    height: 64px;
+    top: 0px;
+    right: 0px;
+    background-image: url("../img/menu/hud/bg-weapon3_off.png");
+}
+
+#weapon4 {
+    position: absolute;
+    display: inline-block;
+    width: 113px;
+    height: 36px;
+    top: 0px;
+    right: 46px;
+    background-image: url("../img/menu/hud/bg-weapon4_off.png");
 }

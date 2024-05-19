@@ -117,5 +117,15 @@
         "anim_startFrame": 1,
         "anim_actFrame": 1,
         "anim_speed": 180
+    },
+    {
+        "id": 45,
+        "textures": {
+            "cellar": ["hwall1"]
+        },
+        "type": "wall",
+        "mode": "normal",
+        "material": "fix",
+        "height": "big"
     }
 ]
