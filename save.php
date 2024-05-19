@@ -1,17 +1,17 @@
 <?php
-if (isset($_POST['mapdata']))
+if (isset($_POST['mapdata']) && isset($_POST['filename']))
 {
-    // $json_data = json_encode($_POST['map'], JSON_PRETTY_PRINT);
     $json_data = $_POST['mapdata'];
+    $filename = $_POST['filename'];
 
-    if (file_put_contents('./data/maps/map.JSON', $json_data) !== false) {
-        $message = "Sikeres mentés!";
+    if (file_put_contents('./data/maps/'.$filename.'.JSON', $json_data) !== false) {
+        $message = "Successful saving!";
         file_put_contents('log.txt', date('Y-m-d H:i:s') ." ". $message ." \r", FILE_APPEND);
-        return $message;
+        echo $message;
     } else {
-        $message = "Hiba történt a mentés során!";
+        $message = "Save failed!";
         file_put_contents('log.txt', date('Y-m-d H:i:s') ." ". $message ." \r", FILE_APPEND);
-        return $message;
+        echo $message;
     }
 } 
 else

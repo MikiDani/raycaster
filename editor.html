@@ -23,11 +23,13 @@
                 <div class="row tools-title m-3">
                     <div class="d-flex justify-content-between align-items-center mt-2">
                         <button type="button" id="save-button" class="btn btn-sm btn-minw1 btn-primary" data-size="big">Save</button>
-                        <button type="button" id="load-button" class="btn btn-sm btn-minw1 btn-primary" data-size="big" data-bs-toggle="modal" data-bs-target="#load-window">Load</button>
+                        <!-- <button type="button" id="load-button" class="btn btn-sm btn-minw1 btn-primary" data-size="big" data-bs-toggle="modal" data-bs-target="#load-window">Load</button> -->
+                        <button type="button" id="load-button" class="btn btn-sm btn-minw1 btn-primary">Load</button>
                         <button type="button" id="options-button" class="btn btn-sm btn-minw1 btn-primary" data-size="big">Options</button>
                     </div>
                     <div class="px-3 py-0">
-                        <input type="text" name="filename" value="testmap.json" placeholder="filename.json" class="form-control my-3">
+                        <input type="text" name="filename" value="map" placeholder="filename.json" class="form-control my-3">
+                        <div id="filename-message" style="display: none;" class="mb-3"></div>
                     </div>
                 </div>
                 <div class="mx-3 my-0 d-flex justify-content-between align-items-center">

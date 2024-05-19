@@ -123,3 +123,14 @@ canvas {
     background-size: cover;
     background-position: bottom;
 }
+
+#scroll-button {
+    background-image: url("../img/menu/bg-papirus.png");
+    width: 70px;
+    height: 50px;
+    border: 2px solid #be8254;
+    color: #111010;
+    font-weight: bold;
+    font-size: 1.2rem;
+    background-repeat: repeat;
+}

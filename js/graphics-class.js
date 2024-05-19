@@ -12,6 +12,7 @@ export default class GaphicsClass {
 	poisonModValue;
 	poisonModScale;
 	blockMask;
+	imgBgPapirus;
 
 	constructor ({mapDataClass: mapDataClass, spritesClass: spritesClass, texturesClass: texturesClass, CELL_SIZE: CELL_SIZE, player: player, menu: menu, gamePlay: gamePlay, check: check, poisonModValue: poisonModValue})
 	{
@@ -116,6 +117,17 @@ export default class GaphicsClass {
 			container.style.height = this.SCREEN_HEIGHT + 'px'
 			document.body.appendChild(container)
 		}
+		// KELL EZ ??
+		var imgContainer = document.createElement("div")
+		imgContainer.setAttribute('id', 'img-container')
+		imgContainer.style.display = 'none'
+		container.append(imgContainer)
+		
+		var imgBgPapirus = document.createElement("img")
+		imgBgPapirus.setAttribute("id", "bg-papirus")
+		imgBgPapirus.setAttribute("src", "./img/menu/bg-papirus.png")
+		imgContainer.append(imgBgPapirus)
+
 		var loading = document.createElement("div")
 		loading.setAttribute('id', 'loading')
 		loading.style.display = 'none'
@@ -337,15 +349,13 @@ export default class GaphicsClass {
 		try {
 			await Promise.all([
 				new Promise(resolve => {
-					if (useButton) htmlElements += '<div class="text-center"><button type="button" id="scroll-button" class="btn btn-primary">Ok</button></div>'
+					if (useButton) htmlElements += '<div class="text-center"><button type="button" id="scroll-button" class="btn">Ok</button></div>'
 					$("#scroll-info-box-content-text").html(htmlElements);
-
 					if (useButton) {						
 						$("#scroll-info-box-content-text").find('#scroll-button').on('click', hideScrollInfoBoxAction);
-						function handleEnterKeyPress(event) { if (event.key === "Enter") { hideScrollInfoBoxAction(); document.removeEventListener('keydown', handleEnterKeyPress) }	}
+						function handleEnterKeyPress(event) { if (event.key === "Enter") { hideScrollInfoBoxAction(); document.removeEventListener('keydown', handleEnterKeyPress) } }
 						document.addEventListener('keydown', handleEnterKeyPress);
 					}
-
 					resolve();
 				}),
 				loadImage(imgTopUrl),
@@ -627,10 +637,10 @@ export default class GaphicsClass {
 		return this.texturesClass.errorTexture['error']['error']
 	}
 
-	renderMinimap(rays) {
+	renderMinimap() {
 		const cellSize = this.MINIMAP_SCALE * this.CELL_SIZE;
-		let mapSizeX = 6
-		let mapSizeY = 4
+		var mapSizeX = 6
+		var mapSizeY = 4
 
 		let actX = Math.floor(this.player.x / cellSize)
 		let actY = Math.floor(this.player.y / cellSize)
@@ -659,25 +669,35 @@ export default class GaphicsClass {
 				else widthX = cellSize
 
 				// STROKE
-				this.context.strokeStyle = '#80808033'
+				this.context.strokeStyle = '#80808066'
 				this.context.lineWidth = 2;
 				this.context.strokeRect(
 					playerBrickX + (cellSize * x) + modFirstBrickX,
 					playerBrickY + (cellSize * y) + modFirstBrickY,
-					widthX,
-					widthY,
+					widthX,	widthY,
 				);
-
-				this.context.fillStyle = '#ffffff77'
-
-				if (actY + y == this.check.playerCheckY && actX + x == this.check.playerCheckX) this.context.fillStyle = '#0000ff55'
-
-				this.context.fillRect(
+				
+				// PAPIRUS
+				let imgBgPapirus = document.getElementById('bg-papirus')
+				let imgWidth = imgBgPapirus.width;
+				let imgHeight = imgBgPapirus.height - 4;
+				this.context.drawImage(
+					imgBgPapirus,
+					0, 4, imgWidth, imgHeight,
 					playerBrickX + (cellSize * x) + modFirstBrickX,
 					playerBrickY + (cellSize * y) + modFirstBrickY,
-					widthX,
-					widthY,
+					widthX,	widthY,
 				);
+
+				// CHECK COLOR
+				if (actY + y == this.check.playerCheckY && actX + x == this.check.playerCheckX) {
+					this.context.fillStyle = '#0000ff77'
+					this.context.fillRect(
+						playerBrickX + (cellSize * x) + modFirstBrickX,
+						playerBrickY + (cellSize * y) + modFirstBrickY,
+						widthX,	widthY,
+					);
+				}
 
 				if (this.mapDataClass.map[actY + y] != undefined) {
 					if (this.mapDataClass.map[actY + y][actX + x] != undefined) {
@@ -685,15 +705,48 @@ export default class GaphicsClass {
 						var cellValue = this.mapDataClass.map[actY + y][actX + x]
 
 						if (cellValue) {
-
-							this.context.fillStyle = 'orange'
-							
+							this.context.fillStyle = '#b0aaa0'
 							this.context.fillRect(
-								playerBrickX + (cellSize * x) + modFirstBrickX,
-								playerBrickY + (cellSize * y) + modFirstBrickY,
-								widthX,
-								widthY,
+								playerBrickX + (cellSize * x) + modFirstBrickX, playerBrickY + (cellSize * y) + modFirstBrickY,
+								widthX,	widthY,
 							);
+						}
+
+						// BLOCKS
+						let checkBlock = this.spritesClass.checkSpriteData(actY + y, actX + x, 'type', 'block')
+						let checkBlockValue = (checkBlock && checkBlock.material == 'fix') ? true : false;
+
+						if (checkBlockValue && (x != mapSizeX-1 && x != -mapSizeX) && (y != mapSizeY-1 && y != -mapSizeY)) {
+							if (checkBlock.mode == 'door') this.context.fillStyle = '#ca9d60'
+							else this.context.fillStyle = '#bd894e'
+
+							if (checkBlock.angle == 0) {
+								this.context.fillRect(
+									playerBrickX + (cellSize * x) + (cellSize / 3) + modFirstBrickX,
+									playerBrickY + (cellSize * y) + modFirstBrickY,
+									widthX - ((cellSize / 3) * 2), widthY,
+								);
+							} else if (checkBlock.angle == 90) {
+								this.context.fillRect(
+									playerBrickX + (cellSize * x) + modFirstBrickX,
+									playerBrickY + (cellSize * y) + (cellSize / 3) + modFirstBrickY,
+									widthX, widthY - ((cellSize / 3) * 2),
+								);
+							}
+						}
+
+						// FIX OBJECTS
+						let checkObject = this.spritesClass.checkSpriteData(actY + y, actX + x, 'type', 'object')
+						let checkObjectValue = (checkObject && checkObject.active && (checkObject.material == 'fix' || checkObject.material == 'ghost')) ? true : false;
+
+						if (checkObjectValue && (x != mapSizeX-1 && x != -mapSizeX) && (y != mapSizeY-1 && y != -mapSizeY)) {
+							if (checkObject.material == 'ghost') this.context.fillStyle = '#ca9d60'
+							else this.context.fillStyle = '#bd894e'
+							this.context.beginPath();
+							this.context.arc(
+								playerBrickX + (cellSize * x) + (cellSize / 2) + modFirstBrickX, playerBrickY + (cellSize * y) + (cellSize / 2) + modFirstBrickY,
+								(cellSize / 4), 0, 2 * Math.PI);
+							this.context.fill();
 						}
 					}
 				}

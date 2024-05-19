@@ -8,6 +8,8 @@ import TexturesClass from './textures-class.js'
 import MapDataClass from './mapdata-class.js'
 import SpritesClass from './sprites-class.js'
 
+var mapname = 'map'
+
 const CLOCKSIGNAL = 5
 const CELL_SIZE = 64
 
@@ -31,7 +33,7 @@ const menu = {
 	optionsActive: false,
 	clearGameSwitch: false,
 	infoSwitch: true,
-	mapSwitch: true,
+	mapSwitch: false,
 	shadowsSwitch: true,
 	spriteShadowsSwitch: true,
 	mouseSwitch: true,
@@ -156,13 +158,13 @@ function checkMoveSprite(spriteObj, type = null, inputStrafeCheck = null) {
 	soAngleDirection.forEach(brick => {
 		let checkMap = (mapDataClass.map[brick.y][brick.x] != 0) ? true : false;
 
-		let checkBlock = checkSpriteData(brick.y, brick.x, 'type', 'block')
+		let checkBlock = spritesClass.checkSpriteData(brick.y, brick.x, 'type', 'block')
 		let checkBlockValue = (checkBlock && checkBlock.material == 'fix') ? true : false;
 		
-		let checkObject = checkSpriteData(brick.y, brick.x, 'type', 'object')
+		let checkObject = spritesClass.checkSpriteData(brick.y, brick.x, 'type', 'object')
 		let checkObjectValue = (checkObject && checkObject.material != 'ghost') ? true : false;
 
-		let checkCreatures = checkSpriteData(brick.y, brick.x, 'type', 'creature')
+		let checkCreatures = spritesClass.checkSpriteData(brick.y, brick.x, 'type', 'creature')
 		let checkCreaturesValue = (checkCreatures && checkCreatures.material != 'ghost') ? true : false;
 				
 		if (checkMap || checkBlockValue || checkObjectValue || checkCreaturesValue) {
@@ -297,12 +299,12 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 					if (sprite.active == true && sprite.mode.includes("key")) {
 						sprite.active = false
 						let colorizeOption = {}
-						if (sprite.mode=='key1') {
+						if (sprite.type == 'object' && sprite.mode=='key1') {
 							bringPlayer.key1 = true
 							console.log('PICK UP cellar KEY1')
 							colorizeOption = { color: "255, 255, 255", alpha: 0.5, time: 200 }
 						}
-						if (sprite.mode=='key2') {
+						if (sprite.type == 'object' && sprite.mode=='key2') {
 							bringPlayer.key2 = true
 							console.log('PICK UP cellar KEY2')
 							colorizeOption = { color: "255, 180, 50", alpha: 0.5, time: 200 }
@@ -322,7 +324,7 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 				}
 
 				// EXIT
-				let checkExit = checkSpriteData(player.y, player.x, 'mode', 'exit', 'position')				
+				let checkExit = spritesClass.checkSpriteData(player.y, player.x, 'mode', 'exit', 'position')				
 				if (checkExit) {
 					console.log('EXITEN ÁLLSZ ! JEE ! : )')
 				}
@@ -334,18 +336,6 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 	}
 
 	return pCheck;
-}
-
-function checkSpriteData(y, x, attr, name, type = null) {
-	if (type == 'position') {
-		y = Math.floor(y / CELL_SIZE)
-		x = Math.floor(x / CELL_SIZE)
-	}
-
-	let check = spritesClass.sprites.find(sprite => (sprite[attr] == name && y == Math.floor(sprite.y / CELL_SIZE) && x == Math.floor(sprite.x / CELL_SIZE)))
-
-	let returnValue = (check) ? check : false;
-	return returnValue;
 }
 
 function moveCreature(creature) {
@@ -391,15 +381,15 @@ function moveCreature(creature) {
 			}
 
 			// IF FIX SPRITE
-			let checkMapSprite = checkSpriteData(creature.y, creature.x, 'type', 'object', 'position')
+			let checkMapSprite = spritesClass.checkSpriteData(creature.y, creature.x, 'type', 'object', 'position')
 			if (checkMapSprite && checkMapSprite.material == 'fix') creature.angle += (Math.PI / 2)
 
 			// IF DOOR
-			let checkDoor = checkSpriteData(creature.y, creature.x, 'mode', 'door', 'position')
+			let checkDoor = spritesClass.checkSpriteData(creature.y, creature.x, 'mode', 'door', 'position')
 			if (checkDoor && checkDoor.material == 'fix') creature.angle += (Math.PI / 2)
 	
 			// IF BLOCK
-			let checkBlock = checkSpriteData(creature.y, creature.x, 'type', 'block', 'position')
+			let checkBlock = spritesClass.checkSpriteData(creature.y, creature.x, 'type', 'block', 'position')
 			if (checkBlock && checkBlock.mode != 'door') creature.angle += (Math.PI / 2)
 	
 			// DIE CREATURE
@@ -426,7 +416,7 @@ function moveCreature(creature) {
 			}
 
 			// IF EFFECT
-			let checkEffect = checkSpriteData(creature.y, creature.x, 'type', 'effect', 'position')
+			let checkEffect = spritesClass.checkSpriteData(creature.y, creature.x, 'type', 'effect', 'position')
 			if (checkEffect) if (checkEffect.mode == 'direction') {
 				if ((creature.inY >=30 && creature.inY <=34) && (creature.inX >=30 && creature.inX <=34)) creature.angle = checkEffect.angle;
 			}
@@ -631,7 +621,7 @@ async function loadindData() {
 		spritesClass.createSprite(ammo, dirConstruction, spritesClass.weponsSprites)
 	}
 	
-	const mapDataResponse = await fetch('./data/maps/map.JSON')
+	const mapDataResponse = await fetch(`./data/maps/${mapname}.JSON`)
     const mapData = await mapDataResponse.json()
 	// console.log(mapData)
 	
@@ -777,7 +767,7 @@ function gameLoop() {
 	
 	graphicsClass.screenColorizeAction()
 
-	if (menu.mapSwitch) graphicsClass.renderMinimap(graphicsClass.rays)
+	if (menu.mapSwitch) graphicsClass.renderMinimap()
 	if (menu.infoSwitch) graphicsClass.infoPanel()
 	if (menu.clearGameSwitch) clearInterval(gamePlay.game)
 

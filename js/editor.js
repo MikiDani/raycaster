@@ -11,7 +11,7 @@ class Editor {
 	constructor () {
 		this.mapSize = 64
 		this.mapContainerWidth = 4000
-		this.levelData = {
+		this.levelDataBasic = {
 			"player": {
 				"y": 1.5,
 				"x": 1.5,
@@ -28,7 +28,7 @@ class Editor {
 			"sprites": [
 			]
 		}
-		
+		this.levelData = this.levelDataBasic
 		this.map = []
 		this.skys = []
 		this.floors = []
@@ -138,6 +138,15 @@ class Editor {
 			element.css('background-color', '#0a0a0a')
 			element.addClass('brick')
 		}, time);
+	}
+
+	drawMessage = function(message, color) {
+		$("#filename-message").html(`<span class='text-${color}'>${message}</span>`)
+		$("#filename-message").show()
+		setTimeout(() => {
+			$("#filename-message").text('')
+			$("#filename-message").hide(200)
+		}, 2000);
 	}
 
 	buttonOptions() {
@@ -284,7 +293,7 @@ class Editor {
 				// console.log('ezt írja bele:')
 				// console.log(insertedData.data)
 			} else {
-				alert('Nincsen kiválasztva semmi!')
+				clone.drawMessage('No have selected anything!', 'warning')
 			}
 		});
 
@@ -360,40 +369,67 @@ class Editor {
 					}
 				}
 			} else {
-				alert('Még nincsen adat a kurzorban!')
+				this.drawMessage('No have data in cursor!', 'warning')
 			}
 		});
 
 		// CLICK SAVE BUTTON
 		$("#save-button").on('click', {levelData: this.levelData}, function (event) {
 			event.data.levelData
-			console.log('SAVE BUTTON Click:')
 			event.data.levelData['map'] = clone.map
-
-			console.log('Ezzt Küldi:')
-			console.log(event.data.levelData);
-			
-			//const mapdata = JSON.stringify(event.data.levelData).replace(/\s+/g, '')
-			const mapdata = JSON.stringify(event.data.levelData)
-
 			if (clone.map.length != 0) {
-				var xhr = new XMLHttpRequest()
-				xhr.open("POST", "./save.php", true)
-				xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
-				xhr.send("mapdata=" + encodeURIComponent(mapdata))
 
-				xhr.onreadystatechange = function() {
-					if (xhr.readyState === 4 && xhr.status === 200) {
-						console.log('A save.php válaszolt!');
-						console.log(xhr.responseText);
-						
-						alert('Status: ' + xhr.status + ' Text: ' + xhr.responseText)
+				console.log('Ezzt Küldi:')
+				console.log(event.data.levelData);
+				
+				let filename = $("input[name='filename']").val()
+
+				if (filename.length > 0) {
+					const mapdata = JSON.stringify(event.data.levelData)
+					
+					var removeAfterDot = function (str) {
+						const dotIndex = str.indexOf('.');
+						if (dotIndex !== -1) return str.substring(0, dotIndex);
+						return str;
 					}
-				};
-				console.log('Elküldtem a save.php-nak!');
-			} else {
-				console.log('ÜRES MÉG A MAP!');
-			}
+
+					filename = removeAfterDot(filename)
+					$("input[name='filename']").val(filename)
+				
+					var xhr = new XMLHttpRequest()
+					xhr.open("POST", "./save.php", true)
+					xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
+					var dataToSend = "mapdata=" + encodeURIComponent(mapdata) + "&filename=" + encodeURIComponent(filename);
+					xhr.send(dataToSend)
+					xhr.onreadystatechange = function() {
+						if (xhr.readyState === 4 && xhr.status === 200) {
+							// console.log(xhr.responseText);
+							let color = (xhr.status == 200) ? 'success' : 'danger';
+							clone.drawMessage(xhr.responseText, color)
+						}
+					};
+				} else clone.drawMessage('No have filename!', 'danger')
+			} else clone.drawMessage('The map is empty!', 'danger');
+		});
+
+		// CLICK LOAD BUTTON
+		$("#load-button").on('click', function () {
+						
+			let filename = $("input[name='filename']").val()
+
+			if (filename.length > 0) {
+				clone.levelData = clone.levelDataBasic
+
+				for (let y = 0; y < clone.mapSize; y++) {
+					for (let x = 0; x < clone.mapSize; x++) {						
+						let mapBrickElment = $(".map-container").find(`[map-x='${x}'][map-y='${y}']`)
+						mapBrickElment.css("background-image","").css("background-size", "").css("border", "");
+					}
+				}
+
+				clone.loadMap(filename)
+				
+			} else clone.drawMessage('No have filename!', 'danger')
 		});
 	}
 	
@@ -439,8 +475,39 @@ class Editor {
 	}
 
 	async loadMap(mapfileName) {
-		const mapDataWait = await fetch(`./data/maps/${mapfileName}.JSON`)
-		const mapData = await mapDataWait.json()
+
+		async function fetchMapData(mapfileName) {
+			try {
+				const mapDataWait = await fetch(`./data/maps/${mapfileName}.json`);
+				
+				// Ellenőrizzük a státuszkódot
+				if (!mapDataWait.ok) {
+					throw new Error(`HTTP error! status: ${mapDataWait.status}`);
+				}
+				
+				const mapData = await mapDataWait.json();
+				return mapData;
+			} catch (error) {
+				console.error('Error fetching map data:', error);
+				// Kezelheted itt az esetet, például egy alapértelmezett értéket adva vissza
+				return null;
+			}
+		}
+
+		var mapData = null;
+
+		fetchMapData(mapfileName)
+		.then(mapDataLoaded => {
+			if (mapDataLoaded) {
+				console.log('Map data EZ:', mapDataLoaded);
+				mapData = mapDataLoaded
+			} else {
+				return ('Map file not found or another error occurred.');
+			}
+		});
+
+		// const mapDataWait = await fetch(`./data/maps/${mapfileName}.JSON`)
+		// const mapData = await mapDataWait.json()
 
 		await new Promise(resolve => setTimeout(resolve, 300))
 		console.log('Eltelt')

@@ -89,4 +89,16 @@ export default class SpritesClass {
             this.sprites.push(ammo)
         }
     }
+
+    checkSpriteData(y, x, attr, name, type = null) {
+        if (type == 'position') {
+            y = Math.floor(y / this.CELL_SIZE)
+            x = Math.floor(x / this.CELL_SIZE)
+        }
+    
+        let check = this.sprites.find(sprite => (sprite[attr] == name && y == Math.floor(sprite.y / this.CELL_SIZE) && x == Math.floor(sprite.x / this.CELL_SIZE)))
+    
+        let returnValue = (check) ? check : false;
+        return returnValue;
+    }
 }
