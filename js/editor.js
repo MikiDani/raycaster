@@ -46,7 +46,7 @@ class Editor {
 		this.mapIconSize()
 		// ----------------
 		this.loadTextures()
-		this.loadMap('map')
+		this.loadMap('map2')		// !!
 		this.buttonOptions()
 	}
 
@@ -337,6 +337,14 @@ class Editor {
 					mapBrickElment.css("background-image","").css("background-size", "").css("border", "");
 				}
 			}
+			clone.levelData = []
+
+			clone.levelData.player = clone.levelDataBasic.player
+
+			clone.levelData.sprites = []
+
+			console.log(clone.levelData);
+			
 		});
 
 		// FILL MAP BORDER BUTTON

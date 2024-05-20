@@ -105,18 +105,20 @@ export default class SpritesClass {
     demage(get, give, drawing) {
         if (typeof get.energy != 'undefined' && typeof give.damage != 'undefined') {
 
-            if (typeof get.damage_function === 'undefined' || get.damage_function === null) {
-
-                console.log(get.energy);
-            
+            if (typeof get.damage_function == 'undefined' || get.damage_function == null) {            
                 if (get.energy > 0) get.energy -= give.damage;
-            
                 if (drawing) {
+                    if (get.energy < 0) get.energy = 0
                     $("#healt-percentage").text(get.energy + '%');
                     $("#healt-percentage").css('color', 'red');
-                    setTimeout(() => {
-                        $("#healt-percentage").css('color', 'white');
-                    }, 250);
+                    setTimeout(function () {
+                        if (get.energy > 70) $("#healt-percentage").css('color', 'white');
+                        else if(get.energy <= 70 && get.energy >=31) $("#healt-percentage").css('color', 'gold');
+                        else if(get.energy <= 30) $("#healt-percentage").css('color', 'red');
+                    }, 200);
+                    if (get.energy <= 0) {
+                        console.log('Player DIE');
+                    }
                 }
             
                 get.damage_function = setTimeout(() => {

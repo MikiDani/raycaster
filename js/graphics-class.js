@@ -134,7 +134,7 @@ export default class GaphicsClass {
 		loading.style.margin = '0 auto'
 		loading.style.paddingTop = '20px'
 		loading.textContent = 'Loading...'
-		loading.classList.add("loading-box");
+		loading.classList.add("loading-box")
 		container.appendChild(loading)
 
 		this.menuElement = document.createElement("div")
@@ -156,85 +156,94 @@ export default class GaphicsClass {
 		canvasContainer.style.position='relative'
 		container.appendChild(canvasContainer)
 
-		let infoBar = document.createElement("div");
-		infoBar.setAttribute('id', 'info-bar');
-		infoBar.style.display = 'block';
+		let infoBar = document.createElement("div")
+		infoBar.setAttribute('id', 'info-bar')
+		infoBar.style.display = 'block'
 		infoBar.style.position = 'absolute';
-		infoBar.style.width = this.GAME_WIDTH + 'px';
-		infoBar.style.height = '64px';
-		infoBar.style.margin = '0px';
-		infoBar.style.padding = '0px';
+		infoBar.style.width = this.GAME_WIDTH + 'px'
+		infoBar.style.height = '64px'
+		infoBar.style.margin = '0px'
+		infoBar.style.padding = '0px'
 		// infoBar.style.backgroundColor = '#d4b27922';
-		infoBar.style.bottom = '6px';
+		infoBar.style.bottom = '6px'
 		canvasContainer.appendChild(infoBar);
+
+		let health = document.createElement("div")
+		health.setAttribute('id', 'health-container')
+		health.style.position = 'relative'
+		health.style.display = 'block'
+		health.style.float = 'left'
+		health.style.width = '250px'
+		health.style.height = '64px'
+		// health.style.backgroundColor = '#aab279';
+		infoBar.append(health)
 		
-		let healtPercentage = document.createElement("div");
-		healtPercentage.setAttribute('id', 'healt-percentage');
-		healtPercentage.style.display = 'inline-block';
-		healtPercentage.style.width = '20%';
-		healtPercentage.style.height = '64px';
-		// healtPercentage.style.backgroundColor = 'red';
-		healtPercentage.style.textAlign = 'center';
-		healtPercentage.style.fontSize = '40px';
-		healtPercentage.style.letterSpacing = '5px'
-		healtPercentage.style.fontFamily = 'Sakurata';
-		healtPercentage.style.textShadow = `-2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000`;
-		healtPercentage.style.fontWeight = 'bold';
-		healtPercentage.innerHTML = '100%';
-		healtPercentage.style.color = 'white';
-		infoBar.append(healtPercentage)
+		let healtPercentage = document.createElement("div")
+		healtPercentage.setAttribute('id', 'healt-percentage')
+		healtPercentage.innerHTML='100%'
+		health.append(healtPercentage);
 		
-		let weapons = document.createElement("div");
-		weapons.setAttribute('id', 'weapons-container');
-		weapons.style.position = 'relative';
-		weapons.style.display = 'block';
-		weapons.style.float = 'right';
-		weapons.style.width = '378px';
-		weapons.style.height = '64px';
+		let coinGold = document.createElement("div")
+		coinGold.setAttribute('id', 'coin-gold')
+		health.append(coinGold)
+		let coinSilver = document.createElement("div")
+		coinSilver.setAttribute('id', 'coin-silver')
+		health.append(coinSilver)
+		let coinCopper = document.createElement("div")
+		coinCopper.setAttribute('id', 'coin-copper')
+		health.append(coinCopper)
+		let coinGoldText = document.createElement("div")
+		coinGoldText.setAttribute('id', 'coin-gold-text')
+		health.append(coinGoldText)
+		let coinSilverText = document.createElement("div")
+		coinSilverText.setAttribute('id', 'coin-silver-text')
+		health.append(coinSilverText)
+		let coinCopperText = document.createElement("div")
+		coinCopperText.setAttribute('id', 'coin-copper-text')
+		health.append(coinCopperText)
+		
+		let weapons = document.createElement("div")
+		weapons.setAttribute('id', 'weapons-container')
+		weapons.style.position = 'relative'
+		weapons.style.display = 'block'
+		weapons.style.float = 'right'
+		weapons.style.width = '378px'
+		weapons.style.height = '64px'
 		// weapons.style.backgroundColor = '#d4b27922';
 		infoBar.append(weapons)
 
-		let goldKey = document.createElement("div");
-		goldKey.setAttribute('id', 'gold-key');
+		let goldKey = document.createElement("div")
+		goldKey.setAttribute('id', 'gold-key')
 		weapons.append(goldKey)
-		let silverKey = document.createElement("div");
-		silverKey.setAttribute('id', 'silver-key');
+		let silverKey = document.createElement("div")
+		silverKey.setAttribute('id', 'silver-key')
 		weapons.append(silverKey)
-		let ammoStarText = document.createElement("div");
-		ammoStarText.setAttribute('id', 'ammo-star-text');
-		ammoStarText.innerText="123";
+		let ammoStarText = document.createElement("div")
+		ammoStarText.setAttribute('id', 'ammo-star-text')
+		ammoStarText.innerText="123"
 		weapons.append(ammoStarText)
-		let ammoFireText = document.createElement("div");
-		ammoFireText.setAttribute('id', 'ammo-fire-text');
-		ammoFireText.innerText="23";
+		let ammoFireText = document.createElement("div")
+		ammoFireText.setAttribute('id', 'ammo-fire-text')
+		ammoFireText.innerText="23"
 		weapons.append(ammoFireText)
-		let ammoStar = document.createElement("div");
-		ammoStar.setAttribute('id', 'ammo-star');
+		let ammoStar = document.createElement("div")
+		ammoStar.setAttribute('id', 'ammo-star')
 		weapons.append(ammoStar)
-		let ammoFire = document.createElement("div");
-		ammoFire.setAttribute('id', 'ammo-fire');
+		let ammoFire = document.createElement("div")
+		ammoFire.setAttribute('id', 'ammo-fire')
 		weapons.append(ammoFire)
-		let weapon1 = document.createElement("div");
-		weapon1.setAttribute('id', 'weapon1');
+		let weapon1 = document.createElement("div")
+		weapon1.setAttribute('id', 'weapon1')
 		weapons.append(weapon1)
-		let weapon2 = document.createElement("div");
-		weapon2.setAttribute('id', 'weapon2');
+		let weapon2 = document.createElement("div")
+		weapon2.setAttribute('id', 'weapon2')
 		weapons.append(weapon2)
-		let weapon3 = document.createElement("div");
-		weapon3.setAttribute('id', 'weapon3');
+		let weapon3 = document.createElement("div")
+		weapon3.setAttribute('id', 'weapon3')
 		weapons.append(weapon3)
-		let weapon4 = document.createElement("div");
-		weapon4.setAttribute('id', 'weapon4');
+		let weapon4 = document.createElement("div")
+		weapon4.setAttribute('id', 'weapon4')
 		weapons.append(weapon4)
-
-		let things = document.createElement("div");
-		things.setAttribute('id', 'things-container');
-		things.style.display = 'inline-block';
-		things.style.float = 'right';
-		things.style.width = '20%';
-		things.style.height = '64px';
-		// things.style.backgroundColor = '#00ff0077';
-		infoBar.append(things)
 
 		const canvas = document.createElement("canvas")
 		canvas.setAttribute('id', 'canvas')

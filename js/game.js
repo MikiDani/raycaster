@@ -8,7 +8,7 @@ import TexturesClass from './textures-class.js'
 import MapDataClass from './mapdata-class.js'
 import SpritesClass from './sprites-class.js'
 
-var mapname = 'map'
+var mapname = 'map2'
 
 const CLOCKSIGNAL = 5
 const CELL_SIZE = 64
@@ -33,7 +33,7 @@ const menu = {
 	menuactive: true,
 	optionsActive: false,
 	clearGameSwitch: false,
-	infoSwitch: true,
+	infoSwitch: false,
 	mapSwitch: false,
 	shadowsSwitch: true,
 	spriteShadowsSwitch: true,
@@ -778,6 +778,10 @@ var szamol = 0;
 
 function gameLoop() {
 	gamePlay.timeStart = Date.now()
+
+	$('#coin-gold-text').text('20')
+	$('#coin-silver-text').text('8')
+	$('#coin-copper-text').text('110')
 
 	movePlayer(player)
 	graphicsClass.rays = graphicsClass.getRays()

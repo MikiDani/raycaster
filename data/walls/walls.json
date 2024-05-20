@@ -119,9 +119,9 @@
         "anim_speed": 180
     },
     {
-        "id": 45,
+        "id": 105,
         "textures": {
-            "cellar": ["hwall1"]
+            "garden": ["hwall1"]
         },
         "type": "wall",
         "mode": "normal",

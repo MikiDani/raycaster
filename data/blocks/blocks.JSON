@@ -64,5 +64,16 @@
         "anim_speed": 180,
 		"open_switch": false,
 		"open_positionValue": 0
-    }
+    },
+    {
+		"id": 520,
+		"textures": {
+			"block3": ["spider-web"]
+		},
+		"active": true,
+		"type": "block",
+		"mode": "normal",
+		"material": "ghost",
+		"angle": 90
+	}
 ]
