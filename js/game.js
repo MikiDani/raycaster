@@ -25,6 +25,7 @@ const player = {
 	score: 0,
 	weapon: 1,
 	poison: false,
+	energy: 100,
 }
 
 const menu = {
@@ -270,9 +271,9 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 					if (sprite.type == 'block') return;
 					if (sprite.material == 'ghost') return;
 
-					// CRASH AND STOP PLAYER
-					pCheck.moveX = false
-					pCheck.moveY = false
+					// CRASH AND STOP PLAYER	// old srach
+					// pCheck.moveX = false
+					// pCheck.moveY = false
 
 					let colorizeOption = { color: "0, 255, 0", alpha: 0.05, time: 10 }
 					graphicsClass.screenColorizeOptions(colorizeOption);
@@ -297,19 +298,24 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 					
 					// PICKUP KEYS
 					if (sprite.active == true && sprite.mode.includes("key")) {
-						sprite.active = false
+						
 						let colorizeOption = {}
-						if (sprite.type == 'object' && sprite.mode=='key1') {
+						if (!player.key1 && sprite.type == 'object' && sprite.mode=='key1') {
 							bringPlayer.key1 = true
+							sprite.active = false
 							console.log('PICK UP cellar KEY1')
+							$('#silver-key').addClass('silver-key-on')
 							colorizeOption = { color: "255, 255, 255", alpha: 0.5, time: 200 }
+							graphicsClass.screenColorizeOptions(colorizeOption);
 						}
-						if (sprite.type == 'object' && sprite.mode=='key2') {
+						if (!player.key2 && sprite.type == 'object' && sprite.mode=='key2') {
 							bringPlayer.key2 = true
+							sprite.active = false
 							console.log('PICK UP cellar KEY2')
+							$('#gold-key').addClass('gold-key-on')
 							colorizeOption = { color: "255, 180, 50", alpha: 0.5, time: 200 }
+							graphicsClass.screenColorizeOptions(colorizeOption);
 						}
-						graphicsClass.screenColorizeOptions(colorizeOption);
 						return;
 					}
 
@@ -358,7 +364,10 @@ function moveCreature(creature) {
 			console.log('PLAYER TALÁLAT!!!')
 
 			creature.move = false
+
+			spritesClass.demage(player, creature, true)
 			
+			// ATTACK TEXTURE
 			if(!creature.anim_attack_function) {
 				creature.anim_attack_actFrame = `${creature.dirConstruction[0]}_E1`
 				creature.anim_attack_function = setInterval(() => {
@@ -366,7 +375,7 @@ function moveCreature(creature) {
 				}, creature.anim_speed)
 			}
 
-			let colorizeOption = { color: "255, 0, 0", alpha: 0.1, time: 200 }
+			let colorizeOption = { color: "255, 0, 0", alpha: 0.2, time: 5 }
 			graphicsClass.screenColorizeOptions(colorizeOption);
 		} else {
 			// NORMAL CREATURE WALK
@@ -380,7 +389,7 @@ function moveCreature(creature) {
 				creature.anim_attack_function = null
 			}
 
-			// IF FIX SPRITE
+			// IF FIX SPRITE	angel:180
 			let checkMapSprite = spritesClass.checkSpriteData(creature.y, creature.x, 'type', 'object', 'position')
 			if (checkMapSprite && checkMapSprite.material == 'fix') creature.angle += (Math.PI / 2)
 
@@ -410,6 +419,22 @@ function moveCreature(creature) {
 					creature.x = Math.floor((creature.x / CELL_SIZE)) * CELL_SIZE + (CELL_SIZE / 2)
 					creature.y = Math.floor((creature.y / CELL_SIZE)) * CELL_SIZE + (CELL_SIZE / 2)
 
+					let creatureMapX = Math.floor(creature.x / CELL_SIZE)
+					let creatureMapY = Math.floor(creature.y / CELL_SIZE)
+
+					// 1#
+					// console.log('CX: ' + creature.x + ' CY: ' + creature.y);
+					
+					// var breakEach = false
+					// mapDataClass.wayCordinates.forEach(way => {
+					// 	if (breakEach) return;
+					// 	console.log(way.x, way.y, way.angle);
+					// 	if (mapDataClass.map[creatureMapY + way.y][creatureMapX + way.x] == 0) {
+					// 		creature.angle = graphicsClass.toRadians(way.angle)
+					// 		breakEach = true;
+					// 	}
+					// });
+					// 2#
 					if (!cCheck.moveY) creature.angle = (Math.floor(Math.random() * 2)) ? graphicsClass.toRadians(180) : graphicsClass.toRadians(0);
 					if (!cCheck.moveX) creature.angle = (Math.floor(Math.random() * 2)) ? graphicsClass.toRadians(90) : graphicsClass.toRadians(270);		
 				}

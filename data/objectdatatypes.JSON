@@ -31,6 +31,7 @@
                                                            "effects": [0, 90, 180, 270] },
     { "name": "speed",              "inputType": "number" },
     { "name": "energy",             "inputType": "number" },
+    { "name": "damage",             "inputType": "number" },
     { "name": "move",               "inputType": "boolean" },
     { "name": "moveType",           "inputType": "select", "creatures": ["patrol", "stay", "levitation", "attack"] },
     { "name": "distance",           "inputType": "number" },

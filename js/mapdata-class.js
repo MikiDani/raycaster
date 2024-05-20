@@ -3,11 +3,14 @@ export default class MapDataClass {
     walls;
     sky;
     floor;
+    wayCordinates;
     constructor({texturesClass: texturesClass}) {
         this.texturesClass = texturesClass
         //--------------------------------
         this.map = []
         this.walls = []; this.walls[0] = null;
+
+        this.wayCordinates = [{x: -1, y: 0, angle: 180}, {x: 1, y: 0, angle: 0}, {x: 0, y: -1, angle: 180}, {x: 0, y: 1, angle: 90}];
     }
 
     returnActualWallTexture(wall, wallY, wallX) {

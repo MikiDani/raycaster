@@ -101,4 +101,28 @@ export default class SpritesClass {
         let returnValue = (check) ? check : false;
         return returnValue;
     }
+    
+    demage(get, give, drawing) {
+        if (typeof get.energy != 'undefined' && typeof give.damage != 'undefined') {
+
+            if (typeof get.damage_function === 'undefined' || get.damage_function === null) {
+
+                console.log(get.energy);
+            
+                if (get.energy > 0) get.energy -= give.damage;
+            
+                if (drawing) {
+                    $("#healt-percentage").text(get.energy + '%');
+                    $("#healt-percentage").css('color', 'red');
+                    setTimeout(() => {
+                        $("#healt-percentage").css('color', 'white');
+                    }, 250);
+                }
+            
+                get.damage_function = setTimeout(() => {
+                    get.damage_function = null;
+                }, 500);
+            }
+        }
+    }
 }

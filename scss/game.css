@@ -145,7 +145,7 @@ canvas {
   padding-top: 12px;
 }
 
-#ammo-star-text {
+#gold-key {
   position: absolute;
   display: flex;
   justify-content: center;
@@ -154,6 +154,36 @@ canvas {
   height: 32px;
   top: 0px;
   left: 0px;
+}
+
+.gold-key-on {
+  background-image: url("../img/menu/hud/gold-key.png");
+}
+
+#silver-key {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 48px;
+  height: 32px;
+  bottom: 0px;
+  left: 0px;
+}
+
+.silver-key-on {
+  background-image: url("../img/menu/hud/silver-key.png");
+}
+
+#ammo-star-text {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 48px;
+  height: 32px;
+  top: 0px;
+  left: 48px;
   color: #111010;
   font-family: "Sakurata", sans-serif;
   font-weight: bold;
@@ -167,7 +197,7 @@ canvas {
   width: 48px;
   height: 32px;
   bottom: 0px;
-  left: 0px;
+  left: 48px;
   color: #111010;
   font-family: "Sakurata", sans-serif;
   font-weight: bold;
@@ -181,7 +211,7 @@ canvas {
   width: 32px;
   height: 32px;
   top: 0px;
-  left: 48px;
+  left: 96px;
   background-image: url("../img/menu/hud/ammo-star.png");
 }
 
@@ -191,7 +221,7 @@ canvas {
   width: 32px;
   height: 32px;
   bottom: 0px;
-  left: 48px;
+  left: 96px;
   background-image: url("../img/menu/hud/ammo-fire.png");
 }
 
@@ -199,9 +229,9 @@ canvas {
   position: absolute;
   display: inline-block;
   width: 91px;
-  height: 36px;
+  height: 32px;
   top: 0px;
-  left: 80px;
+  left: 128px;
   background-image: url("../img/menu/hud/bg-weapon1.png");
 }
 
@@ -209,9 +239,9 @@ canvas {
   position: absolute;
   display: inline-block;
   width: 204px;
-  height: 29px;
-  top: 36px;
-  left: 80px;
+  height: 32px;
+  top: 32px;
+  left: 128px;
   background-image: url("../img/menu/hud/bg-weapon2_off.png");
 }
 
@@ -229,7 +259,7 @@ canvas {
   position: absolute;
   display: inline-block;
   width: 113px;
-  height: 36px;
+  height: 32px;
   top: 0px;
   right: 46px;
   background-image: url("../img/menu/hud/bg-weapon4_off.png");

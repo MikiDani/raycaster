@@ -189,11 +189,17 @@ export default class GaphicsClass {
 		weapons.style.position = 'relative';
 		weapons.style.display = 'block';
 		weapons.style.float = 'right';
-		weapons.style.width = '330px';
+		weapons.style.width = '378px';
 		weapons.style.height = '64px';
 		// weapons.style.backgroundColor = '#d4b27922';
 		infoBar.append(weapons)
 
+		let goldKey = document.createElement("div");
+		goldKey.setAttribute('id', 'gold-key');
+		weapons.append(goldKey)
+		let silverKey = document.createElement("div");
+		silverKey.setAttribute('id', 'silver-key');
+		weapons.append(silverKey)
 		let ammoStarText = document.createElement("div");
 		ammoStarText.setAttribute('id', 'ammo-star-text');
 		ammoStarText.innerText="123";
