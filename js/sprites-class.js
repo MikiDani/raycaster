@@ -111,11 +111,7 @@ export default class SpritesClass {
                     if (get.energy < 0) get.energy = 0
                     $("#healt-percentage").text(get.energy + '%');
                     $("#healt-percentage").css('color', 'red');
-                    setTimeout(function () {
-                        if (get.energy > 70) $("#healt-percentage").css('color', 'white');
-                        else if(get.energy <= 70 && get.energy >=31) $("#healt-percentage").css('color', 'gold');
-                        else if(get.energy <= 30) $("#healt-percentage").css('color', 'red');
-                    }, 200);
+                    this.playerHealtTimeOut(get.energy)
                     if (get.energy <= 0) {
                         console.log('Player DIE');
                     }
@@ -126,5 +122,13 @@ export default class SpritesClass {
                 }, 500);
             }
         }
+    }
+
+    playerHealtTimeOut(energy) {
+        setTimeout(function () {
+            if (energy > 70) $("#healt-percentage").css('color', 'white');
+            else if(energy <= 70 && energy >=31) $("#healt-percentage").css('color', 'gold');
+            else if(energy <= 30) $("#healt-percentage").css('color', 'red');
+        }, 200);
     }
 }

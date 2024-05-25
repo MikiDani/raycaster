@@ -20,7 +20,7 @@
         "type": "object",
         "mode": "coin1",
         "material": "ghost",
-        "value": 100,
+        "value": 1,
         "z": -5,
         "angle": 45
     },
@@ -33,7 +33,7 @@
         "type": "object",
         "mode": "coin2",
         "material": "ghost",
-        "value": 50,
+        "value": 1,
         "z": -5,
         "angle": 45
     },
@@ -46,7 +46,7 @@
         "type": "object",
         "mode": "coin3",
         "material": "ghost",
-        "value": 10,
+        "value": 1,
         "z": -5,
         "angle": 45
     },
@@ -129,6 +129,34 @@
         "time": 0,
         "message": "Message. Button press.",
         "material": "ghost",
+        "z": 0
+    },
+    {
+        "id": 1055,
+        "textures": {
+            "mushroom": ["mushroom"]
+        },
+        "active": true,
+        "type": "object",
+        "mode": "mushroom",
+        "time": 0,
+        "material": "ghost",
+        "z": 0
+    },
+    {
+        "id": 1060,
+        "textures": {
+            "health": ["healt10-a1", "healt10-a2", "healt10-a3"]
+        },
+        "active": true,
+        "type": "object",
+        "mode": "energy",
+        "material": "ghost",
+        "value": 10,
+        "anim_switch": true,
+        "anim_startFrame": 1,
+        "anim_actFrame": 1,
+        "anim_speed": 300,
         "z": 0
     }
 ]

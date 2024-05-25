@@ -10,6 +10,16 @@
         "height": "normal"
     },
     {
+        "id": 6,
+        "textures": {
+            "cellar": ["hwall1"]
+        },
+        "type": "wall",
+        "mode": "normal",
+        "material": "fix",
+        "height": "big"
+    },
+    {
         "id": 10,
         "textures": {
             "cellar": ["wall1-c1"]
@@ -127,5 +137,22 @@
         "mode": "normal",
         "material": "fix",
         "height": "big"
+    },
+    {
+        "id": 110,
+        "textures": {
+            "garden": ["hwall1-f1", "hwall1-f2", "hwall1-f3", "hwall1-f4"]
+        },
+        "type": "wall",
+        "mode": "animated",
+        "material": "fix",
+        "height": "big",
+        "anim_switch": true,
+        "anim_repeat": true,
+        "anim_repeatCount": 0,
+        "anim_repeatEnd": 40,
+        "anim_startFrame": 1,
+        "anim_actFrame": 1,
+        "anim_speed": 80
     }
 ]

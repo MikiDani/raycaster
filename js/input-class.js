@@ -5,10 +5,10 @@ export default class InputClass {
 		this.graphicsClass = graphicsClass
 		this.movePlayer = movePlayer
 		//--------------------------------------------------------------------
-		this.MOVE_SPEED = 10	// !!
+		this.MOVE_SPEED = 12	// !!
 		this.MOVE_ANGLE = 5
 		this.MOVE_ANGLE_SLOW = 1
-		this.WALL_DISTANCE = Math.floor((graphicsClass.CELL_SIZE / 100) * 25)	// 40 eredeti
+		this.WALL_DISTANCE = Math.floor((graphicsClass.CELL_SIZE / 100) * 35)	// 40 eredeti
 		//--------------------------------------------------------------------
 		this.menu = menu
 		this.gameMenu = gameMenu
@@ -18,7 +18,7 @@ export default class InputClass {
 		this.gamePlay = gamePlay
 		this.check = check
 		this.mouseMoveSwitsh = false
-		this.messageTime = 3000
+		this.messageTime = 1500
 
 		this.loadInputs()
 		this.moveMenuStar()

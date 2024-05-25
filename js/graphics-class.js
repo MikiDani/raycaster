@@ -33,7 +33,7 @@ export default class GaphicsClass {
 		// this.MINIMAP_SCALE = 0.25
 		// this.MINIMAP_X = (this.GAME_WIDTH / 2) - (this.MINIMAP_SCALE * CELL_SIZE) * 30
 		// this.MINIMAP_Y = (this.GAME_HEIGHT / 2) - (this.GAME_HEIGHT / 2.5)
-		this.MINIMAP_SCALE = 0.7
+		this.MINIMAP_SCALE = 1.2
 		this.MINIMAP_X = 100
 		this.MINIMAP_Y = 50
 		this.PLAYER_SIZE = Math.floor(CELL_SIZE / 4)
@@ -194,12 +194,15 @@ export default class GaphicsClass {
 		health.append(coinCopper)
 		let coinGoldText = document.createElement("div")
 		coinGoldText.setAttribute('id', 'coin-gold-text')
+		coinGoldText.innerHTML='0'
 		health.append(coinGoldText)
 		let coinSilverText = document.createElement("div")
 		coinSilverText.setAttribute('id', 'coin-silver-text')
+		coinSilverText.innerHTML='0'
 		health.append(coinSilverText)
 		let coinCopperText = document.createElement("div")
 		coinCopperText.setAttribute('id', 'coin-copper-text')
+		coinCopperText.innerHTML='0'
 		health.append(coinCopperText)
 		
 		let weapons = document.createElement("div")
@@ -292,7 +295,7 @@ export default class GaphicsClass {
 	makeMenu() {
 		$("#menu-bg").html('')
 		let menuElementContent = `
-			<div><img src="./img/menu/menu-logo.png" alt="Yukio Ninja" class="logo-position" style="display:block;"/></div>
+			<div><img src="./img/menu/menu-logo.png" alt="Yukio Ninja" class="logo-position" style="display:none;"/></div>
 			<div id="menu-box" class="mx-auto col-4 pt-4">`;
 				if (this.menu.optionsActive) {
 					
@@ -763,16 +766,6 @@ export default class GaphicsClass {
 					widthX,	widthY,
 				);
 
-				// CHECK COLOR
-				if (actY + y == this.check.playerCheckY && actX + x == this.check.playerCheckX) {
-					this.context.fillStyle = '#0000ff77'
-					this.context.fillRect(
-						playerBrickX + (cellSize * x) + modFirstBrickX,
-						playerBrickY + (cellSize * y) + modFirstBrickY,
-						widthX,	widthY,
-					);
-				}
-
 				if (this.mapDataClass.map[actY + y] != undefined) {
 					if (this.mapDataClass.map[actY + y][actX + x] != undefined) {
 
@@ -824,6 +817,41 @@ export default class GaphicsClass {
 						}
 					}
 				}
+
+				// HELP BOXS
+				if (true) {
+					let colors = ['#ff000077', '#00800077', '#0000ff77', '#ffa50077', '#80800077', '#80008077', '#80338077', '#97979777'];
+					var actColor = 0
+					this.check.directions.forEach(box => {						
+						if (actY + y == box.y && actX + x == box.x) {	
+							this.context.fillStyle = colors[actColor]
+							this.context.fillRect(
+								playerBrickX + (cellSize * x) + modFirstBrickX,
+								playerBrickY + (cellSize * y) + modFirstBrickY,
+								widthX,	widthY,
+							);
+							// Szöveg kiírása
+							this.context.fillStyle = "white";
+							this.context.font = "20px Arial";
+							this.context.textAlign = "center";
+							this.context.textBaseline = "middle";
+							this.context.fillText(box.numberF, playerBrickX + (cellSize * x) + modFirstBrickX + (widthX / 2), playerBrickY + (cellSize * y) + modFirstBrickY + (widthY / 2));
+						}
+						actColor++
+					});
+				}
+
+				// CHECK COLOR
+				if (actY + y == this.check.playerCheckY && actX + x == this.check.playerCheckX) {
+					this.context.strokeStyle = 'black';
+					this.context.lineWidth = 3;
+					this.context.strokeRect(
+						playerBrickX + (cellSize * x) + modFirstBrickX,
+						playerBrickY + (cellSize * y) + modFirstBrickY,
+						widthX,
+						widthY 
+					);
+				}
 			}
 		}
 					
@@ -846,7 +874,7 @@ export default class GaphicsClass {
 			this.context.beginPath();
 			this.context.arc(
 				(this.GAME_WIDTH / 2), (this.GAME_HEIGHT / 2),
-				this.PLAYER_SIZE / 2, 0, 2 * Math.PI);
+				this.PLAYER_SIZE / 4, 0, 2 * Math.PI);
 			this.context.fill();
 		}
 	}

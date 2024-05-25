@@ -22,7 +22,9 @@ const player = {
 	move: true,
 	angle: 0,
 	speed: 0,
-	score: 0,
+	goldScore: 0,
+	silverScore: 0,
+	copperScore: 0,
 	weapon: 1,
 	poison: false,
 	energy: 100,
@@ -34,7 +36,7 @@ const menu = {
 	optionsActive: false,
 	clearGameSwitch: false,
 	infoSwitch: false,
-	mapSwitch: false,
+	mapSwitch: true,
 	shadowsSwitch: true,
 	spriteShadowsSwitch: true,
 	mouseSwitch: true,
@@ -49,6 +51,7 @@ var gamePlay = {
 }
 
 var check = {
+	directions: [],
 	playerCheckX: 0,
 	playerCheckY: 0,
 
@@ -71,24 +74,23 @@ function playerWalk() {
 
 function checkMoveSprite(spriteObj, type = null, inputStrafeCheck = null) {
 
-	let actX = Math.floor(spriteObj.x / CELL_SIZE)
-	let actY = Math.floor(spriteObj.y / CELL_SIZE)
+	var actX = Math.floor(spriteObj.x / CELL_SIZE)
+	var actY = Math.floor(spriteObj.y / CELL_SIZE)
 	spriteObj.inX =  Math.floor(spriteObj.x - (actX * CELL_SIZE))
 	spriteObj.inY =  Math.floor(spriteObj.y - (actY * CELL_SIZE))
-
-	let soAngleDirection = []
 	
 	var moveX = true
 	var moveY = true
-
+	
+	let soAngleDirection = []
 	let firstAngleDirection = []
 		
 	firstAngleDirection = inputClass.checkDirection(graphicsClass.toAngle(spriteObj.angle), spriteObj.speed)
 		
 	if(inputStrafeCheck) {
 		soAngleDirection[0] = {x: actX, y: actY - 1, numberF:2, stopF:2, numberB:6, stopB:6}
-		soAngleDirection[1] = {x: actX - 1, y: actY - 1, numberF:3, stopF:3, numberB:5, stopB:5}
-		soAngleDirection[2] = {x: actX + 1, y: actY - 1, numberF:1, stopF:1, numberB:7, stopB:7}
+		soAngleDirection[1] = {x: actX - 1, y: actY - 1, numberF:1, stopF:1, numberB:5, stopB:5}
+		soAngleDirection[2] = {x: actX + 1, y: actY - 1, numberF:3, stopF:3, numberB:7, stopB:7}
 		soAngleDirection[3] = {x: actX + 1, y: actY, numberF:4, stopF:4, numberB:4, stopB:4}
 		soAngleDirection[4] = {x: actX - 1, y: actY, numberF:8, stopF:8, numberB:8, stopB:8}
 
@@ -98,8 +100,8 @@ function checkMoveSprite(spriteObj, type = null, inputStrafeCheck = null) {
 	} else
 	if(firstAngleDirection.way == 'right') {
 		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, numberF:4, stopF:4, numberB:8, stopB:8}
-		soAngleDirection[1] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y - 1, numberF:3, stopF:3, numberB:7, stopB:7}
-		soAngleDirection[2] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y + 1, numberF:5, stopF:5, numberB:3, stopB:3}
+		soAngleDirection[1] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y - 1, numberF:3, stopF:3, numberB:1, stopB:1}
+		soAngleDirection[2] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y + 1, numberF:5, stopF:5, numberB:7, stopB:7}
 		soAngleDirection[3] = {x: actX, y: actY - 1, numberF:2, stopF:2, numberB:2, stopB:2}
 		soAngleDirection[4] = {x: actX, y: actY + 1, numberF:6, stopF:6, numberF:6, stopB:6}
 	} else
@@ -122,8 +124,8 @@ function checkMoveSprite(spriteObj, type = null, inputStrafeCheck = null) {
 	} else
 	if(firstAngleDirection.way == 'left') {
 		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, numberF:8, stopF:8, numberB:4, stopB:4}
-		soAngleDirection[1] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y + 1, numberF:7, stopF:7, numberB:3, stopB:3}
-		soAngleDirection[2] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y - 1, numberF:1, stopF:1, numberB:5, stopB:5}
+		soAngleDirection[1] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y + 1, numberF:7, stopF:7, numberB:5, stopB:5}
+		soAngleDirection[2] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y - 1, numberF:1, stopF:1, numberB:3, stopB:3}
 		soAngleDirection[3] = {x: actX, y: actY - 1, numberF:2, stopF:2, numberB:2, stopB:2}
 		soAngleDirection[4] = {x: actX, y: actY + 1, numberF:6, stopF:6, numberB:6, stopB:6}
 	} else
@@ -134,8 +136,8 @@ function checkMoveSprite(spriteObj, type = null, inputStrafeCheck = null) {
 	} else
 	if(firstAngleDirection.way == 'up') {
 		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, numberF:2, stopF:2, numberB:6, stopB:6}
-		soAngleDirection[1] = {x: actX + firstAngleDirection.x - 1, y: actY + firstAngleDirection.y, numberF:3, stopF:3, numberB:5, stopB:5}
-		soAngleDirection[2] = {x: actX + firstAngleDirection.x + 1, y: actY + firstAngleDirection.y, numberF:1, stopF:1, numberB:7, stopB:7}
+		soAngleDirection[1] = {x: actX + firstAngleDirection.x - 1, y: actY + firstAngleDirection.y, numberF:1, stopF:1, numberB:7, stopB:7}
+		soAngleDirection[2] = {x: actX + firstAngleDirection.x + 1, y: actY + firstAngleDirection.y, numberF:3, stopF:3, numberB:5, stopB:5}
 		soAngleDirection[3] = {x: actX + 1, y: actY, numberF:4, stopF:4, numberB:4, stopB:4}
 		soAngleDirection[4] = {x: actX - 1, y: actY, numberF:8, stopF:8, numberB:8, stopB:8}
 	} else
@@ -150,11 +152,13 @@ function checkMoveSprite(spriteObj, type = null, inputStrafeCheck = null) {
 	let checkY = soAngleDirection[0].y
 
 	if (type == 'player') {
+		check.directions = []
+		check.directions = soAngleDirection
 		if (typeof soAngleDirection[0] !='undefined' && typeof soAngleDirection[0].y != 'undefined') check.playerCheckY = soAngleDirection[0].y
 		if (typeof soAngleDirection[0] !='undefined' && typeof soAngleDirection[0].x != 'undefined') check.playerCheckX = soAngleDirection[0].x
 	}
 	
-	var playerBarrier = []
+	var spriteBarrier = []
 	
 	soAngleDirection.forEach(brick => {
 		let checkMap = (mapDataClass.map[brick.y][brick.x] != 0) ? true : false;
@@ -170,73 +174,55 @@ function checkMoveSprite(spriteObj, type = null, inputStrafeCheck = null) {
 				
 		if (checkMap || checkBlockValue || checkObjectValue || checkCreaturesValue) {
 			let actualNumber = (firstAngleDirection.sign > 0) ? brick.stopF : brick.stopB;
-			if (!playerBarrier.includes(actualNumber)) playerBarrier.push(actualNumber)
+			if (!spriteBarrier.includes(actualNumber)) spriteBarrier.push(actualNumber)
 		}
 	});
 
-	let valueX = spriteObj.x
-	let valueY = spriteObj.y
-	let valueAngleRad = spriteObj.angle
-	let valueSpeed = spriteObj.speed
-
-	let testX = valueX += Math.cos(valueAngleRad) * valueSpeed
-	let testY = valueY += Math.sin(valueAngleRad) * valueSpeed
-
-	let testActX = Math.floor(testX / CELL_SIZE)
-	let testActY = Math.floor(testY / CELL_SIZE)
-	let testInX =  Math.ceil(testX - (testActX * CELL_SIZE))
-	let testInY =  Math.ceil(testY - (testActY * CELL_SIZE))
-	
-	// if IN = 64 = 0
-	testInX = (testInX == CELL_SIZE) ? 0 : testInX
-	testInY = (testInY == CELL_SIZE) ? 0 : testInY
-
-	var deleteBarier = function(playerBarrier, barrierId) {
-		let findId = playerBarrier.findIndex(barrier => barrier == barrierId)
-		if(findId != -1) playerBarrier.splice(findId, 1)
+	var deleteBarier = function(spriteBarrier, barrierId) {
+		let findId = spriteBarrier.findIndex(barrier => barrier == barrierId)
+		if(findId != -1) spriteBarrier.splice(findId, 1)
 	}
 
-	playerBarrier.forEach((barrier) => {
+	spriteBarrier.forEach((barrier) => {
 		if (barrier == 4) {
-			if(playerBarrier.includes(3)) deleteBarier(playerBarrier, 3)
-			if(playerBarrier.includes(5)) deleteBarier(playerBarrier, 5)
+			if(spriteBarrier.includes(3)) deleteBarier(spriteBarrier, 3)
+			if(spriteBarrier.includes(5)) deleteBarier(spriteBarrier, 5)
 		}
 		if (barrier == 8) {
-			if(playerBarrier.includes(1)) deleteBarier(playerBarrier, 1)
-			if(playerBarrier.includes(7)) deleteBarier(playerBarrier, 7)
+			if(spriteBarrier.includes(1)) deleteBarier(spriteBarrier, 1)
+			if(spriteBarrier.includes(7)) deleteBarier(spriteBarrier, 7)
 		}
 		if (barrier == 6) {
-			if(playerBarrier.includes(7)) deleteBarier(playerBarrier, 7)
-			if(playerBarrier.includes(5)) deleteBarier(playerBarrier, 5)
+			if(spriteBarrier.includes(7)) deleteBarier(spriteBarrier, 7)
+			if(spriteBarrier.includes(5)) deleteBarier(spriteBarrier, 5)
 		}
 		if (barrier == 2) {
-			if(playerBarrier.includes(1)) deleteBarier(playerBarrier, 1)
-			if(playerBarrier.includes(3)) deleteBarier(playerBarrier, 3)
+			if(spriteBarrier.includes(1)) deleteBarier(spriteBarrier, 1)
+			if(spriteBarrier.includes(3)) deleteBarier(spriteBarrier, 3)
 		}
 	});
 
-	playerBarrier.forEach((barrier) => {
-		if (barrier == 4 && (testInX >= CELL_SIZE - inputClass.WALL_DISTANCE)) moveX = false;
-		if (barrier == 8 && (testInX <= inputClass.WALL_DISTANCE)) moveX = false;
-		if (barrier == 6 && (testInY >= CELL_SIZE - inputClass.WALL_DISTANCE)) moveY = false;
-		if (barrier == 2 && (testInY <= inputClass.WALL_DISTANCE)) moveY = false;
-		if (barrier == 3 && (testInY <= inputClass.WALL_DISTANCE && testInX >= CELL_SIZE - inputClass.WALL_DISTANCE)) {	moveX = false; moveY = false; }
-		if (barrier == 5 && (testInY >= CELL_SIZE - inputClass.WALL_DISTANCE && testInX >= CELL_SIZE - inputClass.WALL_DISTANCE)) { moveX = false; moveY = false; }
-		if (barrier == 7 && (testInY >= CELL_SIZE - inputClass.WALL_DISTANCE && testInX <= inputClass.WALL_DISTANCE)) {	moveX = false; moveY = false; }
-		if (barrier == 1 && (testInY <= inputClass.WALL_DISTANCE && testInX <= inputClass.WALL_DISTANCE)) { moveX = false; moveY = false; }
+	spriteBarrier.forEach((barrier) => {
+		if (barrier == 4 && (spriteObj.inX > CELL_SIZE - inputClass.WALL_DISTANCE))	moveX = false;
+		if (barrier == 8 && (spriteObj.inX < inputClass.WALL_DISTANCE))	moveX = false;
+		if (barrier == 6 && (spriteObj.inY > CELL_SIZE - inputClass.WALL_DISTANCE)) moveY = false;
+		if (barrier == 2 && (spriteObj.inY < inputClass.WALL_DISTANCE)) moveY = false;
+		
+		if (barrier == 3 && (spriteObj.inY <= inputClass.WALL_DISTANCE && spriteObj.inX >= CELL_SIZE - inputClass.WALL_DISTANCE)) {	moveX = false; moveY = false; }
+		if (barrier == 5 && (spriteObj.inY >= CELL_SIZE - inputClass.WALL_DISTANCE && spriteObj.inX >= CELL_SIZE - inputClass.WALL_DISTANCE)) { moveX = false; moveY = false; }
+		if (barrier == 7 && (spriteObj.inY >= CELL_SIZE - inputClass.WALL_DISTANCE && spriteObj.inX <= inputClass.WALL_DISTANCE)) {	moveX = false; moveY = false; }
+		if (barrier == 1 && (spriteObj.inY <= inputClass.WALL_DISTANCE && spriteObj.inX <= inputClass.WALL_DISTANCE)) { moveX = false; moveY = false; }
+		
 	});
-
-	if(false && type == 'player') {
-		console.log('testInX: ' + testInX, 'testInY: ' + testInY);
-		console.log(playerBarrier)
-		console.log('moveX:' + moveX + ' moveY' + moveY)
-	}
 
 	return {
 		moveX: moveX,
 		moveY: moveY,
 		checkX: checkX,
 		checkY: checkY,
+		actX: actX,
+		actY: actY,
+		spriteBarrier: spriteBarrier,
 	}
 }
 
@@ -271,7 +257,7 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 					if (sprite.type == 'block') return;
 					if (sprite.material == 'ghost') return;
 
-					// CRASH AND STOP PLAYER	// old srach
+					// CRASH AND STOP PLAYER  // old srach
 					// pCheck.moveX = false
 					// pCheck.moveY = false
 
@@ -286,13 +272,53 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 					if (sprite.active == true && sprite.mode.includes("coin")) {
 						sprite.active = false
 						bringPlayer.score = parseInt(bringPlayer.score) + parseInt(sprite.value)
-						console.log('PICK UP COIN!!!' + bringPlayer.score)
+						console.log('PICK UP COIN!!!')
 						// COLORIZE SCREEN
 						let colorizeOption = {}
-						if (sprite.mode=='coin1') colorizeOption = { color: "255, 180, 50", alpha: 0.5, time: 200 }
-						if (sprite.mode=='coin2') colorizeOption = { color: "255, 255, 255", alpha: 0.5, time: 200 }
-						if (sprite.mode=='coin3') colorizeOption = { color: "200, 100, 0", alpha: 0.5, time: 200 }
+						if (sprite.mode=='coin1') {
+							bringPlayer.goldScore = parseInt(bringPlayer.goldScore) + parseInt(sprite.value)
+							$('#coin-gold-text').text(bringPlayer.goldScore)
+							colorizeOption = { color: "255, 180, 50", alpha: 0.5, time: 200 }
+						}
+						if (sprite.mode=='coin2') {
+							console.log(bringPlayer.silverScore);
+							
+							bringPlayer.silverScore = parseInt(bringPlayer.silverScore) + parseInt(sprite.value)
+							$('#coin-silver-text').text(bringPlayer.silverScore)
+							colorizeOption = { color: "255, 255, 255", alpha: 0.5, time: 200 }
+						}
+						if (sprite.mode=='coin3') {
+							bringPlayer.copperScore = parseInt(bringPlayer.copperScore) + parseInt(sprite.value)
+							$('#coin-copper-text').text(bringPlayer.copperScore)
+							colorizeOption = { color: "200, 100, 0", alpha: 0.5, time: 200 }
+						}
 						graphicsClass.screenColorizeOptions(colorizeOption);
+						return;
+					}
+
+					// PICKUP MASHROOM
+					if (sprite.active == true && sprite.mode == 'mushroom') {
+						console.log('Mashroom!!!')
+						sprite.active = false
+						bringPlayer.poison = true;
+						return;
+					}
+
+					// PICKUP HEALTS					
+					if (sprite.active == true && sprite.mode == 'energy') {
+						if(bringPlayer.energy < 100) {
+							console.log('HEALTH!!!')
+							sprite.active = false
+							bringPlayer.energy += sprite.value
+							if (bringPlayer.energy>100) bringPlayer.energy = 100
+
+							$("#healt-percentage").text(bringPlayer.energy + '%');
+							$("#healt-percentage").css('color', 'green');
+							spritesClass.playerHealtTimeOut(bringPlayer.energy)
+	
+							let colorizeOption = { color: "255, 255, 15", alpha: 0.5, time: 200 }
+							graphicsClass.screenColorizeOptions(colorizeOption);
+						}
 						return;
 					}
 					
@@ -301,17 +327,17 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 						
 						let colorizeOption = {}
 						if (!player.key1 && sprite.type == 'object' && sprite.mode=='key1') {
+							console.log('PICK UP cellar KEY SILVER')
 							bringPlayer.key1 = true
 							sprite.active = false
-							console.log('PICK UP cellar KEY1')
 							$('#silver-key').addClass('silver-key-on')
 							colorizeOption = { color: "255, 255, 255", alpha: 0.5, time: 200 }
 							graphicsClass.screenColorizeOptions(colorizeOption);
 						}
 						if (!player.key2 && sprite.type == 'object' && sprite.mode=='key2') {
+							console.log('PICK UP cellar GOLD KEY')
 							bringPlayer.key2 = true
 							sprite.active = false
-							console.log('PICK UP cellar KEY2')
 							$('#gold-key').addClass('gold-key-on')
 							colorizeOption = { color: "255, 180, 50", alpha: 0.5, time: 200 }
 							graphicsClass.screenColorizeOptions(colorizeOption);
@@ -342,6 +368,57 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 	}
 
 	return pCheck;
+}
+
+function moveAction(sprite, check) {
+
+	if(false) {
+		console.log('----------------------')
+		console.log('CELL_SIZE:' + CELL_SIZE)
+		console.log('WALL.distance:' + inputClass.WALL_DISTANCE)
+		let qwe = CELL_SIZE - inputClass.WALL_DISTANCE
+		console.log('CELL-WALL:' + qwe)
+		
+		console.log('check.actX: ' + check.actX, 'check.actY: ' + check.actY)
+		console.log('posX: ' + sprite.x, 'testInY: ' + sprite.y)
+		console.log('testInX: ' + sprite.inX, 'testInY: ' + sprite.inY)
+		console.log(check.spriteBarrier)
+		console.log('moveX: ' + check.moveX + ' moveY: ' + check.moveY)
+	}
+	
+	if (sprite.move) {
+		
+		if (check.moveX) sprite.x += Math.cos(sprite.angle) * sprite.speed
+		if (check.moveY) sprite.y += Math.sin(sprite.angle) * sprite.speed
+		
+		// Visszaugrás WALL DISTANCE-RA.
+		if(false) {
+			check.spriteBarrier.forEach((barrier) => {
+				if (barrier == 4 && (sprite.inX > CELL_SIZE - inputClass.WALL_DISTANCE)) sprite.x = (check.actX * CELL_SIZE) + (CELL_SIZE - inputClass.WALL_DISTANCE)
+				if (barrier == 8 && (sprite.inX < inputClass.WALL_DISTANCE)) sprite.x = (check.actX * CELL_SIZE) + (inputClass.WALL_DISTANCE)
+				if (barrier == 6 && (sprite.inY > CELL_SIZE - inputClass.WALL_DISTANCE)) sprite.y = (check.actY * CELL_SIZE) + (CELL_SIZE - inputClass.WALL_DISTANCE)
+				if (barrier == 2 && (sprite.inY < inputClass.WALL_DISTANCE))  sprite.y = (check.actY * CELL_SIZE) + (inputClass.WALL_DISTANCE)
+				
+				if (barrier == 3 && (sprite.inY <= inputClass.WALL_DISTANCE && sprite.inX >= CELL_SIZE - inputClass.WALL_DISTANCE)) {
+					sprite.x = (check.actX * CELL_SIZE) + (CELL_SIZE - inputClass.WALL_DISTANCE)
+					sprite.y = (check.actY * CELL_SIZE) + (inputClass.WALL_DISTANCE)
+				}
+				if (barrier == 5 && (sprite.inY >= CELL_SIZE - inputClass.WALL_DISTANCE && sprite.inX >= CELL_SIZE - inputClass.WALL_DISTANCE)) {
+					sprite.x = (check.actX * CELL_SIZE) + (CELL_SIZE - inputClass.WALL_DISTANCE)
+					sprite.y = (check.actY * CELL_SIZE) + (CELL_SIZE - inputClass.WALL_DISTANCE)
+				}
+				if (barrier == 7 && (sprite.inY >= CELL_SIZE - inputClass.WALL_DISTANCE && sprite.inX <= inputClass.WALL_DISTANCE)) {
+					sprite.x = (check.actX * CELL_SIZE) + (inputClass.WALL_DISTANCE)
+					sprite.y = (check.actY * CELL_SIZE) + (CELL_SIZE - inputClass.WALL_DISTANCE)
+					
+				}
+				if (barrier == 1 && (sprite.inY <= inputClass.WALL_DISTANCE && sprite.inX <= inputClass.WALL_DISTANCE)) {
+					sprite.x = (check.actX * CELL_SIZE) + (inputClass.WALL_DISTANCE)
+					sprite.y = (check.actY * CELL_SIZE) + (inputClass.WALL_DISTANCE)
+				}
+			});
+		}
+	}
 }
 
 function moveCreature(creature) {
@@ -507,13 +584,6 @@ function moveAmmo(ammoSprite) {
 	return true
 }
 
-function moveAction(sprite, check) {
-	if (sprite.move) {
-		(check.moveX) ? sprite.x += Math.cos(sprite.angle) * sprite.speed : false;
-		(check.moveY) ? sprite.y += Math.sin(sprite.angle) * sprite.speed : false;
-	}
-}
-
 function spritesCheck() {
 	// ARRANGE SPRITES
 	spritesClass.nearSprites.forEach((nearData) => {
@@ -567,6 +637,14 @@ function spritesCheck() {
 				moveCreature(sprite)
 			}
 
+			// ANIM TEXTURES
+			if (sprite.type == 'block' || sprite.type == 'object') {
+				if(sprite.active) {
+					let checkActAnim = mapDataClass.loadAnimationTexture(sprite)
+					if (checkActAnim) getActualTexture = checkActAnim[1]
+				}
+			}
+
 			// IF AMMO
 			if (sprite.type == 'ammo') {
 				if(sprite.active) {
@@ -574,14 +652,6 @@ function spritesCheck() {
 					let checkActAnim = mapDataClass.loadAnimationTexture(sprite)
 					if (checkActAnim) getActualTexture = checkActAnim[1]
 					sprite.z = playerWalk()
-				}
-			}
-
-			// IF BLOCK
-			if (sprite.type == 'block') {
-				if(sprite.active) {
-					let checkActAnim = mapDataClass.loadAnimationTexture(sprite)
-					if (checkActAnim) getActualTexture = checkActAnim[1]
 				}
 			}
 			
@@ -778,24 +848,16 @@ var szamol = 0;
 
 function gameLoop() {
 	gamePlay.timeStart = Date.now()
-
-	$('#coin-gold-text').text('20')
-	$('#coin-silver-text').text('8')
-	$('#coin-copper-text').text('110')
-
 	movePlayer(player)
 	graphicsClass.rays = graphicsClass.getRays()
 	spritesClass.sprites = spritesClass.sprites.sort((a, b) => b.distance - a.distance)
 	graphicsClass.renderScreen()
 	spritesClass.selectNearSprites()
-	
 	spritesCheck()
 	spritesClass.sprites.forEach(sprite => {
 		sprite.distance = graphicsClass.spriteDistanceCalc(sprite)
 	});
-	
 	graphicsClass.screenColorizeAction()
-
 	if (menu.mapSwitch) graphicsClass.renderMinimap()
 	if (menu.infoSwitch) graphicsClass.infoPanel()
 	if (menu.clearGameSwitch) clearInterval(gamePlay.game)
