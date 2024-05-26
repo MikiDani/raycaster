@@ -5,10 +5,12 @@ export default class InputClass {
 		this.graphicsClass = graphicsClass
 		this.movePlayer = movePlayer
 		//--------------------------------------------------------------------
-		this.MOVE_SPEED = 12	// !!
+		this.MOVE_SPEED = 7	// 7 = start +4 = 11 (7-11)
 		this.MOVE_ANGLE = 5
 		this.MOVE_ANGLE_SLOW = 1
-		this.WALL_DISTANCE = Math.floor((graphicsClass.CELL_SIZE / 100) * 35)	// 40 eredeti
+		this.PLAYER_WALL_DISTANCE = Math.floor((graphicsClass.CELL_SIZE / 100) * 25)
+		this.CREATURE_WALL_DISTANCE = Math.floor((graphicsClass.CELL_SIZE / 100) * 45)
+		this.AMMO_WALL_DISTANCE = Math.floor((graphicsClass.CELL_SIZE / 100) * 10)
 		//--------------------------------------------------------------------
 		this.menu = menu
 		this.gameMenu = gameMenu
@@ -429,6 +431,7 @@ export default class InputClass {
 		if (this.keyPressed['t'] || this.keyPressed['T']) { this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE_SLOW); }
 		if (this.keyPressed['w'] || this.keyPressed['W']) { this.player.speed = this.MOVE_SPEED }
 		if (this.keyPressed['s'] || this.keyPressed['S']) { this.player.speed = -this.MOVE_SPEED }
+		if (this.keyPressed['o'] || this.keyPressed['O']) { this.MOVE_SPEED = this.MOVE_SPEED + 1 }
 		if (this.keyPressed['p'] || this.keyPressed['P']) {
 			if (this.player.poison == false) {
 				this.player.poison = true;

@@ -24,16 +24,13 @@ export default class GaphicsClass {
 		this.SCREEN_WIDTH = window.innerWidth
 		this.SCREEN_HEIGHT = window.innerHeight
 		this.GAME_WIDTH = 1250
-		this.GAME_HEIGHT = 620		// old 700
-		this.GRAPHICS_RATIO = 6	// 4, Best, 6 Normal, 8, Medim, 10 Low, 
+		this.GAME_HEIGHT = 620	// old 700
+		this.GRAPHICS_RATIO = 6
 
 		this.CELL_SIZE = CELL_SIZE
 		this.WALKINTERVAL = -7
 		this.FOV = this.toRadians(60)
-		// this.MINIMAP_SCALE = 0.25
-		// this.MINIMAP_X = (this.GAME_WIDTH / 2) - (this.MINIMAP_SCALE * CELL_SIZE) * 30
-		// this.MINIMAP_Y = (this.GAME_HEIGHT / 2) - (this.GAME_HEIGHT / 2.5)
-		this.MINIMAP_SCALE = 1.2
+		this.MINIMAP_SCALE = 0.8
 		this.MINIMAP_X = 100
 		this.MINIMAP_Y = 50
 		this.PLAYER_SIZE = Math.floor(CELL_SIZE / 4)
@@ -716,8 +713,8 @@ export default class GaphicsClass {
 
 	renderMinimap() {
 		const cellSize = this.MINIMAP_SCALE * this.CELL_SIZE;
-		var mapSizeX = 10
-		var mapSizeY = 6
+		var mapSizeX = 8
+		var mapSizeY = 5
 
 		let actX = Math.floor(this.player.x / this.CELL_SIZE)
 		let actY = Math.floor(this.player.y / this.CELL_SIZE)
@@ -726,6 +723,8 @@ export default class GaphicsClass {
 
 		let playerBrickX = (this.GAME_WIDTH / 2) - mapPlayerInX
 		let playerBrickY = (this.GAME_HEIGHT / 2) - mapPlayerInY
+
+		var creaturesArray = []
 
 		var widthY
 		var widthX
@@ -772,7 +771,10 @@ export default class GaphicsClass {
 						var cellValue = this.mapDataClass.map[actY + y][actX + x]
 
 						if (cellValue) {
-							this.context.fillStyle = '#b0aaa0'
+							if (cellValue.mode == 'door') this.context.fillStyle = '#80a11c'
+							else if (cellValue.mode == 'key1') this.context.fillStyle = 'silver'
+							else if (cellValue.mode == 'key2') this.context.fillStyle = 'gold'
+							else this.context.fillStyle = '#b0aaa0'
 							this.context.fillRect(
 								playerBrickX + (cellSize * x) + modFirstBrickX, playerBrickY + (cellSize * y) + modFirstBrickY,
 								widthX,	widthY,
@@ -784,7 +786,7 @@ export default class GaphicsClass {
 						let checkBlockValue = (checkBlock && checkBlock.material == 'fix') ? true : false;
 
 						if (checkBlockValue && (x != mapSizeX-1 && x != -mapSizeX) && (y != mapSizeY-1 && y != -mapSizeY)) {
-							if (checkBlock.mode == 'door') this.context.fillStyle = '#ca9d60'
+							if (checkBlock.mode == 'door') this.context.fillStyle = '#80a11c'
 							else this.context.fillStyle = '#bd894e'
 
 							if (checkBlock.angle == 0) {
@@ -815,11 +817,24 @@ export default class GaphicsClass {
 								(cellSize / 4), 0, 2 * Math.PI);
 							this.context.fill();
 						}
+
+						// CREATURES
+						let checkCreature = this.spritesClass.checkSpriteData(actY + y, actX + x, 'type', 'creature')
+						let checkCreatureValue = (checkCreature && checkCreature.active) ? true : false;
+						
+						if (checkCreatureValue && (x != mapSizeX-1 && x != -mapSizeX) && (y != mapSizeY-1 && y != -mapSizeY)) {							
+							let creature = {
+								x: playerBrickX + (cellSize * x) + (cellSize / 2) + modFirstBrickX,
+								y: playerBrickY + (cellSize * y) + (cellSize / 2) + modFirstBrickY,
+								angle: checkCreature.angle
+							}
+							creaturesArray.push(creature)
+						}
 					}
 				}
 
-				// HELP BOXS
-				if (true) {
+				// HELP DIRECTION BOXS
+				if (false) {
 					let colors = ['#ff000077', '#00800077', '#0000ff77', '#ffa50077', '#80800077', '#80008077', '#80338077', '#97979777'];
 					var actColor = 0
 					this.check.directions.forEach(box => {						
@@ -841,7 +856,7 @@ export default class GaphicsClass {
 					});
 				}
 
-				// CHECK COLOR
+				// PLAYER CHECK BOX COLOR
 				if (actY + y == this.check.playerCheckY && actX + x == this.check.playerCheckX) {
 					this.context.strokeStyle = 'black';
 					this.context.lineWidth = 3;
@@ -854,29 +869,45 @@ export default class GaphicsClass {
 				}
 			}
 		}
-					
-		// PLAYER
-		if (true) {
-			// RAY
-			const rayLength = this.PLAYER_SIZE * 2;
-			this.context.strokeStyle = 'orange'
+
+		// CREATURES DRAW
+		creaturesArray.forEach(creature => {		
+			const rayLength = cellSize / 2;
+			this.context.strokeStyle = 'red'
 			this.context.lineWidth = 3;
 			this.context.beginPath()
-			this.context.moveTo((this.GAME_WIDTH / 2), (this.GAME_HEIGHT / 2))
+			this.context.moveTo(creature.x, creature.y)
 			this.context.lineTo(
-				(this.GAME_WIDTH / 2) + ((Math.cos(this.player.angle) * rayLength) * this.MINIMAP_SCALE),
-				(this.GAME_HEIGHT / 2) + ((Math.sin(this.player.angle) * rayLength) * this.MINIMAP_SCALE),
+				creature.x + ((Math.cos(creature.angle) * rayLength)),
+				creature.y + ((Math.sin(creature.angle) * rayLength)),
 			)
-			this.context.closePath()
 			this.context.stroke()
-			// CIRCLE
-			this.context.fillStyle = 'blue';
+			this.context.fillStyle = 'red'
 			this.context.beginPath();
 			this.context.arc(
-				(this.GAME_WIDTH / 2), (this.GAME_HEIGHT / 2),
-				this.PLAYER_SIZE / 4, 0, 2 * Math.PI);
+				creature.x, creature.y,
+				(cellSize / 8), 0, 2 * Math.PI);
 			this.context.fill();
-		}
+		});
+		
+		// PLAYER DRAW
+		const rayLength = this.PLAYER_SIZE * 2;
+		this.context.strokeStyle = 'blue'
+		this.context.lineWidth = 3;
+		this.context.beginPath()
+		this.context.moveTo((this.GAME_WIDTH / 2), (this.GAME_HEIGHT / 2))
+		this.context.lineTo(
+			(this.GAME_WIDTH / 2) + ((Math.cos(this.player.angle) * rayLength) * this.MINIMAP_SCALE),
+			(this.GAME_HEIGHT / 2) + ((Math.sin(this.player.angle) * rayLength) * this.MINIMAP_SCALE),
+		)
+		this.context.closePath()
+		this.context.stroke()
+		this.context.fillStyle = 'blue';
+		this.context.beginPath();
+		this.context.arc(
+			(this.GAME_WIDTH / 2), (this.GAME_HEIGHT / 2),
+			cellSize / 8, 0, 2 * Math.PI);
+		this.context.fill();
 	}
 	
 	infoPanel() {

@@ -36,7 +36,7 @@ const menu = {
 	optionsActive: false,
 	clearGameSwitch: false,
 	infoSwitch: false,
-	mapSwitch: true,
+	mapSwitch: false,
 	shadowsSwitch: true,
 	spriteShadowsSwitch: true,
 	mouseSwitch: true,
@@ -78,6 +78,11 @@ function checkMoveSprite(spriteObj, type = null, inputStrafeCheck = null) {
 	var actY = Math.floor(spriteObj.y / CELL_SIZE)
 	spriteObj.inX =  Math.floor(spriteObj.x - (actX * CELL_SIZE))
 	spriteObj.inY =  Math.floor(spriteObj.y - (actY * CELL_SIZE))
+
+	let WALL_DISTANCE
+	if (type == 'player') WALL_DISTANCE = inputClass.PLAYER_WALL_DISTANCE
+	if (type == 'creature') WALL_DISTANCE = inputClass.CREATURE_WALL_DISTANCE
+	if (type == 'ammo') WALL_DISTANCE = inputClass.AMMO_WALL_DISTANCE
 	
 	var moveX = true
 	var moveY = true
@@ -87,7 +92,7 @@ function checkMoveSprite(spriteObj, type = null, inputStrafeCheck = null) {
 		
 	firstAngleDirection = inputClass.checkDirection(graphicsClass.toAngle(spriteObj.angle), spriteObj.speed)
 		
-	if(inputStrafeCheck) {
+	if (inputStrafeCheck) {
 		soAngleDirection[0] = {x: actX, y: actY - 1, numberF:2, stopF:2, numberB:6, stopB:6}
 		soAngleDirection[1] = {x: actX - 1, y: actY - 1, numberF:1, stopF:1, numberB:5, stopB:5}
 		soAngleDirection[2] = {x: actX + 1, y: actY - 1, numberF:3, stopF:3, numberB:7, stopB:7}
@@ -98,50 +103,50 @@ function checkMoveSprite(spriteObj, type = null, inputStrafeCheck = null) {
 		soAngleDirection[6] = {x: actX, y: actY + 1, numberF:6, stopF:6, numberB:2, stopB:2 }
 		soAngleDirection[7] = {x: actX + 1, y: actY + 1, numberF:5, stopF:5, numberB:1, stopB:1 }
 	} else
-	if(firstAngleDirection.way == 'right') {
+	if (firstAngleDirection.way == 'right') {
 		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, numberF:4, stopF:4, numberB:8, stopB:8}
 		soAngleDirection[1] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y - 1, numberF:3, stopF:3, numberB:1, stopB:1}
 		soAngleDirection[2] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y + 1, numberF:5, stopF:5, numberB:7, stopB:7}
 		soAngleDirection[3] = {x: actX, y: actY - 1, numberF:2, stopF:2, numberB:2, stopB:2}
 		soAngleDirection[4] = {x: actX, y: actY + 1, numberF:6, stopF:6, numberF:6, stopB:6}
 	} else
-	if(firstAngleDirection.way == 'right-down') {
+	if (firstAngleDirection.way == 'right-down') {
 		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, numberF:5, stopF:5, numberB:1, stopB:1}
 		soAngleDirection[1] = {x: soAngleDirection[0].x, y: soAngleDirection[0].y + (- 1 * firstAngleDirection.sign), numberF:4, stopF:4, numberB:8, stopB:8}
 		soAngleDirection[2] = {x: soAngleDirection[0].x  + (- 1 * firstAngleDirection.sign), y: soAngleDirection[0].y, numberF:6, stopF:6, numberB:2, stopB:2}
 	} else
-	if(firstAngleDirection.way == 'down') {
+	if (firstAngleDirection.way == 'down') {
 		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, numberF:6, stopF:6, numberB:2, stopB:2 }
 		soAngleDirection[1] = {x: actX + firstAngleDirection.x + 1, y: actY + firstAngleDirection.y, numberF:5, stopF:5, numberB:1, stopB:1 }
 		soAngleDirection[2] = {x: actX + firstAngleDirection.x - 1, y: actY + firstAngleDirection.y, numberF:7, stopF:7, numberB:3, stopB:3 }
 		soAngleDirection[3] = {x: actX - 1, y: actY, numberF: 8, stopF:8, numberB: 8, stopB:8}
 		soAngleDirection[4] = {x: actX + 1, y: actY, numberF: 4, stopF:4, numberB: 4, stopB:4}
 	} else
-	if(firstAngleDirection.way == 'left-down') {
+	if (firstAngleDirection.way == 'left-down') {
 		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y,  numberF:7, stopF:7, numberB:3, stopB:3 }
 		soAngleDirection[1] = {x: soAngleDirection[0].x, y: soAngleDirection[0].y + (- 1 * firstAngleDirection.sign), numberF:8, stopF:8, numberB:4, stopB:4}
 		soAngleDirection[2] = {x: soAngleDirection[0].x  - (- 1 * firstAngleDirection.sign), y: soAngleDirection[0].y, numberF:6, stopF:6, numberB:2, stopB:2}
 	} else
-	if(firstAngleDirection.way == 'left') {
+	if (firstAngleDirection.way == 'left') {
 		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, numberF:8, stopF:8, numberB:4, stopB:4}
 		soAngleDirection[1] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y + 1, numberF:7, stopF:7, numberB:5, stopB:5}
 		soAngleDirection[2] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y - 1, numberF:1, stopF:1, numberB:3, stopB:3}
 		soAngleDirection[3] = {x: actX, y: actY - 1, numberF:2, stopF:2, numberB:2, stopB:2}
 		soAngleDirection[4] = {x: actX, y: actY + 1, numberF:6, stopF:6, numberB:6, stopB:6}
 	} else
-	if(firstAngleDirection.way == 'left-up') {
+	if (firstAngleDirection.way == 'left-up') {
 		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, numberF:1, stopF:1, numberB:5, stopB:5}
 		soAngleDirection[1] = {x: soAngleDirection[0].x, y: soAngleDirection[0].y - (- 1 * firstAngleDirection.sign), numberF:8, stopF:8, numberB:4, stopB:4}
 		soAngleDirection[2] = {x: soAngleDirection[0].x  - (- 1 * firstAngleDirection.sign), y: soAngleDirection[0].y, numberF:2, stopF:2, numberB:6, stopB:6}
 	} else
-	if(firstAngleDirection.way == 'up') {
+	if (firstAngleDirection.way == 'up') {
 		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, numberF:2, stopF:2, numberB:6, stopB:6}
 		soAngleDirection[1] = {x: actX + firstAngleDirection.x - 1, y: actY + firstAngleDirection.y, numberF:1, stopF:1, numberB:7, stopB:7}
 		soAngleDirection[2] = {x: actX + firstAngleDirection.x + 1, y: actY + firstAngleDirection.y, numberF:3, stopF:3, numberB:5, stopB:5}
 		soAngleDirection[3] = {x: actX + 1, y: actY, numberF:4, stopF:4, numberB:4, stopB:4}
 		soAngleDirection[4] = {x: actX - 1, y: actY, numberF:8, stopF:8, numberB:8, stopB:8}
 	} else
-	if(firstAngleDirection.way == 'right-up') {
+	if (firstAngleDirection.way == 'right-up') {
 		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, numberF:3, stopF:3, numberB:7, stopB:7}
 		soAngleDirection[1] = {x: soAngleDirection[0].x, y: soAngleDirection[0].y - (- 1 * firstAngleDirection.sign), numberF:4, stopF:4, numberB:8, stopB:8}
 		soAngleDirection[2] = {x: soAngleDirection[0].x  + (- 1 * firstAngleDirection.sign), y: soAngleDirection[0].y, numberF:2, stopF:2, numberB:6, stopB:6}
@@ -161,8 +166,9 @@ function checkMoveSprite(spriteObj, type = null, inputStrafeCheck = null) {
 	var spriteBarrier = []
 	
 	soAngleDirection.forEach(brick => {
-		let checkMap = (mapDataClass.map[brick.y][brick.x] != 0) ? true : false;
-
+		let checkMap = false
+		if (typeof mapDataClass.map[brick.y] !='undefined' && typeof mapDataClass.map[brick.y][brick.x] != 'undefined') checkMap = (mapDataClass.map[brick.y][brick.x] != 0) ? true : false;
+		
 		let checkBlock = spritesClass.checkSpriteData(brick.y, brick.x, 'type', 'block')
 		let checkBlockValue = (checkBlock && checkBlock.material == 'fix') ? true : false;
 		
@@ -180,49 +186,47 @@ function checkMoveSprite(spriteObj, type = null, inputStrafeCheck = null) {
 
 	var deleteBarier = function(spriteBarrier, barrierId) {
 		let findId = spriteBarrier.findIndex(barrier => barrier == barrierId)
-		if(findId != -1) spriteBarrier.splice(findId, 1)
+		if (findId != -1) spriteBarrier.splice(findId, 1)
 	}
 
 	spriteBarrier.forEach((barrier) => {
 		if (barrier == 4) {
-			if(spriteBarrier.includes(3)) deleteBarier(spriteBarrier, 3)
-			if(spriteBarrier.includes(5)) deleteBarier(spriteBarrier, 5)
+			if (spriteBarrier.includes(3)) deleteBarier(spriteBarrier, 3)
+			if (spriteBarrier.includes(5)) deleteBarier(spriteBarrier, 5)
 		}
 		if (barrier == 8) {
-			if(spriteBarrier.includes(1)) deleteBarier(spriteBarrier, 1)
-			if(spriteBarrier.includes(7)) deleteBarier(spriteBarrier, 7)
+			if (spriteBarrier.includes(1)) deleteBarier(spriteBarrier, 1)
+			if (spriteBarrier.includes(7)) deleteBarier(spriteBarrier, 7)
 		}
 		if (barrier == 6) {
-			if(spriteBarrier.includes(7)) deleteBarier(spriteBarrier, 7)
-			if(spriteBarrier.includes(5)) deleteBarier(spriteBarrier, 5)
+			if (spriteBarrier.includes(7)) deleteBarier(spriteBarrier, 7)
+			if (spriteBarrier.includes(5)) deleteBarier(spriteBarrier, 5)
 		}
 		if (barrier == 2) {
-			if(spriteBarrier.includes(1)) deleteBarier(spriteBarrier, 1)
-			if(spriteBarrier.includes(3)) deleteBarier(spriteBarrier, 3)
+			if (spriteBarrier.includes(1)) deleteBarier(spriteBarrier, 1)
+			if (spriteBarrier.includes(3)) deleteBarier(spriteBarrier, 3)
 		}
 	});
 
 	spriteBarrier.forEach((barrier) => {
-		if (barrier == 4 && (spriteObj.inX > CELL_SIZE - inputClass.WALL_DISTANCE))	moveX = false;
-		if (barrier == 8 && (spriteObj.inX < inputClass.WALL_DISTANCE))	moveX = false;
-		if (barrier == 6 && (spriteObj.inY > CELL_SIZE - inputClass.WALL_DISTANCE)) moveY = false;
-		if (barrier == 2 && (spriteObj.inY < inputClass.WALL_DISTANCE)) moveY = false;
+		if (barrier == 4 && (spriteObj.inX > CELL_SIZE - WALL_DISTANCE))	moveX = false;
+		if (barrier == 8 && (spriteObj.inX < WALL_DISTANCE))	moveX = false;
+		if (barrier == 6 && (spriteObj.inY > CELL_SIZE - WALL_DISTANCE)) moveY = false;
+		if (barrier == 2 && (spriteObj.inY < WALL_DISTANCE)) moveY = false;
 		
-		if (barrier == 3 && (spriteObj.inY <= inputClass.WALL_DISTANCE && spriteObj.inX >= CELL_SIZE - inputClass.WALL_DISTANCE)) {	moveX = false; moveY = false; }
-		if (barrier == 5 && (spriteObj.inY >= CELL_SIZE - inputClass.WALL_DISTANCE && spriteObj.inX >= CELL_SIZE - inputClass.WALL_DISTANCE)) { moveX = false; moveY = false; }
-		if (barrier == 7 && (spriteObj.inY >= CELL_SIZE - inputClass.WALL_DISTANCE && spriteObj.inX <= inputClass.WALL_DISTANCE)) {	moveX = false; moveY = false; }
-		if (barrier == 1 && (spriteObj.inY <= inputClass.WALL_DISTANCE && spriteObj.inX <= inputClass.WALL_DISTANCE)) { moveX = false; moveY = false; }
-		
+		if (barrier == 3 && (spriteObj.inY <= WALL_DISTANCE && spriteObj.inX >= CELL_SIZE - WALL_DISTANCE)) {	moveX = false; moveY = false; }
+		if (barrier == 5 && (spriteObj.inY >= CELL_SIZE - WALL_DISTANCE && spriteObj.inX >= CELL_SIZE - WALL_DISTANCE)) { moveX = false; moveY = false; }
+		if (barrier == 7 && (spriteObj.inY >= CELL_SIZE - WALL_DISTANCE && spriteObj.inX <= WALL_DISTANCE)) {	moveX = false; moveY = false; }
+		if (barrier == 1 && (spriteObj.inY <= WALL_DISTANCE && spriteObj.inX <= WALL_DISTANCE)) { moveX = false; moveY = false; }
 	});
 
 	return {
+		WALL_DISTANCE: WALL_DISTANCE,
+		spriteBarrier: spriteBarrier,
 		moveX: moveX,
 		moveY: moveY,
 		checkX: checkX,
 		checkY: checkY,
-		actX: actX,
-		actY: actY,
-		spriteBarrier: spriteBarrier,
 	}
 }
 
@@ -257,7 +261,7 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 					if (sprite.type == 'block') return;
 					if (sprite.material == 'ghost') return;
 
-					// CRASH AND STOP PLAYER  // old srach
+					// CRASH AND STOP PLAYER  // old crash
 					// pCheck.moveX = false
 					// pCheck.moveY = false
 
@@ -306,7 +310,7 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 
 					// PICKUP HEALTS					
 					if (sprite.active == true && sprite.mode == 'energy') {
-						if(bringPlayer.energy < 100) {
+						if (bringPlayer.energy < 100) {
 							console.log('HEALTH!!!')
 							sprite.active = false
 							bringPlayer.energy += sprite.value
@@ -316,8 +320,8 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 							$("#healt-percentage").css('color', 'green');
 							spritesClass.playerHealtTimeOut(bringPlayer.energy)
 	
-							let colorizeOption = { color: "255, 255, 15", alpha: 0.5, time: 200 }
-							graphicsClass.screenColorizeOptions(colorizeOption);
+							let colorizeOption = { color: "60, 175, 215", alpha: 0.5, time: 200 }
+							graphicsClass.screenColorizeOptions(colorizeOption)
 						}
 						return;
 					}
@@ -370,54 +374,66 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 	return pCheck;
 }
 
-function moveAction(sprite, check) {
-
-	if(false) {
-		console.log('----------------------')
-		console.log('CELL_SIZE:' + CELL_SIZE)
-		console.log('WALL.distance:' + inputClass.WALL_DISTANCE)
-		let qwe = CELL_SIZE - inputClass.WALL_DISTANCE
-		console.log('CELL-WALL:' + qwe)
-		
-		console.log('check.actX: ' + check.actX, 'check.actY: ' + check.actY)
-		console.log('posX: ' + sprite.x, 'testInY: ' + sprite.y)
-		console.log('testInX: ' + sprite.inX, 'testInY: ' + sprite.inY)
-		console.log(check.spriteBarrier)
-		console.log('moveX: ' + check.moveX + ' moveY: ' + check.moveY)
-	}
-	
+function moveAction(sprite, check) {	
 	if (sprite.move) {
-		
-		if (check.moveX) sprite.x += Math.cos(sprite.angle) * sprite.speed
-		if (check.moveY) sprite.y += Math.sin(sprite.angle) * sprite.speed
-		
-		// Visszaugrás WALL DISTANCE-RA.
-		if(false) {
-			check.spriteBarrier.forEach((barrier) => {
-				if (barrier == 4 && (sprite.inX > CELL_SIZE - inputClass.WALL_DISTANCE)) sprite.x = (check.actX * CELL_SIZE) + (CELL_SIZE - inputClass.WALL_DISTANCE)
-				if (barrier == 8 && (sprite.inX < inputClass.WALL_DISTANCE)) sprite.x = (check.actX * CELL_SIZE) + (inputClass.WALL_DISTANCE)
-				if (barrier == 6 && (sprite.inY > CELL_SIZE - inputClass.WALL_DISTANCE)) sprite.y = (check.actY * CELL_SIZE) + (CELL_SIZE - inputClass.WALL_DISTANCE)
-				if (barrier == 2 && (sprite.inY < inputClass.WALL_DISTANCE))  sprite.y = (check.actY * CELL_SIZE) + (inputClass.WALL_DISTANCE)
+		let testX = (check.moveX) ? sprite.x + Math.cos(sprite.angle) * sprite.speed : sprite.x;
+		let testY = (check.moveY) ? sprite.y + Math.sin(sprite.angle) * sprite.speed : sprite.y;
+
+		let testActX = Math.floor(testX / CELL_SIZE)
+		let testActY = Math.floor(testY / CELL_SIZE)
+
+		let testInX = Math.floor(testX - (testActX * CELL_SIZE))
+		let testInY = Math.floor(testY - (testActY * CELL_SIZE))
+
+		check.spriteBarrier.forEach((barrier) => {
+			const FAR = CELL_SIZE - check.WALL_DISTANCE
+			const NEAR = check.WALL_DISTANCE
+			const maxX = (testActX * CELL_SIZE) + (FAR)
+			const minX = (testActX * CELL_SIZE) + (NEAR)
+			const maxY = (testActY * CELL_SIZE) + (FAR)
+			const minY = (testActY * CELL_SIZE) + (NEAR)
+
+			if (check.moveX) {
+				if (barrier == 4 && (testInX > FAR)) {
+					sprite.wallCrash = 4
+					testX = maxX
+				}
+				if (barrier == 8 && (testInX < NEAR)) {
+					sprite.wallCrash = 8
+					testX = minX
+				}
+			}
+			if (check.moveY) {
+				if (barrier == 6 && (testInY > FAR)) {
+					sprite.wallCrash = 6
+					testY = maxY
+				}
+				if (barrier == 2 && (testInY < NEAR)) {
+					sprite.wallCrash = 2
+					testY = minY
+				}
+			}
+			if (barrier == 3 && (testInY <= NEAR && testInX >= FAR)) {
+				testX = maxX
+				testY = minY
+			}
+			if (barrier == 5 && (testInY >= FAR && testInX >= FAR)) {
+				testX = maxX
+				testY = maxY
+			}
+			if (barrier == 7 && (testInY >= FAR && testInX <= NEAR)) {
+				testX = minX
+				testY = maxY
 				
-				if (barrier == 3 && (sprite.inY <= inputClass.WALL_DISTANCE && sprite.inX >= CELL_SIZE - inputClass.WALL_DISTANCE)) {
-					sprite.x = (check.actX * CELL_SIZE) + (CELL_SIZE - inputClass.WALL_DISTANCE)
-					sprite.y = (check.actY * CELL_SIZE) + (inputClass.WALL_DISTANCE)
-				}
-				if (barrier == 5 && (sprite.inY >= CELL_SIZE - inputClass.WALL_DISTANCE && sprite.inX >= CELL_SIZE - inputClass.WALL_DISTANCE)) {
-					sprite.x = (check.actX * CELL_SIZE) + (CELL_SIZE - inputClass.WALL_DISTANCE)
-					sprite.y = (check.actY * CELL_SIZE) + (CELL_SIZE - inputClass.WALL_DISTANCE)
-				}
-				if (barrier == 7 && (sprite.inY >= CELL_SIZE - inputClass.WALL_DISTANCE && sprite.inX <= inputClass.WALL_DISTANCE)) {
-					sprite.x = (check.actX * CELL_SIZE) + (inputClass.WALL_DISTANCE)
-					sprite.y = (check.actY * CELL_SIZE) + (CELL_SIZE - inputClass.WALL_DISTANCE)
-					
-				}
-				if (barrier == 1 && (sprite.inY <= inputClass.WALL_DISTANCE && sprite.inX <= inputClass.WALL_DISTANCE)) {
-					sprite.x = (check.actX * CELL_SIZE) + (inputClass.WALL_DISTANCE)
-					sprite.y = (check.actY * CELL_SIZE) + (inputClass.WALL_DISTANCE)
-				}
-			});
-		}
+			}
+			if (barrier == 1 && (testInY <= NEAR && testInX <= NEAR)) {
+				testX = minX
+				testY = minY
+			}
+		});
+		// MOVE
+		sprite.x = testX
+		sprite.y = testY
 	}
 }
 
@@ -426,7 +442,7 @@ function moveCreature(creature) {
 		
 		let cCheck = checkMoveSprite(creature, 'creature')
 						
-		if(mapDataClass.map[cCheck.checkY][cCheck.checkX] != 0 && mapDataClass.map[cCheck.checkY][cCheck.checkX].type == 'effect') {
+		if (mapDataClass.map[cCheck.checkY][cCheck.checkX] != 0 && mapDataClass.map[cCheck.checkY][cCheck.checkX].type == 'effect') {
 			console.log(mapDataClass.map[cCheck.checkY][cCheck.checkX].type);
 		}
 
@@ -445,7 +461,7 @@ function moveCreature(creature) {
 			spritesClass.demage(player, creature, true)
 			
 			// ATTACK TEXTURE
-			if(!creature.anim_attack_function) {
+			if (!creature.anim_attack_function) {
 				creature.anim_attack_actFrame = `${creature.dirConstruction[0]}_E1`
 				creature.anim_attack_function = setInterval(() => {
 					creature.anim_attack_actFrame = (creature.anim_attack_actFrame == `${creature.dirConstruction[0]}_E1`) ? `${creature.dirConstruction[0]}_E2` : `${creature.dirConstruction[0]}_E1`;
@@ -491,36 +507,37 @@ function moveCreature(creature) {
 
 			// MOVE CREATURE
 			if (creature.moveType == 'patrol') {
-				if (!cCheck.moveY || !cCheck.moveX) {
-					// CENTER CREATURE
+				if (typeof creature.wallCrash != 'undefined' && creature.wallCrash != null) {
 					creature.x = Math.floor((creature.x / CELL_SIZE)) * CELL_SIZE + (CELL_SIZE / 2)
 					creature.y = Math.floor((creature.y / CELL_SIZE)) * CELL_SIZE + (CELL_SIZE / 2)
-
+					
 					let creatureMapX = Math.floor(creature.x / CELL_SIZE)
 					let creatureMapY = Math.floor(creature.y / CELL_SIZE)
-
-					// 1#
-					// console.log('CX: ' + creature.x + ' CY: ' + creature.y);
+					let wall = creature.wallCrash
+					let alterWays = {... mapDataClass.wayBarriers}
+					creature.wallCrash = null
 					
-					// var breakEach = false
-					// mapDataClass.wayCordinates.forEach(way => {
-					// 	if (breakEach) return;
-					// 	console.log(way.x, way.y, way.angle);
-					// 	if (mapDataClass.map[creatureMapY + way.y][creatureMapX + way.x] == 0) {
-					// 		creature.angle = graphicsClass.toRadians(way.angle)
-					// 		breakEach = true;
-					// 	}
-					// });
-					// 2#
-					if (!cCheck.moveY) creature.angle = (Math.floor(Math.random() * 2)) ? graphicsClass.toRadians(180) : graphicsClass.toRadians(0);
-					if (!cCheck.moveX) creature.angle = (Math.floor(Math.random() * 2)) ? graphicsClass.toRadians(90) : graphicsClass.toRadians(270);		
+					delete alterWays[wall];
+					mapDataClass.wayCordinates.forEach(way => {
+						if (typeof mapDataClass.map[creatureMapY + way.y] != 'undefined' && typeof mapDataClass.map[creatureMapY + way.y][creatureMapX + way.x] != 'undefined') {
+							if (mapDataClass.map[creatureMapY + way.y][creatureMapX + way.x] != 0) delete alterWays[way.barrier]
+						}
+					});
+
+					// RANDOM WAY
+					let wayBarriers = Object.keys(alterWays)
+					let barriersLength = wayBarriers.length
+					let randomBarrier =  Math.floor(Math.random() * (barriersLength))
+					creature.angle = graphicsClass.toRadians(alterWays[wayBarriers[randomBarrier]])
 				}
 			}
 
 			// IF EFFECT
 			let checkEffect = spritesClass.checkSpriteData(creature.y, creature.x, 'type', 'effect', 'position')
 			if (checkEffect) if (checkEffect.mode == 'direction') {
-				if ((creature.inY >=30 && creature.inY <=34) && (creature.inX >=30 && creature.inX <=34)) creature.angle = checkEffect.angle;
+				console.log('EFFETC WAY !!!');
+				if ((creature.inY >=inputClass.CREATURE_WALL_DISTANCE && creature.inY <= CELL_SIZE - inputClass.CREATURE_WALL_DISTANCE) &&
+					(creature.inX >=inputClass.CREATURE_WALL_DISTANCE && creature.inX <= CELL_SIZE - inputClass.CREATURE_WALL_DISTANCE)) creature.angle = checkEffect.angle;
 			}
 			
 			// IF ATTACK CREATURE
@@ -560,7 +577,7 @@ function moveAmmo(ammoSprite) {
 				findSprite.moveType = 'attack'
 				findSprite.speed += 3	// + 2
 
-				if(!findSprite.anim_demage_function) {
+				if (!findSprite.anim_demage_function) {
 					findSprite.anim_demage_actFrame = `${findSprite.dirConstruction[0]}_E3`
 					
 					findSprite.anim_demage_function = setInterval(() => {
@@ -594,7 +611,7 @@ function spritesCheck() {
 		if (sprite.energy < 1) {
 			sprite.move = false
 			sprite.material = 'ghost'
-			if(!sprite.anim_die_function) {
+			if (!sprite.anim_die_function) {
 				clearInterval(sprite.anim_function); sprite.anim_function = null
 				clearInterval(sprite.anim_attack_function); sprite.anim_attack_function = null
 				clearInterval(sprite.anim_damage_function); sprite.anim_damage_function = null
@@ -639,7 +656,7 @@ function spritesCheck() {
 
 			// ANIM TEXTURES
 			if (sprite.type == 'block' || sprite.type == 'object') {
-				if(sprite.active) {
+				if (sprite.active) {
 					let checkActAnim = mapDataClass.loadAnimationTexture(sprite)
 					if (checkActAnim) getActualTexture = checkActAnim[1]
 				}
@@ -647,7 +664,7 @@ function spritesCheck() {
 
 			// IF AMMO
 			if (sprite.type == 'ammo') {
-				if(sprite.active) {
+				if (sprite.active) {
 					moveAmmo(sprite)
 					let checkActAnim = mapDataClass.loadAnimationTexture(sprite)
 					if (checkActAnim) getActualTexture = checkActAnim[1]
@@ -791,7 +808,7 @@ async function loadindData() {
 			}
 		}
 
-		if(typeof insertSprite != 'undefined') {
+		if (typeof insertSprite != 'undefined') {
 			let data = {}
 			data.id = sprite.id
 			for (const [key, value] of Object.entries(insertSprite)) data[key] = value;
@@ -800,7 +817,7 @@ async function loadindData() {
 		}
 		
 		var dirConstruction
-		if(sprite.type !='effect') {
+		if (sprite.type !='effect') {
 			dirConstruction = await texturesClass.loadTextureToArray(sprite.textures, dirName, texturesClass.spriteTextures)
 		}
 
@@ -809,7 +826,7 @@ async function loadindData() {
 }
 
 async function gameMenu() {
-	if(menu.menuactive) {
+	if (menu.menuactive) {
 		//// MENU
 		clearInterval(gamePlay.game)
 		gamePlay.game = null

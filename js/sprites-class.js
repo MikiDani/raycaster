@@ -71,7 +71,6 @@ export default class SpritesClass {
             if (sY >= checkYmin && sY <= checkYmax &&
                 sX >= checkXmin && sX <= checkXmax) this.nearSprites.push(index)
         });
-        // console.log(this.nearSprites);
     }
 
     startShot() {
@@ -127,8 +126,8 @@ export default class SpritesClass {
     playerHealtTimeOut(energy) {
         setTimeout(function () {
             if (energy > 70) $("#healt-percentage").css('color', 'white');
-            else if(energy <= 70 && energy >=31) $("#healt-percentage").css('color', 'gold');
-            else if(energy <= 30) $("#healt-percentage").css('color', 'red');
+            else if (energy <= 70 && energy >=31) $("#healt-percentage").css('color', 'gold');
+            else if (energy <= 30) $("#healt-percentage").css('color', 'red');
         }, 200);
     }
 }

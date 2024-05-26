@@ -10,7 +10,8 @@ export default class MapDataClass {
         this.map = []
         this.walls = []; this.walls[0] = null;
 
-        this.wayCordinates = [{x: -1, y: 0, angle: 180}, {x: 1, y: 0, angle: 0}, {x: 0, y: -1, angle: 180}, {x: 0, y: 1, angle: 90}];
+        this.wayBarriers = {'2': 270, '4': 0, '6': 90, '8': 180 }
+        this.wayCordinates = [{x: -1, y: 0, barrier: 8}, {x: 1, y: 0, barrier: 4}, {x: 0, y: -1, barrier: 2}, {x: 0, y: 1, barrier: 6}];
     }
 
     returnActualWallTexture(wall, wallY, wallX) {
@@ -58,8 +59,8 @@ export default class MapDataClass {
             }
         }
         // Fill this.map
-        for(let mY=0; mY<map.length; mY++) {
-            for(let mX=0; mX<map[0].length; mX++) {
+        for (let mY=0; mY<map.length; mY++) {
+            for (let mX=0; mX<map[0].length; mX++) {
                 if (map[mY][mX] != 0) {
                     let cellData = map[mY][mX]
                     // Texture search based on texture identifier.
@@ -73,8 +74,8 @@ export default class MapDataClass {
     }
 
     loadAnimationTexture(obj, wallY, wallX) {
-		if(obj.anim_switch) {
-			if(!obj.anim_function) {
+		if (obj.anim_switch) {
+			if (!obj.anim_function) {
                 // Create animation interval
 				obj.anim_function = setInterval(() => {
                     obj.anim_actFrame++
