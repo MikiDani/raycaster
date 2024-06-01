@@ -60,5 +60,36 @@
         "anim_startFrame": 0,
         "rotate_switch": true,
         "rotate_frames": ["B", "D", "A", "C"]
+    },
+    {
+        "id": "1510",
+        "textures": {
+            "frog": [ "frog_A1", "frog_A2", "frog_A3", "frog_A4",
+                      "frog_B1", "frog_B2", "frog_B3", "frog_B4",
+                      "frog_C1", "frog_C2", "frog_C3", "frog_C4",
+                      "frog_D1", "frog_D2", "frog_D3", "frog_D4",
+                      "frog_E1", "frog_E2", "frog_E3",
+                      "frog_F1", "frog_F2", "frog_F3", "frog_F4"]
+        },
+        "active": true,
+        "type": "creature",
+        "mode": "enemy",
+        "material": "enemy",
+        "z": 0,
+        "angle": 0,
+        "energy": 2,
+        "damage": 5,
+        "speed": 3,
+        "move": true,
+        "moveType": "patrol",
+        "anim_switch": true,
+        "anim_frames": [1, 2, 3, 4],
+        "anim_actFrame": 0,
+        "anim_speed": 150,
+        "anim_repeat": false,
+        "anim_repeatCount": 0,
+        "anim_startFrame": 0,
+        "rotate_switch": true,
+        "rotate_frames": ["B", "D", "A", "C"]
     }
 ]

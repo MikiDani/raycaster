@@ -9,11 +9,11 @@
                                                            "effects": ["effect"]
                                                         },
     { "name": "mode",               "inputType": "select", "walls": ["normal", "animated", "door", "secret", "key1", "key2"],
-                                                           "objects": ["normal", "coin1", "coin2", "coin3", "key1", "key2", "message", "mushroom", "energy"],
+                                                           "objects": ["normal", "coin1", "coin2", "coin3", "key1", "key2", "message", "mushroom", "energy", "map"],
                                                            "blocks": ["normal", "door", "secret", "key1", "key2"],
                                                            "creatures": ["normal"],
                                                            "effects": ["direction"] },
-    { "name": "material",           "inputType": "select", "walls": ["fix", "ghost", "health-plus", "health-minus"],
+    { "name": "material",           "inputType": "select", "walls": ["fix", "ghost", "health-plus", "health-minus", "enemy"],
                                                            "objects": ["fix", "ghost", "health-plus", "health-minus"],
                                                            "blocks": ["fix", "ghost", "health-plus", "health-minus"],
                                                            "creatures": ["enemy", "fix", "ghost"] },

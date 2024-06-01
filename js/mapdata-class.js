@@ -32,6 +32,8 @@ export default class MapDataClass {
             wallArray.type = wallData.type
             wallArray.mode = wallData.mode
             wallArray.height = wallData.height
+            wallArray.damage = wallData.damage
+            wallArray.energy = wallData.energy
             if (wallData.mode == 'animated'
             || wallData.mode == 'door' || wallData.mode == 'secret'
             || wallData.mode == 'key1' || wallData.mode == 'key2'

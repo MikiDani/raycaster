@@ -293,10 +293,17 @@ export default class InputClass {
 				this.keyPressed[event.key] = true
 				if (event.key == '1') this.menu.skySwitch = !this.menu.skySwitch;
 				if (event.key == '2') this.menu.floorSwitch = !this.menu.floorSwitch;
-				if (event.key == 'm') this.menu.mapSwitch = !this.menu.mapSwitch;
 				if (event.key == 'i') this.menu.infoSwitch = !this.menu.infoSwitch;
 				if (event.key == 'g') this.menu.shadowsSwitch = !this.menu.shadowsSwitch;
 				if (event.key == 'h') this.menu.spriteShadowsSwitch = !this.menu.spriteShadowsSwitch;
+				if (event.key == 'm') {
+					if(this.player.map) {
+						this.menu.mapSwitch = !this.menu.mapSwitch;
+					} else {
+						let content = `<div class="text-center"><h3 class='text-center'>You don't have the map.</h3></div>`
+						this.graphicsClass.scrollInfoMaker(content, this.messageTime)
+					}
+				}
 
 				if (event.key == 'v') {
 					console.log('ColorCache: ');
@@ -423,14 +430,12 @@ export default class InputClass {
 			if (checkMove.moveX) this.player.x = this.player.x + (Math.cos(this.player.angle + this.graphicsClass.toRadians(90)) * this.MOVE_SPEED)
 			if (checkMove.moveY) this.player.y = this.player.y + (Math.sin(this.player.angle + this.graphicsClass.toRadians(90)) * this.MOVE_SPEED)
 		}
-		if (this.keyPressed['ArrowLeft']) { this.player.angle += -this.graphicsClass.toRadians(this.MOVE_ANGLE); }
-		if (this.keyPressed['ArrowRight']) { this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE); }
-		if (this.keyPressed['a'] || this.keyPressed['A']) { this.player.angle += -this.graphicsClass.toRadians(this.MOVE_ANGLE); }
-		if (this.keyPressed['d'] || this.keyPressed['D']) { this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE); }
-		if (this.keyPressed['r'] || this.keyPressed['R']) { this.player.angle += -this.graphicsClass.toRadians(this.MOVE_ANGLE_SLOW); }
-		if (this.keyPressed['t'] || this.keyPressed['T']) { this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE_SLOW); }
-		if (this.keyPressed['w'] || this.keyPressed['W']) { this.player.speed = this.MOVE_SPEED }
-		if (this.keyPressed['s'] || this.keyPressed['S']) { this.player.speed = -this.MOVE_SPEED }
+		if (this.keyPressed['a'] || this.keyPressed['A']) { this.player.move = true; this.player.angle += -this.graphicsClass.toRadians(this.MOVE_ANGLE) }
+		if (this.keyPressed['d'] || this.keyPressed['D']) { this.player.move = true; this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE)	}
+		if (this.keyPressed['r'] || this.keyPressed['R']) { this.player.move = true; this.player.angle += -this.graphicsClass.toRadians(this.MOVE_ANGLE_SLOW); }
+		if (this.keyPressed['t'] || this.keyPressed['T']) { this.player.move = true; this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE_SLOW); }
+		if (this.keyPressed['w'] || this.keyPressed['W']) { this.player.move = true; this.player.speed = this.MOVE_SPEED }
+		if (this.keyPressed['s'] || this.keyPressed['S']) { this.player.move = true; this.player.speed = -this.MOVE_SPEED }
 		if (this.keyPressed['o'] || this.keyPressed['O']) { this.MOVE_SPEED = this.MOVE_SPEED + 1 }
 		if (this.keyPressed['p'] || this.keyPressed['P']) {
 			if (this.player.poison == false) {
@@ -440,8 +445,10 @@ export default class InputClass {
 				this.graphicsClass.FOV = this.graphicsClass.toRadians(60)
 			}
 		}
-		if (this.keyPressed['ArrowUp']) { this.player.speed = this.MOVE_SPEED }
-		if (this.keyPressed['ArrowDown']) { this.player.speed = -this.MOVE_SPEED }
+		if (this.keyPressed['ArrowUp']) { this.player.move = true; this.player.speed = this.MOVE_SPEED }
+		if (this.keyPressed['ArrowDown']) { this.player.move = true; this.player.speed = -this.MOVE_SPEED }
+		if (this.keyPressed['ArrowLeft']) { this.player.move = true; this.player.angle += -this.graphicsClass.toRadians(this.MOVE_ANGLE); }
+		if (this.keyPressed['ArrowRight']) { this.player.move = true; this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE); }
 
 		this.keybordListener = requestAnimationFrame(this.handleKeyPress);
 	}

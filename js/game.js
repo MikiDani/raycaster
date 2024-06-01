@@ -28,6 +28,7 @@ const player = {
 	weapon: 1,
 	poison: false,
 	energy: 100,
+	map: true,	// !!
 }
 
 const menu = {
@@ -188,25 +189,33 @@ function checkMoveSprite(spriteObj, type = null, inputStrafeCheck = null) {
 		let findId = spriteBarrier.findIndex(barrier => barrier == barrierId)
 		if (findId != -1) spriteBarrier.splice(findId, 1)
 	}
+	
+	let deleteBarrierArray = [];
 
 	spriteBarrier.forEach((barrier) => {
 		if (barrier == 4) {
-			if (spriteBarrier.includes(3)) deleteBarier(spriteBarrier, 3)
-			if (spriteBarrier.includes(5)) deleteBarier(spriteBarrier, 5)
+			if (spriteBarrier.includes(3)) deleteBarrierArray.push(3);
+			if (spriteBarrier.includes(5)) deleteBarrierArray.push(5);
 		}
 		if (barrier == 8) {
-			if (spriteBarrier.includes(1)) deleteBarier(spriteBarrier, 1)
-			if (spriteBarrier.includes(7)) deleteBarier(spriteBarrier, 7)
+			if (spriteBarrier.includes(1)) deleteBarrierArray.push(1);
+			if (spriteBarrier.includes(7)) deleteBarrierArray.push(7);
 		}
 		if (barrier == 6) {
-			if (spriteBarrier.includes(7)) deleteBarier(spriteBarrier, 7)
-			if (spriteBarrier.includes(5)) deleteBarier(spriteBarrier, 5)
+			if (spriteBarrier.includes(7)) deleteBarrierArray.push(7);
+			if (spriteBarrier.includes(5)) deleteBarrierArray.push(5);
 		}
 		if (barrier == 2) {
-			if (spriteBarrier.includes(1)) deleteBarier(spriteBarrier, 1)
-			if (spriteBarrier.includes(3)) deleteBarier(spriteBarrier, 3)
+			if (spriteBarrier.includes(1)) deleteBarrierArray.push(1);
+			if (spriteBarrier.includes(3)) deleteBarrierArray.push(3);
 		}
 	});
+	
+	deleteBarrierArray.forEach((barrier) => {
+		deleteBarier(spriteBarrier, barrier);
+	});
+
+	// console.log(spriteBarrier);
 
 	spriteBarrier.forEach((barrier) => {
 		if (barrier == 4 && (spriteObj.inX > CELL_SIZE - WALL_DISTANCE))	moveX = false;
@@ -232,16 +241,32 @@ function checkMoveSprite(spriteObj, type = null, inputStrafeCheck = null) {
 
 function movePlayer(bringPlayer, inputStrafeCheck) {
 
-	if (bringPlayer.speed != 0 || inputStrafeCheck) {
+	let playerActX = Math.floor(bringPlayer.x / CELL_SIZE)
+	let playerActY = Math.floor(bringPlayer.y / CELL_SIZE)
 
+	// WALL CREATURE ATTACK
+	for(const [key, value] of Object.entries(mapDataClass.wayCordinates)) {
+		let checkEnemyWall = mapDataClass.map[playerActY + value.y][playerActX + value.x]
+		
+		if (checkEnemyWall.type == 'creature') {
+			console.log(checkEnemyWall.damage);
+
+			spritesClass.demage(bringPlayer, checkEnemyWall, true)
+
+			let colorizeOption = { color: "255, 0, 0", alpha: 0.2, time: 5 }
+			graphicsClass.screenColorizeOptions(colorizeOption);
+		}
+	}
+
+	if (bringPlayer.move || inputStrafeCheck) {
+		
+		bringPlayer.move = false
 		var pCheck = false
 		
-		let playerActX = Math.floor(bringPlayer.x / CELL_SIZE)
-		let playerActY = Math.floor(bringPlayer.y / CELL_SIZE)
-
 		pCheck = checkMoveSprite(bringPlayer, 'player', inputStrafeCheck)
 
-		if (true) {
+		// !!! régi 45
+		if (false) {
 			let psPlayerX = Math.floor((bringPlayer.x + Math.cos(bringPlayer.angle) * bringPlayer.speed) / CELL_SIZE)
 			let psPlayerY = Math.floor((bringPlayer.y + Math.sin(bringPlayer.angle) * bringPlayer.speed) / CELL_SIZE)
 			if (mapDataClass.map[psPlayerY][psPlayerX]) { pCheck.moveX = false; pCheck.moveY = false; }
@@ -266,7 +291,7 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 					// pCheck.moveY = false
 
 					let colorizeOption = { color: "0, 255, 0", alpha: 0.05, time: 10 }
-					graphicsClass.screenColorizeOptions(colorizeOption);
+					graphicsClass.screenColorizeOptions(colorizeOption)
 				}
 
 				// ACTUAL PLAYER BRICK
@@ -304,7 +329,22 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 					if (sprite.active == true && sprite.mode == 'mushroom') {
 						console.log('Mashroom!!!')
 						sprite.active = false
-						bringPlayer.poison = true;
+						bringPlayer.poison = true
+						return;
+					}
+
+					// PICKUP MAP
+					if (sprite.active == true && sprite.mode == 'map') {
+						console.log('MAP!!!')
+						sprite.active = false
+						bringPlayer.map = true
+
+						let colorizeOption = { color: "255, 240, 180", alpha: 0.5, time: 200 }
+						graphicsClass.screenColorizeOptions(colorizeOption)
+
+						let content = `<div class="text-center"><h3 class='text-center'>You picked up the map</h3><div class="mx-auto">If you want to use the map, press the "m" key.</div></div>`
+						graphicsClass.scrollInfoMaker(content, inputClass.messageTime)
+
 						return;
 					}
 
@@ -374,67 +414,65 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 	return pCheck;
 }
 
-function moveAction(sprite, check) {	
-	if (sprite.move) {
-		let testX = (check.moveX) ? sprite.x + Math.cos(sprite.angle) * sprite.speed : sprite.x;
-		let testY = (check.moveY) ? sprite.y + Math.sin(sprite.angle) * sprite.speed : sprite.y;
+function moveAction(sprite, check) {
+	let testX = (check.moveX) ? sprite.x + Math.cos(sprite.angle) * sprite.speed : sprite.x;
+	let testY = (check.moveY) ? sprite.y + Math.sin(sprite.angle) * sprite.speed : sprite.y;
 
-		let testActX = Math.floor(testX / CELL_SIZE)
-		let testActY = Math.floor(testY / CELL_SIZE)
+	let testActX = Math.floor(testX / CELL_SIZE)
+	let testActY = Math.floor(testY / CELL_SIZE)
 
-		let testInX = Math.floor(testX - (testActX * CELL_SIZE))
-		let testInY = Math.floor(testY - (testActY * CELL_SIZE))
+	let testInX = Math.floor(testX - (testActX * CELL_SIZE))
+	let testInY = Math.floor(testY - (testActY * CELL_SIZE))
 
-		check.spriteBarrier.forEach((barrier) => {
-			const FAR = CELL_SIZE - check.WALL_DISTANCE
-			const NEAR = check.WALL_DISTANCE
-			const maxX = (testActX * CELL_SIZE) + (FAR)
-			const minX = (testActX * CELL_SIZE) + (NEAR)
-			const maxY = (testActY * CELL_SIZE) + (FAR)
-			const minY = (testActY * CELL_SIZE) + (NEAR)
+	check.spriteBarrier.forEach((barrier) => {
+		const FAR = CELL_SIZE - check.WALL_DISTANCE
+		const NEAR = check.WALL_DISTANCE
+		const maxX = (testActX * CELL_SIZE) + (FAR)
+		const minX = (testActX * CELL_SIZE) + (NEAR)
+		const maxY = (testActY * CELL_SIZE) + (FAR)
+		const minY = (testActY * CELL_SIZE) + (NEAR)
 
-			if (check.moveX) {
-				if (barrier == 4 && (testInX > FAR)) {
-					sprite.wallCrash = 4
-					testX = maxX
-				}
-				if (barrier == 8 && (testInX < NEAR)) {
-					sprite.wallCrash = 8
-					testX = minX
-				}
-			}
-			if (check.moveY) {
-				if (barrier == 6 && (testInY > FAR)) {
-					sprite.wallCrash = 6
-					testY = maxY
-				}
-				if (barrier == 2 && (testInY < NEAR)) {
-					sprite.wallCrash = 2
-					testY = minY
-				}
-			}
-			if (barrier == 3 && (testInY <= NEAR && testInX >= FAR)) {
+		if (check.moveX) {
+			if (barrier == 4 && (testInX > FAR)) {
+				sprite.wallCrash = 4
 				testX = maxX
-				testY = minY
 			}
-			if (barrier == 5 && (testInY >= FAR && testInX >= FAR)) {
-				testX = maxX
+			if (barrier == 8 && (testInX < NEAR)) {
+				sprite.wallCrash = 8
+				testX = minX
+			}
+		}
+		if (check.moveY) {
+			if (barrier == 6 && (testInY > FAR)) {
+				sprite.wallCrash = 6
 				testY = maxY
 			}
-			if (barrier == 7 && (testInY >= FAR && testInX <= NEAR)) {
-				testX = minX
-				testY = maxY
-				
-			}
-			if (barrier == 1 && (testInY <= NEAR && testInX <= NEAR)) {
-				testX = minX
+			if (barrier == 2 && (testInY < NEAR)) {
+				sprite.wallCrash = 2
 				testY = minY
 			}
-		});
-		// MOVE
-		sprite.x = testX
-		sprite.y = testY
-	}
+		}
+		if (barrier == 3 && (testInY <= NEAR && testInX >= FAR)) {
+			testX = maxX
+			testY = minY
+		}
+		if (barrier == 5 && (testInY >= FAR && testInX >= FAR)) {
+			testX = maxX
+			testY = maxY
+		}
+		if (barrier == 7 && (testInY >= FAR && testInX <= NEAR)) {
+			testX = minX
+			testY = maxY
+			
+		}
+		if (barrier == 1 && (testInY <= NEAR && testInX <= NEAR)) {
+			testX = minX
+			testY = minY
+		}
+	});
+	// MOVE
+	sprite.x = testX
+	sprite.y = testY
 }
 
 function moveCreature(creature) {
@@ -508,34 +546,52 @@ function moveCreature(creature) {
 			// MOVE CREATURE
 			if (creature.moveType == 'patrol') {
 				if (typeof creature.wallCrash != 'undefined' && creature.wallCrash != null) {
+					let wall = creature.wallCrash
+					creature.wallCrash = null
 					creature.x = Math.floor((creature.x / CELL_SIZE)) * CELL_SIZE + (CELL_SIZE / 2)
 					creature.y = Math.floor((creature.y / CELL_SIZE)) * CELL_SIZE + (CELL_SIZE / 2)
 					
 					let creatureMapX = Math.floor(creature.x / CELL_SIZE)
 					let creatureMapY = Math.floor(creature.y / CELL_SIZE)
-					let wall = creature.wallCrash
 					let alterWays = {... mapDataClass.wayBarriers}
-					creature.wallCrash = null
 					
 					delete alterWays[wall];
 					mapDataClass.wayCordinates.forEach(way => {
 						if (typeof mapDataClass.map[creatureMapY + way.y] != 'undefined' && typeof mapDataClass.map[creatureMapY + way.y][creatureMapX + way.x] != 'undefined') {
 							if (mapDataClass.map[creatureMapY + way.y][creatureMapX + way.x] != 0) delete alterWays[way.barrier]
 						}
+
+						let wayCheckBlock = spritesClass.checkSpriteData(creatureMapY + way.y, creatureMapX + way.x, 'type', 'block')
+						if (wayCheckBlock && wayCheckBlock.active && wayCheckBlock.material == 'fix') {
+							delete alterWays[way.barrier]
+						}
+						
+						let wayCheckObject = spritesClass.checkSpriteData(creatureMapY + way.y, creatureMapX + way.x, 'type', 'object')						
+						if (wayCheckObject && wayCheckObject.active && wayCheckObject.material == 'fix') {
+							delete alterWays[way.barrier]
+						}
+
+						let wayCheckCreature = spritesClass.checkSpriteData(creatureMapY + way.y, creatureMapX + way.x, 'type', 'creature')
+						if (wayCheckCreature && wayCheckCreature.active) {
+							delete alterWays[way.barrier]
+						}
 					});
 
-					// RANDOM WAY
 					let wayBarriers = Object.keys(alterWays)
 					let barriersLength = wayBarriers.length
-					let randomBarrier =  Math.floor(Math.random() * (barriersLength))
-					creature.angle = graphicsClass.toRadians(alterWays[wayBarriers[randomBarrier]])
+
+					if (barriersLength > 0) {
+						// RANDOM WAY
+						let randomBarrier =  Math.floor(Math.random() * (barriersLength))
+						creature.angle = graphicsClass.toRadians(alterWays[wayBarriers[randomBarrier]])
+					}
 				}
 			}
 
 			// IF EFFECT
 			let checkEffect = spritesClass.checkSpriteData(creature.y, creature.x, 'type', 'effect', 'position')
 			if (checkEffect) if (checkEffect.mode == 'direction') {
-				console.log('EFFETC WAY !!!');
+				//console.log('EFFETC WAY !!!');
 				if ((creature.inY >=inputClass.CREATURE_WALL_DISTANCE && creature.inY <= CELL_SIZE - inputClass.CREATURE_WALL_DISTANCE) &&
 					(creature.inX >=inputClass.CREATURE_WALL_DISTANCE && creature.inX <= CELL_SIZE - inputClass.CREATURE_WALL_DISTANCE)) creature.angle = checkEffect.angle;
 			}
@@ -558,8 +614,9 @@ function moveCreature(creature) {
 					creature.speed = 3
 				}
 			}
-
-			moveAction(creature, cCheck)			
+			
+			// MOVE
+			if (creature.move) moveAction(creature, cCheck)
 		}
 	}
 }
@@ -567,6 +624,9 @@ function moveCreature(creature) {
 function moveAmmo(ammoSprite) {
 	if (ammoSprite.speed != 0) {
 		let ammoCheck = checkMoveSprite(ammoSprite, 'ammo')
+
+		console.log(ammoCheck);
+		
 		// CHECK HIT SPRITES
 		let checkSprites = spritesClass.sprites.filter(obj => Math.floor(obj.y / CELL_SIZE) == ammoCheck.checkY && Math.floor(obj.x / CELL_SIZE) == ammoCheck.checkX)
 		checkSprites.forEach((findSprite) => {
@@ -593,8 +653,16 @@ function moveAmmo(ammoSprite) {
 				if (ammoIndex !== -1) spritesClass.sprites.splice(ammoIndex, 1)
 			}
 		});
-		
-		if (ammoCheck.moveX == false || ammoCheck.moveY == false) ammoSprite.active = false
+		// CHECK HIT WALL ENEMY
+
+		if (ammoCheck.moveX == false || ammoCheck.moveY == false) {
+
+			console.log(ammoCheck.checkX);
+			console.log(ammoCheck.checkY);
+			
+			// HIT WALL 
+			ammoSprite.active = false
+		}
 
 		moveAction(ammoSprite, ammoCheck)
 	}
@@ -874,7 +942,7 @@ function gameLoop() {
 	spritesClass.sprites.forEach(sprite => {
 		sprite.distance = graphicsClass.spriteDistanceCalc(sprite)
 	});
-	graphicsClass.screenColorizeAction()
+	graphicsClass.screenColorizeAction()	
 	if (menu.mapSwitch) graphicsClass.renderMinimap()
 	if (menu.infoSwitch) graphicsClass.infoPanel()
 	if (menu.clearGameSwitch) clearInterval(gamePlay.game)
