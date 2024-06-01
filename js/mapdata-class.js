@@ -1,5 +1,6 @@
 export default class MapDataClass {
     map;
+    shadow;
     walls;
     sky;
     floor;
@@ -21,7 +22,8 @@ export default class MapDataClass {
                 if (checkActAnim) return checkActAnim;
             }
         }
-        return [wall.dirConstruction[0], wall.dirConstruction[1]]
+        if (wall.type == 'creature') return [wall.dirConstruction[0], wall.dirConstruction[wall.anim_actFrame]];
+        else return [wall.dirConstruction[0], wall.dirConstruction[1]];
     }
 
     async createWall(wallData, dirConstruction) {        
@@ -81,8 +83,10 @@ export default class MapDataClass {
                 // Create animation interval
 				obj.anim_function = setInterval(() => {
                     obj.anim_actFrame++
-                    // obj.dirConstruction.length = anim_max frames
-					obj.anim_actFrame = (obj.anim_actFrame >= obj.dirConstruction.length) ? obj.anim_startFrame : obj.anim_actFrame
+                    // obj.dirConstruction.length = anim_max frames | if creature or ammo the last frame is end frame
+                    let animMaxFrame = (obj.type == 'creature' || obj.type == 'ammo') ? obj.dirConstruction.length - 1 : obj.dirConstruction.length;
+
+					obj.anim_actFrame = (obj.anim_actFrame >= animMaxFrame) ? obj.anim_startFrame : obj.anim_actFrame
                     if (!obj.anim_repeat) {
 						obj.anim_repeatCount++
                         if (obj.anim_repeatCount >= obj.anim_repeatEnd) {
@@ -98,7 +102,8 @@ export default class MapDataClass {
 					}
 				}, obj.anim_speed)
 			}
-		return [obj.dirConstruction[0], obj.dirConstruction[obj.anim_actFrame]]
+            return [obj.dirConstruction[0], obj.dirConstruction[obj.anim_actFrame]]
 		}
+        if (obj.type == 'ammo') return [obj.dirConstruction[0], obj.dirConstruction[obj.anim_actFrame]]
 	}
 }

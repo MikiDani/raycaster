@@ -29,6 +29,7 @@ const player = {
 	poison: false,
 	energy: 100,
 	map: true,	// !!
+	shotTime: 100,
 }
 
 const menu = {
@@ -94,63 +95,63 @@ function checkMoveSprite(spriteObj, type = null, inputStrafeCheck = null) {
 	firstAngleDirection = inputClass.checkDirection(graphicsClass.toAngle(spriteObj.angle), spriteObj.speed)
 		
 	if (inputStrafeCheck) {
-		soAngleDirection[0] = {x: actX, y: actY - 1, numberF:2, stopF:2, numberB:6, stopB:6}
-		soAngleDirection[1] = {x: actX - 1, y: actY - 1, numberF:1, stopF:1, numberB:5, stopB:5}
-		soAngleDirection[2] = {x: actX + 1, y: actY - 1, numberF:3, stopF:3, numberB:7, stopB:7}
-		soAngleDirection[3] = {x: actX + 1, y: actY, numberF:4, stopF:4, numberB:4, stopB:4}
-		soAngleDirection[4] = {x: actX - 1, y: actY, numberF:8, stopF:8, numberB:8, stopB:8}
+		soAngleDirection[0] = {x: actX, y: actY - 1, stopF:2, stopB:6}
+		soAngleDirection[1] = {x: actX - 1, y: actY - 1, stopF:1, stopB:5}
+		soAngleDirection[2] = {x: actX + 1, y: actY - 1, stopF:3, stopB:7}
+		soAngleDirection[3] = {x: actX + 1, y: actY, stopF:4, stopB:4}
+		soAngleDirection[4] = {x: actX - 1, y: actY, stopF:8, stopB:8}
 
-		soAngleDirection[5] = {x: actX - 1, y: actY + 1, numberF:7, stopF:7, numberB:3, stopB:3 }
-		soAngleDirection[6] = {x: actX, y: actY + 1, numberF:6, stopF:6, numberB:2, stopB:2 }
-		soAngleDirection[7] = {x: actX + 1, y: actY + 1, numberF:5, stopF:5, numberB:1, stopB:1 }
+		soAngleDirection[5] = {x: actX - 1, y: actY + 1, stopF:7, stopB:3 }
+		soAngleDirection[6] = {x: actX, y: actY + 1, stopF:6, stopB:2 }
+		soAngleDirection[7] = {x: actX + 1, y: actY + 1, stopF:5, stopB:1 }
 	} else
 	if (firstAngleDirection.way == 'right') {
-		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, numberF:4, stopF:4, numberB:8, stopB:8}
-		soAngleDirection[1] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y - 1, numberF:3, stopF:3, numberB:1, stopB:1}
-		soAngleDirection[2] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y + 1, numberF:5, stopF:5, numberB:7, stopB:7}
-		soAngleDirection[3] = {x: actX, y: actY - 1, numberF:2, stopF:2, numberB:2, stopB:2}
-		soAngleDirection[4] = {x: actX, y: actY + 1, numberF:6, stopF:6, numberF:6, stopB:6}
+		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, stopF:4, stopB:8}
+		soAngleDirection[1] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y - 1, stopF:3, stopB:1}
+		soAngleDirection[2] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y + 1, stopF:5, stopB:7}
+		soAngleDirection[3] = {x: actX, y: actY - 1, stopF:2, stopB:2}
+		soAngleDirection[4] = {x: actX, y: actY + 1, stopF:6, stopB:6}
 	} else
 	if (firstAngleDirection.way == 'right-down') {
-		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, numberF:5, stopF:5, numberB:1, stopB:1}
-		soAngleDirection[1] = {x: soAngleDirection[0].x, y: soAngleDirection[0].y + (- 1 * firstAngleDirection.sign), numberF:4, stopF:4, numberB:8, stopB:8}
-		soAngleDirection[2] = {x: soAngleDirection[0].x  + (- 1 * firstAngleDirection.sign), y: soAngleDirection[0].y, numberF:6, stopF:6, numberB:2, stopB:2}
+		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, stopF:5, stopB:1}
+		soAngleDirection[1] = {x: soAngleDirection[0].x, y: soAngleDirection[0].y + (- 1 * firstAngleDirection.sign), stopF:4, stopB:8}
+		soAngleDirection[2] = {x: soAngleDirection[0].x  + (- 1 * firstAngleDirection.sign), y: soAngleDirection[0].y, stopF:6, stopB:2}
 	} else
 	if (firstAngleDirection.way == 'down') {
-		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, numberF:6, stopF:6, numberB:2, stopB:2 }
-		soAngleDirection[1] = {x: actX + firstAngleDirection.x + 1, y: actY + firstAngleDirection.y, numberF:5, stopF:5, numberB:1, stopB:1 }
-		soAngleDirection[2] = {x: actX + firstAngleDirection.x - 1, y: actY + firstAngleDirection.y, numberF:7, stopF:7, numberB:3, stopB:3 }
-		soAngleDirection[3] = {x: actX - 1, y: actY, numberF: 8, stopF:8, numberB: 8, stopB:8}
-		soAngleDirection[4] = {x: actX + 1, y: actY, numberF: 4, stopF:4, numberB: 4, stopB:4}
+		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, stopF:6, stopB:2 }
+		soAngleDirection[1] = {x: actX + firstAngleDirection.x + 1, y: actY + firstAngleDirection.y, stopF:5, stopB:1 }
+		soAngleDirection[2] = {x: actX + firstAngleDirection.x - 1, y: actY + firstAngleDirection.y, stopF:7, stopB:3 }
+		soAngleDirection[3] = {x: actX - 1, y: actY,  stopF:8, stopB:8}
+		soAngleDirection[4] = {x: actX + 1, y: actY,  stopF:4, stopB:4}
 	} else
 	if (firstAngleDirection.way == 'left-down') {
-		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y,  numberF:7, stopF:7, numberB:3, stopB:3 }
-		soAngleDirection[1] = {x: soAngleDirection[0].x, y: soAngleDirection[0].y + (- 1 * firstAngleDirection.sign), numberF:8, stopF:8, numberB:4, stopB:4}
-		soAngleDirection[2] = {x: soAngleDirection[0].x  - (- 1 * firstAngleDirection.sign), y: soAngleDirection[0].y, numberF:6, stopF:6, numberB:2, stopB:2}
+		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y,  stopF:7, stopB:3 }
+		soAngleDirection[1] = {x: soAngleDirection[0].x, y: soAngleDirection[0].y + (- 1 * firstAngleDirection.sign), stopF:8, stopB:4}
+		soAngleDirection[2] = {x: soAngleDirection[0].x  - (- 1 * firstAngleDirection.sign), y: soAngleDirection[0].y, stopF:6, stopB:2}
 	} else
 	if (firstAngleDirection.way == 'left') {
-		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, numberF:8, stopF:8, numberB:4, stopB:4}
-		soAngleDirection[1] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y + 1, numberF:7, stopF:7, numberB:5, stopB:5}
-		soAngleDirection[2] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y - 1, numberF:1, stopF:1, numberB:3, stopB:3}
-		soAngleDirection[3] = {x: actX, y: actY - 1, numberF:2, stopF:2, numberB:2, stopB:2}
-		soAngleDirection[4] = {x: actX, y: actY + 1, numberF:6, stopF:6, numberB:6, stopB:6}
+		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, stopF:8, stopB:4}
+		soAngleDirection[1] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y + 1, stopF:7, stopB:5}
+		soAngleDirection[2] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y - 1, stopF:1, stopB:3}
+		soAngleDirection[3] = {x: actX, y: actY - 1, stopF:2, stopB:2}
+		soAngleDirection[4] = {x: actX, y: actY + 1, stopF:6, stopB:6}
 	} else
 	if (firstAngleDirection.way == 'left-up') {
-		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, numberF:1, stopF:1, numberB:5, stopB:5}
-		soAngleDirection[1] = {x: soAngleDirection[0].x, y: soAngleDirection[0].y - (- 1 * firstAngleDirection.sign), numberF:8, stopF:8, numberB:4, stopB:4}
-		soAngleDirection[2] = {x: soAngleDirection[0].x  - (- 1 * firstAngleDirection.sign), y: soAngleDirection[0].y, numberF:2, stopF:2, numberB:6, stopB:6}
+		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, stopF:1, stopB:5}
+		soAngleDirection[1] = {x: soAngleDirection[0].x, y: soAngleDirection[0].y - (- 1 * firstAngleDirection.sign), stopF:8, stopB:4}
+		soAngleDirection[2] = {x: soAngleDirection[0].x  - (- 1 * firstAngleDirection.sign), y: soAngleDirection[0].y, stopF:2, stopB:6}
 	} else
 	if (firstAngleDirection.way == 'up') {
-		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, numberF:2, stopF:2, numberB:6, stopB:6}
-		soAngleDirection[1] = {x: actX + firstAngleDirection.x - 1, y: actY + firstAngleDirection.y, numberF:1, stopF:1, numberB:7, stopB:7}
-		soAngleDirection[2] = {x: actX + firstAngleDirection.x + 1, y: actY + firstAngleDirection.y, numberF:3, stopF:3, numberB:5, stopB:5}
-		soAngleDirection[3] = {x: actX + 1, y: actY, numberF:4, stopF:4, numberB:4, stopB:4}
-		soAngleDirection[4] = {x: actX - 1, y: actY, numberF:8, stopF:8, numberB:8, stopB:8}
+		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, stopF:2, stopB:6}
+		soAngleDirection[1] = {x: actX + firstAngleDirection.x - 1, y: actY + firstAngleDirection.y, stopF:1, stopB:7}
+		soAngleDirection[2] = {x: actX + firstAngleDirection.x + 1, y: actY + firstAngleDirection.y, stopF:3, stopB:5}
+		soAngleDirection[3] = {x: actX + 1, y: actY, stopF:4, stopB:4}
+		soAngleDirection[4] = {x: actX - 1, y: actY, stopF:8, stopB:8}
 	} else
 	if (firstAngleDirection.way == 'right-up') {
-		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, numberF:3, stopF:3, numberB:7, stopB:7}
-		soAngleDirection[1] = {x: soAngleDirection[0].x, y: soAngleDirection[0].y - (- 1 * firstAngleDirection.sign), numberF:4, stopF:4, numberB:8, stopB:8}
-		soAngleDirection[2] = {x: soAngleDirection[0].x  + (- 1 * firstAngleDirection.sign), y: soAngleDirection[0].y, numberF:2, stopF:2, numberB:6, stopB:6}
+		soAngleDirection[0] = {x: actX + firstAngleDirection.x, y: actY + firstAngleDirection.y, stopF:3, stopB:7}
+		soAngleDirection[1] = {x: soAngleDirection[0].x, y: soAngleDirection[0].y - (- 1 * firstAngleDirection.sign), stopF:4, stopB:8}
+		soAngleDirection[2] = {x: soAngleDirection[0].x  + (- 1 * firstAngleDirection.sign), y: soAngleDirection[0].y, stopF:2, stopB:6}
 	}
 
 	// FIRST CHACK WAY
@@ -189,34 +190,35 @@ function checkMoveSprite(spriteObj, type = null, inputStrafeCheck = null) {
 		let findId = spriteBarrier.findIndex(barrier => barrier == barrierId)
 		if (findId != -1) spriteBarrier.splice(findId, 1)
 	}
+
+	if (type == 'player') {
+
+		let deleteBarrierArray = [];
+
+		spriteBarrier.forEach((barrier) => {
+			if (barrier == 4) {
+				if (spriteBarrier.includes(3)) deleteBarrierArray.push(3);
+				if (spriteBarrier.includes(5)) deleteBarrierArray.push(5);
+			}
+			if (barrier == 8) {
+				if (spriteBarrier.includes(1)) deleteBarrierArray.push(1);
+				if (spriteBarrier.includes(7)) deleteBarrierArray.push(7);
+			}
+			if (barrier == 6) {
+				if (spriteBarrier.includes(7)) deleteBarrierArray.push(7);
+				if (spriteBarrier.includes(5)) deleteBarrierArray.push(5);
+			}
+			if (barrier == 2) {
+				if (spriteBarrier.includes(1)) deleteBarrierArray.push(1);
+				if (spriteBarrier.includes(3)) deleteBarrierArray.push(3);
+			}
+		});
+
+		deleteBarrierArray.forEach((barrier) => {
+			deleteBarier(spriteBarrier, barrier)
+		});
+	}
 	
-	let deleteBarrierArray = [];
-
-	spriteBarrier.forEach((barrier) => {
-		if (barrier == 4) {
-			if (spriteBarrier.includes(3)) deleteBarrierArray.push(3);
-			if (spriteBarrier.includes(5)) deleteBarrierArray.push(5);
-		}
-		if (barrier == 8) {
-			if (spriteBarrier.includes(1)) deleteBarrierArray.push(1);
-			if (spriteBarrier.includes(7)) deleteBarrierArray.push(7);
-		}
-		if (barrier == 6) {
-			if (spriteBarrier.includes(7)) deleteBarrierArray.push(7);
-			if (spriteBarrier.includes(5)) deleteBarrierArray.push(5);
-		}
-		if (barrier == 2) {
-			if (spriteBarrier.includes(1)) deleteBarrierArray.push(1);
-			if (spriteBarrier.includes(3)) deleteBarrierArray.push(3);
-		}
-	});
-	
-	deleteBarrierArray.forEach((barrier) => {
-		deleteBarier(spriteBarrier, barrier);
-	});
-
-	// console.log(spriteBarrier);
-
 	spriteBarrier.forEach((barrier) => {
 		if (barrier == 4 && (spriteObj.inX > CELL_SIZE - WALL_DISTANCE))	moveX = false;
 		if (barrier == 8 && (spriteObj.inX < WALL_DISTANCE))	moveX = false;
@@ -248,7 +250,7 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 	for(const [key, value] of Object.entries(mapDataClass.wayCordinates)) {
 		let checkEnemyWall = mapDataClass.map[playerActY + value.y][playerActX + value.x]
 		
-		if (checkEnemyWall.type == 'creature') {
+		if (checkEnemyWall.type == 'creature' && checkEnemyWall.energy > 0) {
 			console.log(checkEnemyWall.damage);
 
 			spritesClass.demage(bringPlayer, checkEnemyWall, true)
@@ -424,6 +426,8 @@ function moveAction(sprite, check) {
 	let testInX = Math.floor(testX - (testActX * CELL_SIZE))
 	let testInY = Math.floor(testY - (testActY * CELL_SIZE))
 
+	var crash = false
+
 	check.spriteBarrier.forEach((barrier) => {
 		const FAR = CELL_SIZE - check.WALL_DISTANCE
 		const NEAR = check.WALL_DISTANCE
@@ -432,47 +436,52 @@ function moveAction(sprite, check) {
 		const maxY = (testActY * CELL_SIZE) + (FAR)
 		const minY = (testActY * CELL_SIZE) + (NEAR)
 
-		if (check.moveX) {
-			if (barrier == 4 && (testInX > FAR)) {
-				sprite.wallCrash = 4
-				testX = maxX
-			}
-			if (barrier == 8 && (testInX < NEAR)) {
-				sprite.wallCrash = 8
-				testX = minX
-			}
+		if (barrier == 4 && (testInX > FAR)) {
+			sprite.wallCrash = 4
+			testX = maxX
+			crash = 4
 		}
-		if (check.moveY) {
-			if (barrier == 6 && (testInY > FAR)) {
-				sprite.wallCrash = 6
-				testY = maxY
-			}
-			if (barrier == 2 && (testInY < NEAR)) {
-				sprite.wallCrash = 2
-				testY = minY
-			}
+		if (barrier == 8 && (testInX < NEAR)) {
+			sprite.wallCrash = 8
+			testX = minX
+			crash = 8
+		}
+		if (barrier == 6 && (testInY > FAR)) {
+			sprite.wallCrash = 6
+			testY = maxY
+			crash = 6
+		}
+		if (barrier == 2 && (testInY < NEAR)) {
+			sprite.wallCrash = 2
+			testY = minY
+			crash = 2
 		}
 		if (barrier == 3 && (testInY <= NEAR && testInX >= FAR)) {
 			testX = maxX
 			testY = minY
+			crash = 3
 		}
 		if (barrier == 5 && (testInY >= FAR && testInX >= FAR)) {
 			testX = maxX
 			testY = maxY
+			crash = 5
 		}
 		if (barrier == 7 && (testInY >= FAR && testInX <= NEAR)) {
 			testX = minX
 			testY = maxY
-			
+			crash = 7
 		}
 		if (barrier == 1 && (testInY <= NEAR && testInX <= NEAR)) {
 			testX = minX
 			testY = minY
+			crash = 1
 		}
 	});
 	// MOVE
 	sprite.x = testX
 	sprite.y = testY
+
+	return crash;
 }
 
 function moveCreature(creature) {
@@ -624,8 +633,6 @@ function moveCreature(creature) {
 function moveAmmo(ammoSprite) {
 	if (ammoSprite.speed != 0) {
 		let ammoCheck = checkMoveSprite(ammoSprite, 'ammo')
-
-		console.log(ammoCheck);
 		
 		// CHECK HIT SPRITES
 		let checkSprites = spritesClass.sprites.filter(obj => Math.floor(obj.y / CELL_SIZE) == ammoCheck.checkY && Math.floor(obj.x / CELL_SIZE) == ammoCheck.checkX)
@@ -653,22 +660,58 @@ function moveAmmo(ammoSprite) {
 				if (ammoIndex !== -1) spritesClass.sprites.splice(ammoIndex, 1)
 			}
 		});
+
+		// MOVE AMMO
+		var haveCrash = moveAction(ammoSprite, ammoCheck)
+	
 		// CHECK HIT WALL ENEMY
-
-		if (ammoCheck.moveX == false || ammoCheck.moveY == false) {
-
-			console.log(ammoCheck.checkX);
-			console.log(ammoCheck.checkY);
+		if (haveCrash) {				
+			var ammoMapX = Math.floor(ammoSprite.x/CELL_SIZE)
+			var ammoMapY = Math.floor(ammoSprite.y/CELL_SIZE)
 			
-			// HIT WALL 
-			ammoSprite.active = false
-		}
+			var wallData = 0			
 
-		moveAction(ammoSprite, ammoCheck)
+			if (haveCrash == 2) wallData = mapDataClass.map[ammoMapY - 1][ammoMapX];
+			else if (haveCrash == 6) wallData = mapDataClass.map[ammoMapY + 1][ammoMapX];
+			else if (haveCrash == 8) wallData = mapDataClass.map[ammoMapY][ammoMapX - 1];
+			else if (haveCrash == 4) wallData = mapDataClass.map[ammoMapY][ammoMapX + 1];
+			else if (haveCrash == 1) wallData = mapDataClass.map[ammoMapY - 1][ammoMapX - 1];
+			else if (haveCrash == 3) wallData = mapDataClass.map[ammoMapY - 1][ammoMapX + 1];
+			else if (haveCrash == 5) wallData = mapDataClass.map[ammoMapY + 1][ammoMapX + 1];
+			else if (haveCrash == 7) wallData = mapDataClass.map[ammoMapY + 1][ammoMapX - 1];
+
+			if (wallData.type == 'creature') {
+				if (wallData.energy > 0) wallData.energy--
+				
+				console.log('Energy: ' + wallData.energy)
+				
+				console.log(wallData.dirConstruction[[wallData.dirConstruction.length-1]])
+
+				if (wallData.energy <= 0) {
+					wallData.anim_startFrame = wallData.dirConstruction.length-1
+					wallData.anim_actFrame = wallData.dirConstruction.length-1
+
+					wallData.anim_switch = false
+				}
+			}
+
+			// TURN OFF AMMO
+			ammoSprite.move = false
+			ammoSprite.anim_switch = false
+			ammoSprite.anim_actFrame = ammoSprite.dirConstruction.length - 1
+			
+			ammoSprite.endFunction = setTimeout(() => {
+				ammoSprite.active = false
+				clearTimeout(ammoSprite.endFunction);
+				ammoSprite.endFunction = null;
+			}, 10)
+			
+			console.log('Spritelength: ' + Object.keys(spritesClass.sprites).length)
+		}
 	}
 	return true
 }
-
+           
 function spritesCheck() {
 	// ARRANGE SPRITES
 	spritesClass.nearSprites.forEach((nearData) => {
@@ -718,7 +761,6 @@ function spritesCheck() {
 				} else {
 					getActualTexture = creatureSpriteSelect(sprite)
 				}
-
 				moveCreature(sprite)
 			}
 
@@ -765,8 +807,7 @@ function creatureSpriteSelect(creature) {
 	if (creature.rotate_switch) {
 		var rot_b = creature.rotate_frames[0]; var rot_d = creature.rotate_frames[1]; var rot_a = creature.rotate_frames[2]; var rot_c = creature.rotate_frames[3];
 	} else {
-		var rot_b = 'a'; var rot_d = 'a';
-		var rot_a = 'a'; var rot_c = 'a';
+		var rot_b = 'a'; var rot_d = 'a'; var rot_a = 'a'; var rot_c = 'a';
 	}
 
 	let texturename;
@@ -803,6 +844,9 @@ async function loadindData() {
 	
 	const mapDataResponse = await fetch(`./data/maps/${mapname}.JSON`)
     const mapData = await mapDataResponse.json()
+	mapDataClass.shadow = mapData.shadow
+	console.log(mapDataClass.shadow);
+	
 	// console.log(mapData)
 	
 	const wallsDataResponse = await fetch('./data/walls/walls.JSON')
@@ -891,6 +935,10 @@ async function loadindData() {
 
 		spritesClass.createSprite(sprite, dirConstruction, spritesClass.sprites)
     }
+
+	// LOADING INFO
+	// console.log(texturesClass.loadingInfo);
+	console.log(texturesClass.loadingInfo.length + ' image loaded.');
 }
 
 async function gameMenu() {

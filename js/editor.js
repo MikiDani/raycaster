@@ -12,6 +12,7 @@ class Editor {
 		this.mapSize = 64
 		this.mapContainerWidth = 4000
 		this.levelDataBasic = {
+			"shadow": 160,
 			"player": {
 				"y": 1.5,
 				"x": 1.5,
@@ -151,6 +152,20 @@ class Editor {
 
 	buttonOptions() {
 		var clone = this
+
+		$("#shadow-input").on('input', {leveldata: this.levelData}, function (event) {
+			var leveldata = event.data.leveldata
+			
+			console.log($(this).val())
+
+			
+			
+			console.log('regi: ' + leveldata.shadow);
+			leveldata.shadow = $(this).val()
+			console.log('új: ' + leveldata.shadow);
+			$("#shadow-input-value").html($(this).val())
+		});
+
 		// LOAD DATAS IN VARIABLE WHEN CLICKED TEXTURE	
 		$("#textures-selected").on('input', () => this.loadElementsData(this.selectedElementData.textures))
 		////////////////////////////////
@@ -234,13 +249,8 @@ class Editor {
 						if (findSpriteIndex !== -1) clone.levelData.sprites.splice(findSpriteIndex, 1)
 					}
 					function drawTexture(clone, y, x, obj) {
-						let loadingTexture = clone.walls.find(wall => wall.id == obj.id)
-
-						// console.log(loadingTexture);
-						
+						let loadingTexture = clone.walls.find(wall => wall.id == obj.id)						
 						let mapBrick = $(".map-container").find(`[id^='map_'][map-y='${y}'][map-x='${x}']`);
-
-						// console.log(mapBrick);
 						
 						for(const [dir, filename] of Object.entries(loadingTexture.textures)) {
 							mapBrick.css('background-image', `url(./img/walls/${dir}/${filename[0]}.png)`);
@@ -251,7 +261,7 @@ class Editor {
 						}
 					}
 
-					if (angle==90) {
+					if (angle == 90) {
 						if (typeof clone.map[y][x-1] != undefined)
 							deleteMap(clone, y, x-1); deleteSprite(clone, y, x-1); clone.map[y][x-1] = {id:5}; drawTexture(clone, y, x-1, {id:5});
 						
@@ -259,7 +269,7 @@ class Editor {
 							deleteMap(clone, y, x+1); deleteSprite(clone, y, x+1); clone.map[y][x+1] = {id:5}; drawTexture(clone, y, x+1, {id:5});
 					}
 
-					if (angle==0) {
+					if (angle == 0) {
 						if (typeof clone.map[y-1][x] != undefined)
 							deleteMap(clone, y-1, x); deleteSprite(clone, y-1, x); clone.map[y-1][x] = {id:5}; drawTexture(clone, y-1, x, {id:5});
 						
@@ -338,13 +348,10 @@ class Editor {
 				}
 			}
 			clone.levelData = []
-
+			clone.levelData.sprites = []
 			clone.levelData.player = clone.levelDataBasic.player
 
-			clone.levelData.sprites = []
-
 			console.log(clone.levelData);
-			
 		});
 
 		// FILL MAP BORDER BUTTON
@@ -488,7 +495,6 @@ class Editor {
 			try {
 				const mapDataWait = await fetch(`./data/maps/${mapfileName}.json`);
 				
-				// Ellenőrizzük a státuszkódot
 				if (!mapDataWait.ok) {
 					throw new Error(`HTTP error! status: ${mapDataWait.status}`);
 				}
@@ -496,9 +502,7 @@ class Editor {
 				const mapData = await mapDataWait.json();
 				return mapData;
 			} catch (error) {
-				console.error('Error fetching map data:', error);
-				// Kezelheted itt az esetet, például egy alapértelmezett értéket adva vissza
-				return null;
+				throw('Error fetching map data:', error);
 			}
 		}
 
@@ -521,10 +525,12 @@ class Editor {
 		console.log('Eltelt')
 
 		// LOADING SUCCESS
-
 		this.levelData.player.y = mapData.player.y
 		this.levelData.player.x = mapData.player.x
 		this.levelData.player.angle = mapData.player.angle
+		this.levelData.shadow = mapData.shadow
+
+		$("#shadow-input-value").text(this.levelData.shadow)
 
 		this.drawPlayer(this.levelData.player.y, this.levelData.player.x, this.levelData.player.angle, 'draw')
 

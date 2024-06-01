@@ -1,5 +1,6 @@
 export default class TexturesClass {
-	constructor() {		
+	constructor() {
+		this.loadingInfo = []
 		this.errorTexture = []
 		this.skyTexture = []
 		this.floorTexture = []
@@ -105,6 +106,7 @@ export default class TexturesClass {
 					fault(error);
 				};
 				// console.log('A ' + filename + ' loaded.');
+				this.loadingInfo.push(filename)
 			}
 		});
 	}

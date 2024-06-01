@@ -10,17 +10,24 @@ export default class InputClass {
 		this.MOVE_ANGLE_SLOW = 1
 		this.PLAYER_WALL_DISTANCE = Math.floor((graphicsClass.CELL_SIZE / 100) * 25)
 		this.CREATURE_WALL_DISTANCE = Math.floor((graphicsClass.CELL_SIZE / 100) * 45)
-		this.AMMO_WALL_DISTANCE = Math.floor((graphicsClass.CELL_SIZE / 100) * 10)
+		this.AMMO_WALL_DISTANCE = Math.floor((graphicsClass.CELL_SIZE / 100) * 15)
 		//--------------------------------------------------------------------
 		this.menu = menu
 		this.gameMenu = gameMenu
 		this.player = player
 		this.keyPressed = keyPressed
 		this.keybordListener = null
+		this.shotingAction = null
 		this.gamePlay = gamePlay
 		this.check = check
 		this.mouseMoveSwitsh = false
 		this.messageTime = 1500
+
+		document.addEventListener('keydown', function(event) {
+			if (event.shiftKey && event.key == 'F5') return;
+			if (event.key == 'F12') return;
+			event.preventDefault();
+		});
 
 		this.loadInputs()
 		this.moveMenuStar()
@@ -310,7 +317,16 @@ export default class InputClass {
 					console.log(this.graphicsClass.colorCache);
 				}
 
-				if (event.ctrlKey) { this.spritesClass.startShot() }
+				// ATTACK / SHOT
+				if (event.ctrlKey) {					
+					if (this.shotingAction == null) {
+						this.spritesClass.startShot()
+						this.shotingAction = setTimeout(()=> {
+							clearTimeout(this.shotingAction);
+							this.shotingAction = null;
+						}, this.player.shotTime);
+					}
+				}
 			}
 		});
 
@@ -414,7 +430,7 @@ export default class InputClass {
 	}
 
 	handleKeyPress = () => {
-		if (this.keyPressed['q'] || this.keyPressed['Q'] || this.keyPressed['Home']) {
+		if (this.keyPressed['q'] || this.keyPressed['Q'] || this.keyPressed['Delete']) {
 			let playerClone = {...this.player}
 			playerClone.x = playerClone.x + (Math.cos(playerClone.angle - this.graphicsClass.toRadians(90)) * this.MOVE_SPEED)
 			playerClone.y = playerClone.y + (Math.sin(playerClone.angle - this.graphicsClass.toRadians(90)) * this.MOVE_SPEED)
@@ -422,7 +438,7 @@ export default class InputClass {
 			if (checkMove.moveX) this.player.x = this.player.x + (Math.cos(this.player.angle - this.graphicsClass.toRadians(90)) * this.MOVE_SPEED)
 			if (checkMove.moveY) this.player.y = this.player.y + (Math.sin(this.player.angle - this.graphicsClass.toRadians(90)) * this.MOVE_SPEED)
 		}
-		if (this.keyPressed['e'] || this.keyPressed['E'] || this.keyPressed['PageUp']) {
+		if (this.keyPressed['e'] || this.keyPressed['E'] || this.keyPressed['PageDown']) {
 			let playerClone = {...this.player}
 			playerClone.x = playerClone.x + (Math.cos(playerClone.angle + this.graphicsClass.toRadians(90)) * this.MOVE_SPEED)
 			playerClone.y = playerClone.y + (Math.sin(playerClone.angle + this.graphicsClass.toRadians(90)) * this.MOVE_SPEED)

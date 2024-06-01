@@ -502,7 +502,7 @@ export default class GaphicsClass {
 
 	calcShadowDistance(distance) {
 	// let shadowDistance = (distance / 160) * 0.1;
-	let shadowDistance = (distance / 160) * 0.15;
+	let shadowDistance = (distance / this.mapDataClass.shadow) * 0.15;	// this.mapDataClass.shadow = 160
 	shadowDistance = (shadowDistance > 1) ? 1 : shadowDistance;
 	shadowDistance = shadowDistance.toFixed(1);
 	return shadowDistance
