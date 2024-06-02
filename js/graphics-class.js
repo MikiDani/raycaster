@@ -1183,7 +1183,7 @@ export default class GaphicsClass {
 					let wi = isOnTheScreen - Math.floor(brick_number / 2)
 					for(let w=0; w<brick_number; w++) {
 
-						if (typeof this.rays[wi] != 'undefined' && this.rays[wi].distance > sprite.distance && sprite.distance >= 30) {
+						if (typeof this.rays[wi] != 'undefined' && this.rays[wi].distance > sprite.distance && ((sprite.type=='ammo' && sprite.distance >= 10) || sprite.distance >= 30)) { // >= 30
 							
 							for (let h=0; h < brick_number; h++) {
 								let colorX = Math.floor(((w * this.GRID_SIZE) / color_num))

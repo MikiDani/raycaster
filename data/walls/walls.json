@@ -120,6 +120,15 @@
         "anim_speed": 180
     },
     {
+        "id": 45,
+        "textures": {
+            "cellar": ["wall-exit"]
+        },
+        "type": "wall",
+        "mode": "normal",
+        "height": "normal"
+    },
+    {
         "id": 100,
         "textures": {
             "garden": ["wall1"]

@@ -154,12 +154,7 @@ class Editor {
 		var clone = this
 
 		$("#shadow-input").on('input', {leveldata: this.levelData}, function (event) {
-			var leveldata = event.data.leveldata
-			
-			console.log($(this).val())
-
-			
-			
+			var leveldata = event.data.leveldata			
 			console.log('regi: ' + leveldata.shadow);
 			leveldata.shadow = $(this).val()
 			console.log('új: ' + leveldata.shadow);

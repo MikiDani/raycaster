@@ -405,6 +405,10 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 				let checkExit = spritesClass.checkSpriteData(player.y, player.x, 'mode', 'exit', 'position')				
 				if (checkExit) {
 					console.log('EXITEN ÁLLSZ ! JEE ! : )')
+
+					let content = `<div class="text-center"><h3 class='text-center'>Youfind the EXIT!</h3></div>`
+						graphicsClass.scrollInfoMaker(content, inputClass.messageTime)
+						return;
 				}
 			})
 		}
@@ -632,6 +636,20 @@ function moveCreature(creature) {
 
 function moveAmmo(ammoSprite) {
 	if (ammoSprite.speed != 0) {
+		
+		function turnOffAmmo(ammoSprite) {
+			ammoSprite.move = false
+			ammoSprite.anim_switch = false
+			ammoSprite.anim_actFrame = ammoSprite.dirConstruction.length - 1
+			
+			ammoSprite.endFunction = setTimeout(() => {
+				ammoSprite.active = false
+				clearTimeout(ammoSprite.endFunction);
+				ammoSprite.endFunction = null;
+			}, 10)
+			console.log('Spritelength: ' + Object.keys(spritesClass.sprites).length)
+		}
+		
 		let ammoCheck = checkMoveSprite(ammoSprite, 'ammo')
 		
 		// CHECK HIT SPRITES
@@ -642,18 +660,19 @@ function moveAmmo(ammoSprite) {
 				console.log('Energy: ' + findSprite.energy)
 
 				findSprite.moveType = 'attack'
-				findSprite.speed += 3	// + 2
+				findSprite.speed += 2	// + 2
 
 				if (!findSprite.anim_demage_function) {
 					findSprite.anim_demage_actFrame = `${findSprite.dirConstruction[0]}_E3`
 					
 					findSprite.anim_demage_function = setInterval(() => {
-						console.log('Lejárt!');
 						clearInterval(findSprite.anim_demage_function)
 						findSprite.anim_demage_function = null
 						findSprite.anim_demage_actFrame = null
 					},findSprite.anim_speed)
 				}
+
+				turnOffAmmo(ammoSprite)
 				
 				// DELETE AMMO
 				let ammoIndex = spritesClass.sprites.indexOf(ammoSprite);
@@ -696,17 +715,7 @@ function moveAmmo(ammoSprite) {
 			}
 
 			// TURN OFF AMMO
-			ammoSprite.move = false
-			ammoSprite.anim_switch = false
-			ammoSprite.anim_actFrame = ammoSprite.dirConstruction.length - 1
-			
-			ammoSprite.endFunction = setTimeout(() => {
-				ammoSprite.active = false
-				clearTimeout(ammoSprite.endFunction);
-				ammoSprite.endFunction = null;
-			}, 10)
-			
-			console.log('Spritelength: ' + Object.keys(spritesClass.sprites).length)
+			turnOffAmmo(ammoSprite)
 		}
 	}
 	return true
