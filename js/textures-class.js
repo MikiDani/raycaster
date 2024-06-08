@@ -1,10 +1,12 @@
 export default class TexturesClass {
 	constructor() {
 		this.loadingInfo = []
+
 		this.errorTexture = []
+		this.weaponsTextures = []
+		this.playerWeaponsTextures = []
 		this.skyTexture = []
 		this.floorTexture = []
-		this.weaponsTextures = []
 		this.wallTextures = []
 		this.spriteTextures = []
 	}

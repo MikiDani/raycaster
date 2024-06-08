@@ -8,8 +8,6 @@ import TexturesClass from './textures-class.js'
 import MapDataClass from './mapdata-class.js'
 import SpritesClass from './sprites-class.js'
 
-var mapname = 'map2'
-
 const CLOCKSIGNAL = 5
 const CELL_SIZE = 64
 
@@ -28,8 +26,10 @@ const player = {
 	weapon: 1,
 	poison: false,
 	energy: 100,
-	map: true,	// !!
 	shotTime: 100,
+	map: true,	// !!
+	key1: false,
+	key2: false,
 }
 
 const menu = {
@@ -49,6 +49,7 @@ const menu = {
 var gamePlay = {
 	game: null,
 	gameLoaded: false,
+	nextLevel: false,
 	timeStart: null,
 }
 
@@ -405,10 +406,12 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 				let checkExit = spritesClass.checkSpriteData(player.y, player.x, 'mode', 'exit', 'position')				
 				if (checkExit) {
 					console.log('EXITEN ÁLLSZ ! JEE ! : )')
+					
+					gamePlay.nextLevel = true
 
-					let content = `<div class="text-center"><h3 class='text-center'>Youfind the EXIT!</h3></div>`
-						graphicsClass.scrollInfoMaker(content, inputClass.messageTime)
-						return;
+					// let content = `<div class="text-center"><h3 class='text-center'>Youfind the EXIT!</h3></div>`
+					// graphicsClass.scrollInfoMaker(content, inputClass.messageTime)
+					return;
 				}
 			})
 		}
@@ -720,7 +723,7 @@ function moveAmmo(ammoSprite) {
 	}
 	return true
 }
-           
+		   
 function spritesCheck() {
 	// ARRANGE SPRITES
 	spritesClass.nearSprites.forEach((nearData) => {
@@ -836,46 +839,70 @@ function creatureSpriteSelect(creature) {
 }
 
 async function loadindData() {
-	const weaponDataResponse = await fetch('./data/weapons/weapons.JSON')
-	const weaponsData = await weaponDataResponse.json()
 
-	// LOAD WEAPON TEXTURES
-	for (let n = 0; n < weaponsData.weapons.length; n++) {
-		let weapon = weaponsData.weapons[n]
-		let dirConstruction = await texturesClass.loadTextureToArray(weapon.textures, 'weapons', texturesClass.weaponsTextures)
-		spritesClass.createSprite(weapon, dirConstruction, spritesClass.weponsSprites)
-	}
-	for (let n = 0; n < weaponsData.ammos.length; n++) {
-		let ammo = weaponsData.ammos[n]
+	mapDataClass.map = []
+	spritesClass.sprites = []
+	spritesClass.nearSprites = []
+	spritesClass.weponsSprites = []
+	
+	var actualLevel = mapDataClass.maps[mapDataClass.mapLevel];
+
+	console.log('load map name: ' + actualLevel);
+
+	const weaponAmmoDataResponse = await fetch('./data/weapons/weapon_ammos.JSON')
+	const weaponsAmmoData = await weaponAmmoDataResponse.json()
+
+	// LOAD WEAPON AMMOS TEXTURES
+	for (let n = 0; n < weaponsAmmoData.ammos.length; n++) {
+		let ammo = weaponsAmmoData.ammos[n]
 		let dirConstruction = await texturesClass.loadTextureToArray(ammo.textures, 'weapons', texturesClass.weaponsTextures)
 		spritesClass.createSprite(ammo, dirConstruction, spritesClass.weponsSprites)
 	}
-	
-	const mapDataResponse = await fetch(`./data/maps/${mapname}.JSON`)
-    const mapData = await mapDataResponse.json()
+
+	const response = await fetch('./data/weapons/weapon_player.JSON');
+	const playerWeaponData = await response.json();
+	texturesClass.playerWeaponsTextures = {}
+	Object.entries(playerWeaponData).forEach(([weapon, value]) => {
+		value.forEach(item => {
+			Object.entries(item).forEach(([dirName, imgList]) => {
+				imgList.forEach(imgName => {
+					let weaponImg = `<img id="${imgName}" src="${dirName}${imgName}.png">`;
+					$('#img-container').append(weaponImg)
+					if (!texturesClass.playerWeaponsTextures[weapon]) texturesClass.playerWeaponsTextures[weapon] = [];
+					texturesClass.playerWeaponsTextures[weapon].push(imgName)
+				});
+		  	});
+		});
+	});
+
+	console.log('---');
+	console.log(texturesClass.playerWeaponsTextures);
+		
+	const mapDataResponse = await fetch(`./data/maps/${actualLevel}.JSON`)
+	const mapData = await mapDataResponse.json()
+
 	mapDataClass.shadow = mapData.shadow
-	console.log(mapDataClass.shadow);
-	
+		
 	// console.log(mapData)
 	
 	const wallsDataResponse = await fetch('./data/walls/walls.JSON')
-    const wallsData = await wallsDataResponse.json()
+	const wallsData = await wallsDataResponse.json()
 	// console.log(wallsData)
 
 	const blocksDataResponse = await fetch('./data/blocks/blocks.JSON');
-    const blocksData = await blocksDataResponse.json()
+	const blocksData = await blocksDataResponse.json()
 	// console.log(blocksData)
 
 	const objectsDataResponse = await fetch('./data/objects/objects.JSON')
-    const objectsData = await objectsDataResponse.json()
+	const objectsData = await objectsDataResponse.json()
 	// console.log(objectsData)
 
 	const creaturesDataResponse = await fetch('./data/creatures/creatures.JSON')
-    const creaturesData = await creaturesDataResponse.json()
+	const creaturesData = await creaturesDataResponse.json()
 	// console.log(creaturesData)
 
 	const effectsDataResponse = await fetch('./data/effects/effects.JSON')
-    const effectsData = await effectsDataResponse.json()
+	const effectsData = await effectsDataResponse.json()
 	// console.log('effectsData')
 	// console.log(effectsData)
 	
@@ -901,17 +928,17 @@ async function loadindData() {
 
 	// Load Wall Textures
 	for (let i = 0; i < wallsData.length; i++) {
-        let wall = wallsData[i]		
+		let wall = wallsData[i]		
 		let dirConstruction = await texturesClass.loadTextureToArray(wall.textures, 'walls', texturesClass.wallTextures)
 		await mapDataClass.createWall(wall, dirConstruction)
-    }
+	}
 	
 	// Map Array upload Wall textures
 	await mapDataClass.defineTextures(mapData.map)
 
 	// Load Sprites
 	for (let i = 0; i < mapData.sprites.length; i++) {
-        let sprite = mapData.sprites[i]
+		let sprite = mapData.sprites[i]
 		let dirName
 		let insertSprite = objectsData.find(obj => parseInt(obj.id) == parseInt(sprite.id))
 		if (insertSprite) { dirName = 'objects' }
@@ -943,14 +970,34 @@ async function loadindData() {
 		}
 
 		spritesClass.createSprite(sprite, dirConstruction, spritesClass.sprites)
-    }
+	}
 
 	// LOADING INFO
 	// console.log(texturesClass.loadingInfo);
+
 	console.log(texturesClass.loadingInfo.length + ' image loaded.');
+	texturesClass.loadingInfo = []
 }
 
 async function gameMenu() {
+	if (gamePlay.nextLevel) {
+		clearInterval(gamePlay.game)
+		gamePlay = {
+			game: null,
+			gameLoaded: false,
+			timeStart: null,
+			nextLevel: false,
+		}
+		player.key1 = false
+		player.key2 = false
+		player.map = false
+		player.poison = false
+
+		mapDataClass.mapLevel++	
+		if (mapDataClass.maps.length-1 < mapDataClass.mapLevel) mapDataClass.mapLevel = 0
+		menu.menuactive = false
+	}
+
 	if (menu.menuactive) {
 		//// MENU
 		clearInterval(gamePlay.game)
@@ -988,9 +1035,21 @@ async function gameMenu() {
 
 var szamol = 0;
 
+function nextLevel() {
+	clearInterval(gamePlay.game)
+	gamePlay.game = null
+	graphicsClass.clrScr()
+	
+	inputClass.graphicsClass.makeMenu()
+	inputClass.gameMenu()
+}
+
 function gameLoop() {
 	gamePlay.timeStart = Date.now()
 	movePlayer(player)
+
+	if (gamePlay.nextLevel) { nextLevel(); return; }
+
 	graphicsClass.rays = graphicsClass.getRays()
 	spritesClass.sprites = spritesClass.sprites.sort((a, b) => b.distance - a.distance)
 	graphicsClass.renderScreen()
@@ -999,13 +1058,20 @@ function gameLoop() {
 	spritesClass.sprites.forEach(sprite => {
 		sprite.distance = graphicsClass.spriteDistanceCalc(sprite)
 	});
-	graphicsClass.screenColorizeAction()	
+	
+
+	// console.log(
+	// 	texturesClass.weaponsTextures
+	// );
+
+	
+	graphicsClass.screenColorizeAction()
 	if (menu.mapSwitch) graphicsClass.renderMinimap()
 	if (menu.infoSwitch) graphicsClass.infoPanel()
 	if (menu.clearGameSwitch) clearInterval(gamePlay.game)
 
-	szamol++;
-	// if (szamol == 3) clearInterval(gamePlay.game)
+	// szamol++;
+	// if (szamol == 1) clearInterval(gamePlay.game)
 
 	if (player.poison) graphicsClass.poison()
 }

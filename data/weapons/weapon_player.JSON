@@ -1,0 +1,12 @@
+{
+	"weapon1": [
+		{
+			"./img/weapons/player_weapon1/": ["player_weapon1-1", "player_weapon1-2", "player_weapon1-3"]
+		}
+	],
+	"weapon2": [
+		{
+			"./img/weapons/player_weapon2/": ["player_weapon2-1", "player_weapon2-2", "player_weapon2-3"]
+		}
+	]
+}

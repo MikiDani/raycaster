@@ -7,6 +7,8 @@ export default class MapDataClass {
     wayCordinates;
     constructor({texturesClass: texturesClass}) {
         this.texturesClass = texturesClass
+        this.maps = ['map', 'map2', 'map3']
+        this.mapLevel = 0
         //--------------------------------
         this.map = []
         this.walls = []; this.walls[0] = null;
@@ -61,7 +63,8 @@ export default class MapDataClass {
             for (let m = 0; m < map[n].length; m++) {
                 this.map[n][m] = 0;
             }
-        }
+        }      
+        
         // Fill this.map
         for (let mY=0; mY<map.length; mY++) {
             for (let mX=0; mX<map[0].length; mX++) {

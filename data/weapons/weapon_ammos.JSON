@@ -1,29 +1,4 @@
 {
-    "weapons": [
-        {
-            "textures": {
-                "player_weapon1": ["player_weapon1"]
-            },
-            "type": "fps",
-            "mode": "",
-            "name": "player_weapon1",
-            "active": false
-        },
-        {
-            "textures": {
-                "map_weapon1": ["map_weapon1"]
-            },
-            "type": "pickup",
-            "mode": "",
-            "name": "map_weapon1",
-            "active": false,
-            "x": null,
-            "y": null,
-            "z": 0,
-            "angle": null,
-            "distance": null
-        }
-    ],
     "ammos": [
         {
             "textures": {

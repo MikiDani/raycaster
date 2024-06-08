@@ -114,10 +114,10 @@
         "anim_switch": false,
         "anim_repeat": false,
         "anim_repeatCount": 0,
-        "anim_repeatEnd": 9,
+        "anim_repeatEnd": 18,
         "anim_startFrame": 1,
         "anim_actFrame": 1,
-        "anim_speed": 180
+        "anim_speed": 80
     },
     {
         "id": 45,

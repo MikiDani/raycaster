@@ -47,7 +47,7 @@ class Editor {
 		this.mapIconSize()
 		// ----------------
 		this.loadTextures()
-		this.loadMap('map2')		// !!
+		this.loadMap('map3')		// !!
 		this.buttonOptions()
 	}
 
@@ -148,6 +148,25 @@ class Editor {
 			$("#filename-message").text('')
 			$("#filename-message").hide(200)
 		}, 2000);
+	}
+
+	async clearMap(clone) {
+		for (let y = 0; y < clone.mapSize; y++) {
+			for (let x = 0; x < clone.mapSize; x++) {
+				clone.map[y][x] = 0
+				let findSpriteIndex = clone.levelData.sprites.findIndex(sprite => y == Math.floor(sprite.y) && x == Math.floor(sprite.x))
+				if (findSpriteIndex !== -1) clone.levelData.sprites.splice(findSpriteIndex, 1)
+									
+				let mapBrickElment = $(".map-container").find(`[map-x='${x}'][map-y='${y}']`)
+				mapBrickElment.css("background-image","").css("background-size", "").css("border", "");
+			}
+		}
+		clone.levelData = []
+		clone.levelData.sprites = []
+		clone.levelData.player = clone.levelDataBasic.player
+
+		console.log('deleted all!');
+		console.log(clone.levelData);
 	}
 
 	buttonOptions() {
@@ -328,25 +347,10 @@ class Editor {
 				clone.drawPlayer(clone.levelData.player.y, clone.levelData.player.x, clone.levelData.player.angle, 'draw')
 			}
 		});
-		
+				
 		// DELETE ALL MAP
-		$("#delete-all-button").on('click', function () {
-			for (let y = 0; y < clone.mapSize; y++) {
-				for (let x = 0; x < clone.mapSize; x++) {
-					clone.map[y][x] = 0
-					let findSpriteIndex = clone.levelData.sprites.findIndex(sprite => y == Math.floor(sprite.y) && x == Math.floor(sprite.x))
-					if (findSpriteIndex !== -1) clone.levelData.sprites.splice(findSpriteIndex, 1)
-					console.log('deleted all!');
-					
-					let mapBrickElment = $(".map-container").find(`[map-x='${x}'][map-y='${y}']`)
-					mapBrickElment.css("background-image","").css("background-size", "").css("border", "");
-				}
-			}
-			clone.levelData = []
-			clone.levelData.sprites = []
-			clone.levelData.player = clone.levelDataBasic.player
-
-			console.log(clone.levelData);
+		$("#delete-all-button").on('click', async function () {
+			await clone.clearMap(clone)
 		});
 
 		// FILL MAP BORDER BUTTON
@@ -423,7 +427,11 @@ class Editor {
 		});
 
 		// CLICK LOAD BUTTON
-		$("#load-button").on('click', function () {
+		$("#load-button").on('click', async function () {
+
+			await clone.clearMap(clone)
+
+			clone.levelData = [];
 						
 			let filename = $("input[name='filename']").val()
 
