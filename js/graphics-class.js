@@ -306,6 +306,10 @@ export default class GaphicsClass {
 		});
 	}
 
+	changeWeapon(weapon) {
+		this.player.weapon = weapon
+	}
+
 	makeMenu() {
 		$("#menu-bg").html('')
 		let menuElementContent = `
@@ -1274,9 +1278,15 @@ export default class GaphicsClass {
 					this.player.shoting_anim = null
 					this.player.shoting_anim_actFrame = 0;
 
+					// W3 W4
+					this.spritesClass.startShot()
+
 					this.checkEnemyHit()
 				}
-			}, this.player.shoting_anim_time)
+			}, this.player.shoting_anim_time[this.player.weapon])
+
+			console.log('TIME: ' + this.player.shoting_anim_time[this.player.weapon]);
+			
 		} else {
 			imgId = this.texturesClass.playerWeaponsTextures[`weapon${this.player.weapon}`][this.player.shoting_anim_actFrame]
 		}

@@ -28,7 +28,7 @@ const player = {
 	shoting: false,
 	shoting_anim: null,
 	shoting_anim_actFrame: 0,
-	shoting_anim_time: 120,
+	shoting_anim_time: [0, 80, 80, 10, 50],
 	poison: false,
 	energy: 100,
 	shotTime: 100,
@@ -768,10 +768,12 @@ function spritesCheck() {
 					if (checkActAnim) getActualTexture = checkActAnim[1]
 
 					let interval = 0
-					if (player.weapon == 3) interval = -10;
-					if (player.weapon == 4) interval = -2;
+					if (player.weapon == 3) interval = -6;
+					if (player.weapon == 4) interval = -4;
 
-					if (interval) sprite.z = graphicsClass.amplitudeA(interval)
+					if (interval) sprite.z = graphicsClass.amplitudeA(interval);
+
+					if (player.weapon == 3) sprite.x += graphicsClass.amplitudeA(interval);
 				}
 			}
 			

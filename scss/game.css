@@ -347,6 +347,10 @@ canvas {
   background-image: url("../img/menu/hud/bg-weapon2_off.png");
 }
 
+weapon2-on {
+  background-image: url("../img/menu/hud/bg-weapon2_on.png") !important;
+}
+
 #weapon3 {
   position: absolute;
   display: inline-block;

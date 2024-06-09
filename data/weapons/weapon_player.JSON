@@ -1,7 +1,7 @@
 {
 	"weapon1": [
 		{
-			"./img/weapons/player_weapon1/": ["player_weapon1-1", "player_weapon1-2", "player_weapon1-3"]
+			"./img/weapons/player_weapon1/": ["player_weapon1-1", "player_weapon1-2", "player_weapon1-3", "player_weapon1-4"]
 		}
 	],
 	"weapon2": [
@@ -11,7 +11,7 @@
 	],
 	"weapon3": [
 		{
-			"./img/weapons/player_weapon3/": ["player_weapon3-1", "player_weapon3-2", "player_weapon3-3"]
+			"./img/weapons/player_weapon3/": ["player_weapon3-1", "player_weapon3-2", "player_weapon3-3", "player_weapon3-4"]
 		}
 	],
 	"weapon4": [
