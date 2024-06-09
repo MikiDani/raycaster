@@ -298,8 +298,13 @@ export default class InputClass {
 			} else {
 			// GAME
 				this.keyPressed[event.key] = true
-				if (event.key == '1') this.menu.skySwitch = !this.menu.skySwitch;
-				if (event.key == '2') this.menu.floorSwitch = !this.menu.floorSwitch;
+				if (event.key == '0') this.player.weapon = 0;
+				if (event.key == '1') this.player.weapon = 1;
+				if (event.key == '2') this.player.weapon = 2;
+				if (event.key == '3') this.player.weapon = 3;
+				if (event.key == '4') this.player.weapon = 4;
+				if (event.key == '8') this.menu.skySwitch = !this.menu.skySwitch;
+				if (event.key == '9') this.menu.floorSwitch = !this.menu.floorSwitch;
 				if (event.key == 'i') this.menu.infoSwitch = !this.menu.infoSwitch;
 				if (event.key == 'g') this.menu.shadowsSwitch = !this.menu.shadowsSwitch;
 				if (event.key == 'h') this.menu.spriteShadowsSwitch = !this.menu.spriteShadowsSwitch;
@@ -320,7 +325,12 @@ export default class InputClass {
 				// ATTACK / SHOT
 				if (event.ctrlKey) {					
 					if (this.shotingAction == null) {
+						
+						// GRAPHICS
+						this.player.shoting = true
+						// ACTION & HEALTH
 						this.spritesClass.startShot()
+						
 						this.shotingAction = setTimeout(()=> {
 							clearTimeout(this.shotingAction);
 							this.shotingAction = null;

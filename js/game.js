@@ -8,7 +8,7 @@ import TexturesClass from './textures-class.js'
 import MapDataClass from './mapdata-class.js'
 import SpritesClass from './sprites-class.js'
 
-const CLOCKSIGNAL = 5
+const CLOCKSIGNAL = 10
 const CELL_SIZE = 64
 
 const player = {
@@ -23,7 +23,12 @@ const player = {
 	goldScore: 0,
 	silverScore: 0,
 	copperScore: 0,
-	weapon: 1,
+	weapon: 2,
+	weaponsDamage: [0, 1, 2, 3, 4],
+	shoting: false,
+	shoting_anim: null,
+	shoting_anim_actFrame: 0,
+	shoting_anim_time: 120,
 	poison: false,
 	energy: 100,
 	shotTime: 100,
@@ -65,15 +70,6 @@ var check = {
 var keyPressed = {};
 
 // -------------------------------------------------------
-
-function playerWalk() {
-	const amplitude = (Math.abs(graphicsClass.WALKINTERVAL) - graphicsClass.WALKINTERVAL) / 2;
-	const offset = (Math.abs(graphicsClass.WALKINTERVAL) + graphicsClass.WALKINTERVAL) / 2;
-	const frequency = 10;
-
-	const value = Math.sin(frequency * Date.now() * 0.001) * amplitude + offset;
-	return Math.floor(value);
-}
 
 function checkMoveSprite(spriteObj, type = null, inputStrafeCheck = null) {
 
@@ -193,7 +189,6 @@ function checkMoveSprite(spriteObj, type = null, inputStrafeCheck = null) {
 	}
 
 	if (type == 'player') {
-
 		let deleteBarrierArray = [];
 
 		spriteBarrier.forEach((barrier) => {
@@ -252,9 +247,7 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 		let checkEnemyWall = mapDataClass.map[playerActY + value.y][playerActX + value.x]
 		
 		if (checkEnemyWall.type == 'creature' && checkEnemyWall.energy > 0) {
-			console.log(checkEnemyWall.damage);
-
-			spritesClass.demage(bringPlayer, checkEnemyWall, true)
+			spritesClass.damage(bringPlayer, checkEnemyWall, true)
 
 			let colorizeOption = { color: "255, 0, 0", alpha: 0.2, time: 5 }
 			graphicsClass.screenColorizeOptions(colorizeOption);
@@ -268,7 +261,7 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 		
 		pCheck = checkMoveSprite(bringPlayer, 'player', inputStrafeCheck)
 
-		// !!! régi 45
+		// OLD 45
 		if (false) {
 			let psPlayerX = Math.floor((bringPlayer.x + Math.cos(bringPlayer.angle) * bringPlayer.speed) / CELL_SIZE)
 			let psPlayerY = Math.floor((bringPlayer.y + Math.sin(bringPlayer.angle) * bringPlayer.speed) / CELL_SIZE)
@@ -406,18 +399,14 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 				let checkExit = spritesClass.checkSpriteData(player.y, player.x, 'mode', 'exit', 'position')				
 				if (checkExit) {
 					console.log('EXITEN ÁLLSZ ! JEE ! : )')
-					
 					gamePlay.nextLevel = true
-
-					// let content = `<div class="text-center"><h3 class='text-center'>Youfind the EXIT!</h3></div>`
-					// graphicsClass.scrollInfoMaker(content, inputClass.messageTime)
 					return;
 				}
 			})
 		}
 		
 		moveAction(bringPlayer, pCheck)
-		bringPlayer.z = playerWalk()
+		bringPlayer.z = graphicsClass.amplitudeA(graphicsClass.WALKINTERVAL)
 	}
 
 	return pCheck;
@@ -512,7 +501,7 @@ function moveCreature(creature) {
 
 			creature.move = false
 
-			spritesClass.demage(player, creature, true)
+			spritesClass.damage(player, creature, true)
 			
 			// ATTACK TEXTURE
 			if (!creature.anim_attack_function) {
@@ -555,9 +544,9 @@ function moveCreature(creature) {
 			if (creature.moveType == 'stay') return;
 
 			if (creature.moveType == 'levitation') {
-				creature.z = playerWalk()
+				creature.z = graphicsClass.amplitudeA(graphicsClass.WALKINTERVAL)
 				return;
-			}			
+			}
 
 			// MOVE CREATURE
 			if (creature.moveType == 'patrol') {
@@ -659,22 +648,9 @@ function moveAmmo(ammoSprite) {
 		let checkSprites = spritesClass.sprites.filter(obj => Math.floor(obj.y / CELL_SIZE) == ammoCheck.checkY && Math.floor(obj.x / CELL_SIZE) == ammoCheck.checkX)
 		checkSprites.forEach((findSprite) => {
 			if (findSprite.type == 'creature' && findSprite.material == 'enemy') {
-				findSprite.energy--
-				console.log('Energy: ' + findSprite.energy)
 
-				findSprite.moveType = 'attack'
-				findSprite.speed += 2	// + 2
-
-				if (!findSprite.anim_demage_function) {
-					findSprite.anim_demage_actFrame = `${findSprite.dirConstruction[0]}_E3`
-					
-					findSprite.anim_demage_function = setInterval(() => {
-						clearInterval(findSprite.anim_demage_function)
-						findSprite.anim_demage_function = null
-						findSprite.anim_demage_actFrame = null
-					},findSprite.anim_speed)
-				}
-
+				spritesClass.enemyHit(findSprite)
+				
 				turnOffAmmo(ammoSprite)
 				
 				// DELETE AMMO
@@ -758,8 +734,8 @@ function spritesCheck() {
 			if (sprite.type == 'creature') {
 				// CREATURE DIE
 				if (sprite.anim_die_function) getActualTexture = sprite.anim_die_actFrame
-				// CREATURE DEMAGE
-				else if (sprite.anim_demage_function) getActualTexture = sprite.anim_demage_actFrame
+				// CREATURE damage
+				else if (sprite.anim_damage_function) getActualTexture = sprite.anim_damage_actFrame
 				// CREATURE ATTACK
 				else if (sprite.anim_attack_function) getActualTexture = sprite.anim_attack_actFrame
 				// BASIC ANIM START
@@ -790,7 +766,12 @@ function spritesCheck() {
 					moveAmmo(sprite)
 					let checkActAnim = mapDataClass.loadAnimationTexture(sprite)
 					if (checkActAnim) getActualTexture = checkActAnim[1]
-					sprite.z = playerWalk()
+
+					let interval = 0
+					if (player.weapon == 3) interval = -10;
+					if (player.weapon == 4) interval = -2;
+
+					if (interval) sprite.z = graphicsClass.amplitudeA(interval)
 				}
 			}
 			
@@ -858,25 +839,6 @@ async function loadindData() {
 		let dirConstruction = await texturesClass.loadTextureToArray(ammo.textures, 'weapons', texturesClass.weaponsTextures)
 		spritesClass.createSprite(ammo, dirConstruction, spritesClass.weponsSprites)
 	}
-
-	const response = await fetch('./data/weapons/weapon_player.JSON');
-	const playerWeaponData = await response.json();
-	texturesClass.playerWeaponsTextures = {}
-	Object.entries(playerWeaponData).forEach(([weapon, value]) => {
-		value.forEach(item => {
-			Object.entries(item).forEach(([dirName, imgList]) => {
-				imgList.forEach(imgName => {
-					let weaponImg = `<img id="${imgName}" src="${dirName}${imgName}.png">`;
-					$('#img-container').append(weaponImg)
-					if (!texturesClass.playerWeaponsTextures[weapon]) texturesClass.playerWeaponsTextures[weapon] = [];
-					texturesClass.playerWeaponsTextures[weapon].push(imgName)
-				});
-		  	});
-		});
-	});
-
-	console.log('---');
-	console.log(texturesClass.playerWeaponsTextures);
 		
 	const mapDataResponse = await fetch(`./data/maps/${actualLevel}.JSON`)
 	const mapData = await mapDataResponse.json()
@@ -993,6 +955,11 @@ async function gameMenu() {
 		player.map = false
 		player.poison = false
 
+		// MAP ÖSSZESÍTŐ INFO
+		
+		// let content = `<div class="text-center"><h3 class='text-center'>Youfind the EXIT!</h3></div>`
+		// graphicsClass.scrollInfoMaker(content, null, true)
+
 		mapDataClass.mapLevel++	
 		if (mapDataClass.maps.length-1 < mapDataClass.mapLevel) mapDataClass.mapLevel = 0
 		menu.menuactive = false
@@ -1059,11 +1026,7 @@ function gameLoop() {
 		sprite.distance = graphicsClass.spriteDistanceCalc(sprite)
 	});
 	
-
-	// console.log(
-	// 	texturesClass.weaponsTextures
-	// );
-
+	if (!menu.menuactive && player.weapon) graphicsClass.playerWeapon()
 	
 	graphicsClass.screenColorizeAction()
 	if (menu.mapSwitch) graphicsClass.renderMinimap()

@@ -100,7 +100,7 @@ export default class GaphicsClass {
 		}
 	}
 
-	makeScreen() {
+	async makeScreen() {
 		if($("#container").length > 0) {
 			$('#container').html('')
 			var container = document.getElementById('container')
@@ -287,6 +287,23 @@ export default class GaphicsClass {
 
 		canvasContainer.appendChild(scrollInfoBox)
 		scrollInfoBox.style.display='none'
+
+		// WEAPONS TEXTURES
+		const response = await fetch('./data/weapons/weapon_player.JSON');
+		const playerWeaponData = await response.json();
+		this.texturesClass.playerWeaponsTextures = {}
+		Object.entries(playerWeaponData).forEach(([weapon, value]) => {
+			value.forEach(item => {
+				Object.entries(item).forEach(([dirName, imgList]) => {
+					imgList.forEach(imgName => {
+						let weaponImg = `<img id="${imgName}" src="${dirName}${imgName}.png">`;
+						$('#img-container').append(weaponImg)
+						if (!this.texturesClass.playerWeaponsTextures[weapon]) this.texturesClass.playerWeaponsTextures[weapon] = [];
+						this.texturesClass.playerWeaponsTextures[weapon].push(imgName)
+					});
+				  });
+			});
+		});
 	}
 
 	makeMenu() {
@@ -447,6 +464,15 @@ export default class GaphicsClass {
 		// Hide Info
 		if (!useButton) setTimeout(() => hideScrollInfoBoxAction(), time);
 		
+	}
+
+	amplitudeA(value) {
+		const amplitude = (Math.abs(value) - value) / 2
+		const offset = (Math.abs(value) + value) / 2
+		const frequency = 10
+	
+		const returnValue = Math.sin(frequency * Date.now() * 0.001) * amplitude + offset
+		return Math.floor(returnValue);
 	}
 
 	spriteDistanceCalc(sprite) {
@@ -833,7 +859,7 @@ export default class GaphicsClass {
 					}
 				}
 
-				// HELP DIRECTION BOXS
+				// DEVELOP HELP DIRECTION BOXS
 				if (false) {
 					let colors = ['#ff000077', '#00800077', '#0000ff77', '#ffa50077', '#80800077', '#80008077', '#80338077', '#97979777'];
 					var actColor = 0
@@ -1119,10 +1145,10 @@ export default class GaphicsClass {
 
 						let BRICK_SIZE = wallHeight / this.CELL_SIZE					
 
-						if (sprite.open_switch) {				
+						if (sprite.open_switch) {
 							(sprite.open_positionValue == 0)
-							? this.doorOpenOrClose(sprite, -5)
-							: this.doorOpenOrClose(sprite, 5)
+							? this.doorOpenOrClose(sprite, -3)
+							: this.doorOpenOrClose(sprite, 3)
 						}
 
 						this.context.fillStyle = "rgba(0, 0, 0, 0)";
@@ -1154,7 +1180,7 @@ export default class GaphicsClass {
 							}
 						}
 					}
-				});
+				});	
 			// OBJECT, AMMO, CREATURE
 			} else if (sprite.type=='object' || sprite.type == 'ammo' || sprite.type == 'creature') {
 				let spriteAngle = Math.atan2(sprite.y - this.player.y, sprite.x - this.player.x);
@@ -1213,8 +1239,59 @@ export default class GaphicsClass {
 			}
 		}
 	}
+	
+	checkEnemyHit() {
+		// CHECK ENEMY HIT MAP
+		let checkEnemyWall = this.mapDataClass.map[this.check.playerCheckY][this.check.playerCheckX];
+		if (checkEnemyWall.type == 'creature' && checkEnemyWall.energy > 0) {
+			checkEnemyWall.energy = checkEnemyWall.energy - this.player.weaponsDamage[this.player.weapon]
+			if (checkEnemyWall.energy <= 0) {
+				checkEnemyWall.anim_startFrame = checkEnemyWall.dirConstruction.length-1
+				checkEnemyWall.anim_actFrame = checkEnemyWall.dirConstruction.length-1
+				checkEnemyWall.anim_switch = false
+			}
+		}
 
-	doorOpenOrClose(sprite, open_moveValue) {
+		// CHECK ENEMY HIT SPRITE
+		let checkCreatures = this.spritesClass.checkSpriteData(this.check.playerCheckY, this.check.playerCheckX, 'type', 'creature')
+		let checkCreaturesValue = (checkCreatures && checkCreatures.material != 'ghost') ? true : false;
+		if (checkCreaturesValue) this.spritesClass.enemyHit(checkCreatures)
+	}
+
+	actualWeaponTexture() {
+		let imgId = this.texturesClass.playerWeaponsTextures[`weapon${this.player.weapon}`][0]
+
+		if (this.player.shoting && this.player.shoting_anim == null) {
+			
+			this.player.shoting_anim = setInterval(() => {
+
+				console.log(this.player.shoting_anim_actFrame);
+					
+				this.player.shoting_anim_actFrame++
+				if (this.player.shoting_anim_actFrame > this.texturesClass.playerWeaponsTextures[`weapon${this.player.weapon}`].length-1) {
+					this.player.shoting = false
+					clearInterval(this.player.shoting_anim)
+					this.player.shoting_anim = null
+					this.player.shoting_anim_actFrame = 0;
+
+					this.checkEnemyHit()
+				}
+			}, this.player.shoting_anim_time)
+		} else {
+			imgId = this.texturesClass.playerWeaponsTextures[`weapon${this.player.weapon}`][this.player.shoting_anim_actFrame]
+		}
+
+		return document.getElementById(imgId);
+	}
+
+	playerWeapon() {
+		let imgElement = this.actualWeaponTexture()
+		let weaponImgSize = this.CELL_SIZE * 8
+		this.context.drawImage(imgElement, (this.player.z) + ((this.GAME_WIDTH / 2) - (weaponImgSize / 2)), ((-this.player.z * 2) + (this.GAME_HEIGHT - weaponImgSize)) - (this.WALKINTERVAL * 2), weaponImgSize, weaponImgSize);
+	}
+
+	doorOpenOrClose(sprite, open_moveValue) {		
+		sprite.material = 'fix'
 		if (sprite.open_function == null) {
 			sprite.anim_switch = true
 			sprite.open_function = setInterval(() => {

@@ -2,14 +2,36 @@
     "ammos": [
         {
             "textures": {
-                "ammo_weapon1": ["ammo_weapon1-1", "ammo_weapon1-2", "ammo_weapon1-end"]
+                "ammo_weapon3": ["ammo_weapon3-1", "ammo_weapon3-2", "ammo_weapon3-end"]
             },
             "type": "ammo",
             "mode": "ammo",
-            "name": "ammo_weapon1",
+            "name": "ammo_weapon3",
             "active": false,
             "move": true,
-            "demage": 1,
+            "damage": 1,
+            "speed": 6,
+            "x": null,
+            "y": null,
+            "z": 0,
+            "angle": null,
+            "distance": null,
+            "anim_switch": true,
+            "anim_repeat": true,
+            "anim_actFrame": 1,
+            "anim_startFrame": 1,
+            "anim_speed": 40
+        },
+        {
+            "textures": {
+                "ammo_weapon4": ["ammo_weapon4-1", "ammo_weapon4-2", "ammo_weapon4-end"]
+            },
+            "type": "ammo",
+            "mode": "ammo",
+            "name": "ammo_weapon4",
+            "active": false,
+            "move": true,
+            "damage": 1,
             "speed": 10,
             "x": null,
             "y": null,

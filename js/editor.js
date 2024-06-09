@@ -47,7 +47,7 @@ class Editor {
 		this.mapIconSize()
 		// ----------------
 		this.loadTextures()
-		this.loadMap('map3')		// !!
+		this.loadMap('map2')		// !!
 		this.buttonOptions()
 	}
 

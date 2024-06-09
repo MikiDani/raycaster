@@ -74,18 +74,17 @@ export default class SpritesClass {
     }
 
     startShot() {
-        // console.log(this.texturesClass.weaponsTextures)
-        // console.log(this.player.weapon)
-        
-        var findAmmo = this.weponsSprites.find(objektum => objektum.name == `ammo_weapon${this.player.weapon}`);
-
-        if (findAmmo) {
-            let ammo = { ...findAmmo };
-            ammo.active = true
-            ammo.x = this.player.x + Math.cos(this.player.angle);
-            ammo.y = this.player.y + Math.sin(this.player.angle);
-            ammo.angle = this.player.angle
-            this.sprites.push(ammo)
+        if (this.player.weapon == '3' || this.player.weapon == '4') {
+            var findAmmo = this.weponsSprites.find(objektum => objektum.name == `ammo_weapon${this.player.weapon}`);
+    
+            if (findAmmo) {
+                let ammo = { ...findAmmo };
+                ammo.active = true
+                ammo.x = this.player.x + Math.cos(this.player.angle);
+                ammo.y = this.player.y + Math.sin(this.player.angle);
+                ammo.angle = this.player.angle
+                this.sprites.push(ammo)
+            }
         }
     }
 
@@ -101,11 +100,12 @@ export default class SpritesClass {
         return returnValue;
     }
     
-    demage(get, give, drawing) {
+    damage(get, give, drawing) {        
         if (typeof get.energy != 'undefined' && typeof give.damage != 'undefined') {
-
-            if (typeof get.damage_function == 'undefined' || get.damage_function == null) {            
+            if (typeof get.damage_function == 'undefined' || get.damage_function == null) {                
+                
                 if (get.energy > 0) get.energy -= give.damage;
+                
                 if (drawing) {
                     if (get.energy < 0) get.energy = 0
                     $("#healt-percentage").text(get.energy + '%');
@@ -115,11 +115,29 @@ export default class SpritesClass {
                         console.log('Player DIE');
                     }
                 }
-            
+
                 get.damage_function = setTimeout(() => {
                     get.damage_function = null;
                 }, 500);
             }
+        }
+    }
+
+    enemyHit(creature) {
+        creature.energy = creature.energy - this.player.weaponsDamage[this.player.weapon]
+        console.log('Energy: ' + creature.energy)
+
+        creature.moveType = 'attack'
+        creature.speed += 2	// + 2
+
+        if (!creature.anim_damage_function) {
+            creature.anim_damage_actFrame = `${creature.dirConstruction[0]}_E3`
+            
+            creature.anim_damage_function = setInterval(() => {
+                clearInterval(creature.anim_damage_function)
+                creature.anim_damage_function = null
+                creature.anim_damage_actFrame = null
+            },creature.anim_speed)
         }
     }
 

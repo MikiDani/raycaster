@@ -14,8 +14,8 @@ export default class TexturesClass {
 	async loadTexturesPicture(data, dir, thisVariableArray) {
 
 		let fileNames = data.textures
-
 		let dirConstruction = []
+		
 		for (const nameDir of Object.keys(fileNames)) {
 			//IF NOTHING OBJECTDIR MAKE			
 			dirConstruction.push(nameDir)
