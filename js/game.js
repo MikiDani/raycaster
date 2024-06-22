@@ -215,9 +215,9 @@ function checkMoveSprite(spriteObj, type = null, inputStrafeCheck = null) {
 		}
 	});
 
-	if (type == 'ammo') {
-		deleteBarrierArray.push(1, 3, 5, 7)
-	}
+	// if (type == 'ammo') {
+	// 	deleteBarrierArray.push(1, 3, 5, 7)
+	// }
 
 	deleteBarrierArray.forEach((barrier) => {
 		deleteBarier(spriteBarrier, barrier)
@@ -1056,20 +1056,43 @@ async function gameMenu() {
 
 var szamol = 0;
 
-function nextLevel() {
+async function nextLevel() {
 	clearInterval(gamePlay.game)
 	gamePlay.game = null
 	graphicsClass.clrScr()
 	
+	// ide akarom hogy csak akkor menjen tovább a program ha a var nextLevelOk = true
+
+	let content = `<div class="text-center"><h3 class='text-center'>Statisztika</h3></div>`
+	graphicsClass.scrollInfoMaker(content, null, true)
+
+	mapDataClass.nextLevelOk = false;
+	document.getElementById('scroll-button').addEventListener('click', () => {
+		mapDataClass.nextLevelOk = true;
+	});
+
+	await waitForNextLevel();
+
 	inputClass.graphicsClass.makeMenu()
 	inputClass.gameMenu()
 }
 
-function gameLoop() {
+function waitForNextLevel() {
+    return new Promise(resolve => {
+        const interval = setInterval(() => {
+            if (mapDataClass.nextLevelOk) {
+                clearInterval(interval);
+                resolve();
+            }
+        }, 100); // Ellenőriz 100 ms-onként
+    });
+}
+
+async function gameLoop() {
 	gamePlay.timeStart = Date.now()
 	movePlayer(player)
 
-	if (gamePlay.nextLevel) { nextLevel(); return; }
+	if (gamePlay.nextLevel) { await nextLevel(); return; }
 
 	graphicsClass.rays = graphicsClass.getRays()
 	spritesClass.sprites = spritesClass.sprites.sort((a, b) => b.distance - a.distance)

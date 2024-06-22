@@ -450,7 +450,7 @@ export default class GaphicsClass {
 		try {
 			await Promise.all([
 				new Promise(resolve => {
-					if (useButton) htmlElements += '<div class="text-center"><button type="button" id="scroll-button" class="btn">Ok</button></div>'
+					if (useButton) htmlElements += `<div class="text-center"><button type="button" id="scroll-button" class="btn">Ok</button></div>`
 					$("#scroll-info-box-content-text").html(htmlElements);
 					if (useButton) {						
 						$("#scroll-info-box-content-text").find('#scroll-button').on('click', hideScrollInfoBoxAction);
