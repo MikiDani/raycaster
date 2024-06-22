@@ -160,5 +160,30 @@
         "anim_startFrame": 1,
         "anim_actFrame": 1,
         "anim_speed": 200
+    },
+    {
+        "id": 150,
+        "textures": {
+            "cellar": ["wall2"]
+        },
+        "type": "wall",
+        "mode": "normal",
+        "height": "normal"
+    },
+    {
+        "id": 155,
+        "textures": {
+            "cellar": ["wall2-t1", "wall2-t2", "wall2-t3", "wall2-t4"]
+        },
+        "type": "wall",
+        "mode": "animated",
+        "height": "normal",
+        "anim_switch": true,
+        "anim_repeat": true,
+        "anim_repeatCount": 0,
+        "anim_repeatEnd": 40,
+        "anim_startFrame": 1,
+        "anim_actFrame": 1,
+        "anim_speed": 80
     }
 ]

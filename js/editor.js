@@ -8,7 +8,11 @@ class Editor {
 	selectedElementData;
 	objectName;
 	effects;
-	constructor () {
+	constructor (mapList) {
+		this.mapList = mapList
+
+		console.log(this.mapList);
+		
 		this.mapSize = 64
 		this.mapContainerWidth = 4000
 		this.levelDataBasic = {
@@ -29,6 +33,7 @@ class Editor {
 			"sprites": [
 			]
 		}
+		this.mapfileName = ''
 		this.levelData = this.levelDataBasic
 		this.map = []
 		this.skys = []
@@ -47,7 +52,7 @@ class Editor {
 		this.mapIconSize()
 		// ----------------
 		this.loadTextures()
-		this.loadMap('map2')		// !!
+		this.loadMap(mapList[0])
 		this.buttonOptions()
 	}
 
@@ -332,7 +337,6 @@ class Editor {
 			if (event.which == 3) {
 				let y = $(this).attr('map-y')
 				let x = $(this).attr('map-x')
-				console.log(x, y);
 				
 				// Map delete
 				clone.map[y][x] = 0
@@ -492,8 +496,29 @@ class Editor {
 		return { textureDir: textureDir, textureName: textureName }
 	}
 
-	async loadMap(mapfileName) {
+	async clickMapnameLoad(clone, filename) {
 
+		await clone.clearMap(clone)
+
+		clone.levelData = [];
+
+		if (filename.length > 0) {
+			clone.levelData = clone.levelDataBasic
+
+			for (let y = 0; y < clone.mapSize; y++) {
+				for (let x = 0; x < clone.mapSize; x++) {						
+					let mapBrickElment = $(".map-container").find(`[map-x='${x}'][map-y='${y}']`)
+					mapBrickElment.css("background-image","").css("background-size", "").css("border", "");
+				}
+			}
+
+			clone.loadMap(filename)
+			
+		} else clone.drawMessage('No have filename!', 'danger')
+	}
+
+
+	async loadMap(mapfileName) {
 		async function fetchMapData(mapfileName) {
 			try {
 				const mapDataWait = await fetch(`./data/maps/${mapfileName}.json`);
@@ -509,6 +534,8 @@ class Editor {
 			}
 		}
 
+		var clone = this
+
 		var mapData = null;
 
 		fetchMapData(mapfileName)
@@ -516,6 +543,7 @@ class Editor {
 			if (mapDataLoaded) {
 				console.log('Map data EZ:', mapDataLoaded);
 				mapData = mapDataLoaded
+				this.mapfileName = mapfileName
 			} else {
 				return ('Map file not found or another error occurred.');
 			}
@@ -525,7 +553,36 @@ class Editor {
 		// const mapData = await mapDataWait.json()
 
 		await new Promise(resolve => setTimeout(resolve, 300))
+
 		console.log('Eltelt')
+
+		$("input[name='filename']").val(mapfileName)
+		$("#map-selector").html('')
+
+		this.mapList.forEach((mapName, index) => {
+			let ifChecked = (mapName == mapfileName) ? 'checked' : '';
+			let element = 
+			`<div class="form-check">
+				<input id="mapselector_${index}" class="form-check-input" name="mapselector" type="radio" value="${mapName}" ${ifChecked}>
+				<label class="form-check-label">${mapName}</label>
+			</div>`;
+
+			$("#map-selector").append(element)
+
+			$(`#mapselector_${index}`).on('click', function() {
+				var loadMapName = $(this).val()
+				let result = confirm('Are you sure you want to load the "' + loadMapName + '" map?');
+				if (result) {
+					clone.clickMapnameLoad(clone, loadMapName)
+				} else {
+					$("#map-selector").find('input').each(function() {
+						if ($(this).val() == clone.mapfileName) $(this).prop('checked', true)
+					});
+				}
+			});
+		});
+
+
 
 		// LOADING SUCCESS
 		this.levelData.player.y = mapData.player.y
@@ -882,10 +939,16 @@ class Editor {
 			if (elementName == 'blocks') fileData = clone.blocks;
 			if (elementName == 'creatures') fileData = clone.creatures;
 			
-			let selectedElements = `
+			var selectedElements = `
 			<div id="selected-container" class="p-0 m-0 px-1">
 				<div class="p-2 m-0 texture-class_ border border-secondary">
-					<h6 class="text-white text-start"><strong>Name: </strong>${Object.values(fileData[elementIndex].textures)[0]}</h6>
+					<span class="text-white text-start"><strong>Name: </strong>`;
+					
+					Object.values(fileData[elementIndex].textures)[0].forEach(name => {
+						selectedElements += `<span>${name}, </span>`;
+					});
+					
+					selectedElements += `</span>
 					<hr class="p-0 my-2 border-white">
 					<div class="textures-pic-container">
 						<div id="" class="textures-pic">`;
@@ -932,4 +995,9 @@ class Editor {
 	}
 }
 
-const editor = new Editor()
+import MapDataClass from './mapdata-class.js';
+
+const mapdataClass = new MapDataClass({texturesClass: null});
+let mapList = mapdataClass.maps
+
+const editor = new Editor(mapList)

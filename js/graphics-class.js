@@ -20,10 +20,13 @@ export default class GaphicsClass {
 
 		this.checkDistance = []
 		this.blockMask = []
-		//--------------------------------------------------------------------
+		//----------------------------------------------
 		this.SCREEN_WIDTH = window.innerWidth
 		this.SCREEN_HEIGHT = window.innerHeight
 		this.GAME_WIDTH = 1250
+
+		// this.GAME_WIDTH = window.innerWidth
+
 		this.GAME_HEIGHT = 620	// old 700
 		this.GRAPHICS_RATIO = 6
 
@@ -35,7 +38,7 @@ export default class GaphicsClass {
 		this.MINIMAP_Y = 50
 		this.PLAYER_SIZE = Math.floor(CELL_SIZE / 4)
 		this.SPRITE_SIZE = 10
-		//--------------------------------------------------------------------
+		//-----------------------------------------------
 		this.map = []
 		this.player = player
 		this.menuElement = ""
@@ -307,7 +310,10 @@ export default class GaphicsClass {
 	}
 
 	changeWeapon(weapon) {
-		this.player.weapon = weapon
+		if (typeof this.player.adoptedWeapons['weapon' + weapon] !== 'undefined' && this.player.adoptedWeapons['weapon' + weapon] == true) {
+			this.player.weapon = weapon
+		}
+		// Kell ide grafikaváltás ?
 	}
 
 	makeMenu() {
@@ -840,7 +846,7 @@ export default class GaphicsClass {
 
 						if (checkObjectValue && (x != mapSizeX-1 && x != -mapSizeX) && (y != mapSizeY-1 && y != -mapSizeY)) {
 							if (checkObject.material == 'ghost') this.context.fillStyle = '#ca9d60'
-							else this.context.fillStyle = '#bd894e'
+							else this.context.fillStyle = '#ff894e'
 							this.context.beginPath();
 							this.context.arc(
 								playerBrickX + (cellSize * x) + (cellSize / 2) + modFirstBrickX, playerBrickY + (cellSize * y) + (cellSize / 2) + modFirstBrickY,
@@ -860,11 +866,24 @@ export default class GaphicsClass {
 							}
 							creaturesArray.push(creature)
 						}
+
+						// AMMO
+						let checkAmmo = this.spritesClass.checkSpriteData(actY + y, actX + x, 'type', 'ammo')
+						let checkAmmoValue = (checkAmmo && checkAmmo.active) ? true : false;
+						
+						if (checkAmmoValue && (x != mapSizeX-1 && x != -mapSizeX) && (y != mapSizeY-1 && y != -mapSizeY)) {							
+							let ammo = {
+								x: playerBrickX + (cellSize * x) + (cellSize / 2) + modFirstBrickX,
+								y: playerBrickY + (cellSize * y) + (cellSize / 2) + modFirstBrickY,
+								angle: checkAmmo.angle
+							}
+							creaturesArray.push(ammo)
+						}
 					}
 				}
 
 				// DEVELOP HELP DIRECTION BOXS
-				if (false) {
+				if (true) {
 					let colors = ['#ff000077', '#00800077', '#0000ff77', '#ffa50077', '#80800077', '#80008077', '#80338077', '#97979777'];
 					var actColor = 0
 					this.check.directions.forEach(box => {						

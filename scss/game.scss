@@ -1,378 +1,378 @@
 @font-face {
-    font-family: 'Sakurata';
-    src: url('../fonts/sakurata.ttf') format('truetype');
+	font-family: 'Sakurata';
+	src: url('../fonts/sakurata.ttf') format('truetype');
 }
 
 @font-face {
-    font-family: 'Kashima';
-    src: url('../fonts/kashima.otf') format('opentype');
+	font-family: 'Kashima';
+	src: url('../fonts/kashima.otf') format('opentype');
 }
 
 html {
-    box-sizing: border-box;
-    overflow: hidden;
-    margin:0;
-    background-color: black;
+	box-sizing: border-box;
+	overflow: hidden;
+	margin:0;
+	background-color: black;
 }
 
 body {
-    margin:0;
-    user-select: none;
-    background-color: black;
-    font-family: 'Sakurata', sans-serif;
+	margin:0;
+	user-select: none;
+	background-color: black;
+	font-family: 'Sakurata', sans-serif;
 }
 
 #container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: black;
-    height: 100wh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: black;
+	height: 100wh;
 }
 
 canvas {
-    will-change: auto;
+	will-change: auto;
 }
 
 #menu-bg {
-    // background-image: url('/img/menu/bg-menu.jpg');
-    // background-size: cover;
-    margin: 0 auto;
+	// background-image: url('/img/menu/bg-menu.jpg');
+	// background-size: cover;
+	margin: 0 auto;
 }
 
 .loading-box {
-    background-color: #f49231aa;
-    font-family: 'Sakurata', sans-serif;
-    font-size: 18px;
+	background-color: #f49231aa;
+	font-family: 'Sakurata', sans-serif;
+	font-size: 18px;
 }
 
 #menu-box {
-    box-sizing: border-box;
-    background-color: #c16509aa;
-    padding: 25px;
-    margin-top: 16%;
+	box-sizing: border-box;
+	background-color: #c16509aa;
+	padding: 25px;
+	margin-top: 16%;
 }
 
 .menu-row {
-    font-family: 'Kashima', sans-serif;
-    font-size: 36px;
-    background-color: #f49231aa;
-    width: 100%;
-    height: 40px;
+	font-family: 'Kashima', sans-serif;
+	font-size: 36px;
+	background-color: #f49231aa;
+	width: 100%;
+	height: 40px;
 }
 
 .menu-element {
-    margin-bottom: 10px;
-    &:hover {
-        cursor: pointer;
-        background-color: #e7bb8f !important;
-    }
+	margin-bottom: 10px;
+	&:hover {
+		cursor: pointer;
+		background-color: #e7bb8f !important;
+	}
 }
 
 .logo-position {
-    position: absolute;
-    top: 20%;
-    left: 50vw;
-    transform: translate(-50%, -50%);
-    width: 400px;
-    -webkit-transform: translate(-50%, -50%);
-    -moz-transform: translate(-50%, -50%);
-    -ms-transform: translate(-50%, -50%);
-    -o-transform: translate(-50%, -50%);
+	position: absolute;
+	top: 20%;
+	left: 50vw;
+	transform: translate(-50%, -50%);
+	width: 400px;
+	-webkit-transform: translate(-50%, -50%);
+	-moz-transform: translate(-50%, -50%);
+	-ms-transform: translate(-50%, -50%);
+	-o-transform: translate(-50%, -50%);
 }
 
 .bg-menu-selector {
-    background-color: #c15909;
+	background-color: #c15909;
 }
 
 .bg-menu-selector-back {
-    background-color: #c1590977;
+	background-color: #c1590977;
 }
 
 .control-small-width {
-    width: 100px !important;
+	width: 100px !important;
 }
 
 .invisible-pointer {
-    pointer-events: none;
+	pointer-events: none;
 }
 
 #scroll-info-box-top {
-    background-image: url("../img/menu/info-scroll-top-pix.png");
-    width: 750px;
-    height: 69px;
+	background-image: url("../img/menu/info-scroll-top-pix.png");
+	width: 750px;
+	height: 69px;
 }
 
 #scroll-info-box-content {
-    background-image: url("../img/menu/info-scroll-bg-pix.png");
-    background-repeat: repeat-y;
-    width: 750px;
-    font-size: 20px;
-    padding-left: 40px;
-    padding-right: 25px;
-    padding-bottom: 50px;
+	background-image: url("../img/menu/info-scroll-bg-pix.png");
+	background-repeat: repeat-y;
+	width: 750px;
+	font-size: 20px;
+	padding-left: 40px;
+	padding-right: 25px;
+	padding-bottom: 50px;
 }
 
 #scroll-info-box-bottom {
-    background-image: url("../img/menu/info-scroll-bottom-pix.png");
-    width: 750px;
-    height: 69px;
+	background-image: url("../img/menu/info-scroll-bottom-pix.png");
+	width: 750px;
+	height: 69px;
 }
 
 .info-key1-container {
-    width: 128px;
-    height: 56px;
-    background-image: url("../img/objects/keys/cellar-key1.png");
-    background-size: cover;
-    background-position: bottom;
+	width: 128px;
+	height: 56px;
+	background-image: url("../img/objects/keys/cellar-key1.png");
+	background-size: cover;
+	background-position: bottom;
 }
 
 .info-key2-container {
-    width: 128px;
-    height: 56px;
-    background-image: url("../img/objects/keys/cellar-key2.png");
-    background-size: cover;
-    background-position: bottom;
+	width: 128px;
+	height: 56px;
+	background-image: url("../img/objects/keys/cellar-key2.png");
+	background-size: cover;
+	background-position: bottom;
 }
 
 #scroll-button {
-    background-image: url("../img/menu/bg-button.png");
-    width: 142px;
-    height: 62px;
-    border: none;
-    // border: 2px solid #be8254;
-    color: #111010;
-    font-family: 'Sakurata', sans-serif;
-    font-weight: bold;
-    font-size: 18px;
-    padding-top: 12px;
+	background-image: url("../img/menu/bg-button.png");
+	width: 142px;
+	height: 62px;
+	border: none;
+	// border: 2px solid #be8254;
+	color: #111010;
+	font-family: 'Sakurata', sans-serif;
+	font-weight: bold;
+	font-size: 18px;
+	padding-top: 12px;
 }
 
 // HUD
 
 // left
 #healt-percentage {
-    display: absolute;
-    width: 180px;
-    height: 64px;
-    left: 0px;
-    top: 0px;
-    text-align: center;
-    font-size: 40px;
-    letter-spacing: 5px;
-    font-family: 'Sakurata';
-    text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;
-    font-weight: bold;
-    color: white;
+	display: absolute;
+	width: 180px;
+	height: 64px;
+	left: 0px;
+	top: 0px;
+	text-align: center;
+	font-size: 40px;
+	letter-spacing: 5px;
+	font-family: 'Sakurata';
+	text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;
+	font-weight: bold;
+	color: white;
 }
 
 #coin-gold {
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 20px;
-    height: 20px;
-    top: 0px;
-    left: 180px;
-    background-image: url("../img/menu/hud/coin-gold.png");
+	position: absolute;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 20px;
+	height: 20px;
+	top: 0px;
+	left: 180px;
+	background-image: url("../img/menu/hud/coin-gold.png");
 }
 
 #coin-gold-text {
-    position: absolute;
-    display: flex;
-    justify-content: start;
-    align-items: center;
-    width: 50px;
-    height: 20px;
-    top: 2px;
-    right: 0px;
-    color: #ffba30;
-    font-family: 'Sakurata', sans-serif;
-    font-weight: bold;
-    font-size: 12px;
-    text-align: left;
-    padding-left:4px;
+	position: absolute;
+	display: flex;
+	justify-content: start;
+	align-items: center;
+	width: 50px;
+	height: 20px;
+	top: 2px;
+	right: 0px;
+	color: #ffba30;
+	font-family: 'Sakurata', sans-serif;
+	font-weight: bold;
+	font-size: 12px;
+	text-align: left;
+	padding-left:4px;
 }
 
 #coin-silver {
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 20px;
-    height: 20px;
-    top: 22px;
-    left: 180px;
-    background-image: url("../img/menu/hud/coin-silver.png");
+	position: absolute;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 20px;
+	height: 20px;
+	top: 22px;
+	left: 180px;
+	background-image: url("../img/menu/hud/coin-silver.png");
 }
 
 #coin-silver-text {
-    position: absolute;
-    display: flex;
-    justify-content: start;
-    align-items: center;
-    width: 50px;
-    height: 20px;
-    top: 22px;
-    right: 0px;
-    color: #8891b0;
-    font-family: 'Sakurata', sans-serif;
-    font-weight: bold;
-    font-size: 12px;
-    text-align: left;
-    padding-left:4px;
+	position: absolute;
+	display: flex;
+	justify-content: start;
+	align-items: center;
+	width: 50px;
+	height: 20px;
+	top: 22px;
+	right: 0px;
+	color: #8891b0;
+	font-family: 'Sakurata', sans-serif;
+	font-weight: bold;
+	font-size: 12px;
+	text-align: left;
+	padding-left:4px;
 }
 
 #coin-copper {
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 20px;
-    height: 20px;
-    bottom: 2px;
-    left: 180px;
-    background-image: url("../img/menu/hud/coin-copper.png");
+	position: absolute;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 20px;
+	height: 20px;
+	bottom: 2px;
+	left: 180px;
+	background-image: url("../img/menu/hud/coin-copper.png");
 }
 
 #coin-copper-text {
-    position: absolute;
-    display: flex;
-    justify-content: start;
-    align-items: center;
-    width: 50px;
-    height: 20px;
-    bottom: 2px;
-    right: 0px;
-    color: #f3a845;
-    font-family: 'Sakurata', sans-serif;
-    font-weight: bold;
-    font-size: 12px;
-    text-align: left;
-    padding-left:4px;
+	position: absolute;
+	display: flex;
+	justify-content: start;
+	align-items: center;
+	width: 50px;
+	height: 20px;
+	bottom: 2px;
+	right: 0px;
+	color: #f3a845;
+	font-family: 'Sakurata', sans-serif;
+	font-weight: bold;
+	font-size: 12px;
+	text-align: left;
+	padding-left:4px;
 }
 
 // right
 #gold-key {
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 48px;
-    height: 32px;
-    top: 0px;
-    left: 0px;
+	position: absolute;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 48px;
+	height: 32px;
+	top: 0px;
+	left: 0px;
 }
 
 .gold-key-on {
-    background-image: url("../img/menu/hud/gold-key.png");
+	background-image: url("../img/menu/hud/gold-key.png");
 }
 
 #silver-key {
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 48px;
-    height: 32px;
-    bottom: 0px;
-    left: 0px;
+	position: absolute;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 48px;
+	height: 32px;
+	bottom: 0px;
+	left: 0px;
 }
 
 .silver-key-on {
-    background-image: url("../img/menu/hud/silver-key.png");
+	background-image: url("../img/menu/hud/silver-key.png");
 }
 
 #ammo-star-text {
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 48px;
-    height: 32px;
-    top: 0px;
-    left: 48px;
-    color: #111010;
-    font-family: 'Sakurata', sans-serif;
-    font-weight: bold;
-    font-size: 18px;
-    text-align: center;
+	position: absolute;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 48px;
+	height: 32px;
+	top: 0px;
+	left: 48px;
+	color: #111010;
+	font-family: 'Sakurata', sans-serif;
+	font-weight: bold;
+	font-size: 18px;
+	text-align: center;
 }
 
 #ammo-fire-text {
-    position: absolute;
-    display: inline-block;
-    width: 48px;
-    height: 32px;
-    bottom: 0px;
-    left: 48px;
-    color: #111010;
-    font-family: 'Sakurata', sans-serif;
-    font-weight: bold;
-    font-size: 18px;
-    text-align: center;
+	position: absolute;
+	display: inline-block;
+	width: 48px;
+	height: 32px;
+	bottom: 0px;
+	left: 48px;
+	color: #111010;
+	font-family: 'Sakurata', sans-serif;
+	font-weight: bold;
+	font-size: 18px;
+	text-align: center;
 }
 
 #ammo-star {
-    position: absolute;
-    display: inline-block;
-    width: 32px;
-    height: 32px;
-    top: 0px;
-    left: 96px;
-    background-image: url("../img/menu/hud/ammo-star.png");
+	position: absolute;
+	display: inline-block;
+	width: 32px;
+	height: 32px;
+	top: 0px;
+	left: 96px;
+	background-image: url("../img/menu/hud/ammo-star.png");
 }
 
 #ammo-fire {
-    position: absolute;
-    display: inline-block;
-    width: 32px;
-    height: 32px;
-    bottom: 0px;
-    left: 96px;
-    background-image: url("../img/menu/hud/ammo-fire.png");
+	position: absolute;
+	display: inline-block;
+	width: 32px;
+	height: 32px;
+	bottom: 0px;
+	left: 96px;
+	background-image: url("../img/menu/hud/ammo-fire.png");
 }
 
 #weapon1 {
-    position: absolute;
-    display: inline-block;
-    width: 91px;
-    height: 32px;
-    top: 0px;
-    left: 128px;
-    background-image: url("../img/menu/hud/bg-weapon1.png");
+	position: absolute;
+	display: inline-block;
+	width: 91px;
+	height: 32px;
+	top: 0px;
+	left: 128px;
+	background-image: url("../img/menu/hud/bg-weapon1.png");
 }
 
 #weapon2 {
-    position: absolute;
-    display: inline-block;
-    width: 204px;
-    height: 32px;
-    top: 32px;
-    left: 128px;
-    background-image: url("../img/menu/hud/bg-weapon2_off.png");
+	position: absolute;
+	display: inline-block;
+	width: 204px;
+	height: 32px;
+	top: 32px;
+	left: 128px;
+	background-image: url("../img/menu/hud/bg-weapon2_off.png");
 }
-weapon2-on {
-    background-image: url("../img/menu/hud/bg-weapon2_on.png") !important;
+.weapon2-on {
+	background-image: url("../img/menu/hud/bg-weapon2_on.png") !important;
 }
 
 #weapon3 {
-    position: absolute;
-    display: inline-block;
-    width: 46px;
-    height: 64px;
-    top: 0px;
-    right: 0px;
-    background-image: url("../img/menu/hud/bg-weapon3_off.png");
+	position: absolute;
+	display: inline-block;
+	width: 46px;
+	height: 64px;
+	top: 0px;
+	right: 0px;
+	background-image: url("../img/menu/hud/bg-weapon3_off.png");
 }
 
 #weapon4 {
-    position: absolute;
-    display: inline-block;
-    width: 113px;
-    height: 32px;
-    top: 0px;
-    right: 46px;
-    background-image: url("../img/menu/hud/bg-weapon4_off.png");
+	position: absolute;
+	display: inline-block;
+	width: 113px;
+	height: 32px;
+	top: 0px;
+	right: 46px;
+	background-image: url("../img/menu/hud/bg-weapon4_off.png");
 }

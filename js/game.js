@@ -8,7 +8,7 @@ import TexturesClass from './textures-class.js'
 import MapDataClass from './mapdata-class.js'
 import SpritesClass from './sprites-class.js'
 
-const CLOCKSIGNAL = 10
+const CLOCKSIGNAL = 40
 const CELL_SIZE = 64
 
 const player = {
@@ -23,7 +23,13 @@ const player = {
 	goldScore: 0,
 	silverScore: 0,
 	copperScore: 0,
-	weapon: 2,
+	weapon: 1,
+	adoptedWeapons: {
+		weapon1: true,
+		weapon2: true,
+		weapon3: true,
+		weapon4: true,
+	},
 	weaponsDamage: [0, 1, 2, 3, 4],
 	shoting: false,
 	shoting_anim: null,
@@ -188,44 +194,56 @@ function checkMoveSprite(spriteObj, type = null, inputStrafeCheck = null) {
 		if (findId != -1) spriteBarrier.splice(findId, 1)
 	}
 
-	if (type == 'player') {
-		let deleteBarrierArray = [];
+	let deleteBarrierArray = [];
 
-		spriteBarrier.forEach((barrier) => {
-			if (barrier == 4) {
-				if (spriteBarrier.includes(3)) deleteBarrierArray.push(3);
-				if (spriteBarrier.includes(5)) deleteBarrierArray.push(5);
-			}
-			if (barrier == 8) {
-				if (spriteBarrier.includes(1)) deleteBarrierArray.push(1);
-				if (spriteBarrier.includes(7)) deleteBarrierArray.push(7);
-			}
-			if (barrier == 6) {
-				if (spriteBarrier.includes(7)) deleteBarrierArray.push(7);
-				if (spriteBarrier.includes(5)) deleteBarrierArray.push(5);
-			}
-			if (barrier == 2) {
-				if (spriteBarrier.includes(1)) deleteBarrierArray.push(1);
-				if (spriteBarrier.includes(3)) deleteBarrierArray.push(3);
-			}
-		});
+	spriteBarrier.forEach((barrier) => {
+		if (barrier == 4) {
+			if (spriteBarrier.includes(3)) deleteBarrierArray.push(3);
+			if (spriteBarrier.includes(5)) deleteBarrierArray.push(5);
+		}
+		if (barrier == 8) {
+			if (spriteBarrier.includes(1)) deleteBarrierArray.push(1);
+			if (spriteBarrier.includes(7)) deleteBarrierArray.push(7);
+		}
+		if (barrier == 6) {
+			if (spriteBarrier.includes(7)) deleteBarrierArray.push(7);
+			if (spriteBarrier.includes(5)) deleteBarrierArray.push(5);
+		}
+		if (barrier == 2) {
+			if (spriteBarrier.includes(1)) deleteBarrierArray.push(1);
+			if (spriteBarrier.includes(3)) deleteBarrierArray.push(3);
+		}
+	});
 
-		deleteBarrierArray.forEach((barrier) => {
-			deleteBarier(spriteBarrier, barrier)
-		});
+	if (type == 'ammo') {
+		deleteBarrierArray.push(1, 3, 5, 7)
 	}
-	
+
+	deleteBarrierArray.forEach((barrier) => {
+		deleteBarier(spriteBarrier, barrier)
+	});
+
+	if (type == 'ammo') {
+		console.log(spriteBarrier);
+	}
+
 	spriteBarrier.forEach((barrier) => {
 		if (barrier == 4 && (spriteObj.inX > CELL_SIZE - WALL_DISTANCE))	moveX = false;
 		if (barrier == 8 && (spriteObj.inX < WALL_DISTANCE))	moveX = false;
 		if (barrier == 6 && (spriteObj.inY > CELL_SIZE - WALL_DISTANCE)) moveY = false;
 		if (barrier == 2 && (spriteObj.inY < WALL_DISTANCE)) moveY = false;
 		
-		if (barrier == 3 && (spriteObj.inY <= WALL_DISTANCE && spriteObj.inX >= CELL_SIZE - WALL_DISTANCE)) {	moveX = false; moveY = false; }
+		if (barrier == 3 && (spriteObj.inY <= WALL_DISTANCE && spriteObj.inX >= CELL_SIZE - WALL_DISTANCE)) { moveX = false; moveY = false; }
 		if (barrier == 5 && (spriteObj.inY >= CELL_SIZE - WALL_DISTANCE && spriteObj.inX >= CELL_SIZE - WALL_DISTANCE)) { moveX = false; moveY = false; }
-		if (barrier == 7 && (spriteObj.inY >= CELL_SIZE - WALL_DISTANCE && spriteObj.inX <= WALL_DISTANCE)) {	moveX = false; moveY = false; }
+		if (barrier == 7 && (spriteObj.inY >= CELL_SIZE - WALL_DISTANCE && spriteObj.inX <= WALL_DISTANCE)) { moveX = false; moveY = false; }
 		if (barrier == 1 && (spriteObj.inY <= WALL_DISTANCE && spriteObj.inX <= WALL_DISTANCE)) { moveX = false; moveY = false; }
 	});
+
+	// if (type == 'ammo') {
+	// 	moveX = true
+	// 	moveY = true
+	// 	spriteBarrier = []
+	// }
 
 	return {
 		WALL_DISTANCE: WALL_DISTANCE,
@@ -277,7 +295,7 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 				// WAY PLAYER BRICK
 				if ((pCheck.checkX == spriteActX) && (pCheck.checkY == spriteActY)) {
 
-					console.log('SPRITE A KÖVETKEZŐ!!!')
+					// console.log('SPRITE A KÖVETKEZŐ!!!')
 					
 					if (sprite.type == 'block') return;
 					if (sprite.material == 'ghost') return;
@@ -385,6 +403,24 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 						return;
 					}
 
+					// PICKUP WEAPONS
+					if (sprite.active == true && sprite.mode.includes("weapon")) {
+						
+						console.log('WEAPON2 nél');
+						
+						let colorizeOption = {}
+						if (sprite.type == 'object' && sprite.mode=='weapon2') {
+							console.log('PICK UP WEAPON2!')
+							bringPlayer.adoptedWeapons.weapon2 = true
+							bringPlayer.weapon = 2
+							sprite.active = false
+							$('#weapon2').addClass('weapon2-on')
+							colorizeOption = { color: "255, 255, 255", alpha: 0.5, time: 200 }
+							graphicsClass.screenColorizeOptions(colorizeOption);
+						}
+						return;
+					}
+
 					// PICKUP SCROLLS
 					if (sprite.active == true && sprite.mode == 'message') {
 						sprite.active = false
@@ -398,7 +434,6 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 				// EXIT
 				let checkExit = spritesClass.checkSpriteData(player.y, player.x, 'mode', 'exit', 'position')				
 				if (checkExit) {
-					console.log('EXITEN ÁLLSZ ! JEE ! : )')
 					gamePlay.nextLevel = true
 					return;
 				}
@@ -406,7 +441,13 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 		}
 		
 		moveAction(bringPlayer, pCheck)
+
 		bringPlayer.z = graphicsClass.amplitudeA(graphicsClass.WALKINTERVAL)
+
+		if (bringPlayer.speed < 0) {
+			bringPlayer.speed = 1
+			bringPlayer.move = true
+		}
 	}
 
 	return pCheck;
@@ -639,7 +680,6 @@ function moveAmmo(ammoSprite) {
 				clearTimeout(ammoSprite.endFunction);
 				ammoSprite.endFunction = null;
 			}, 10)
-			console.log('Spritelength: ' + Object.keys(spritesClass.sprites).length)
 		}
 		
 		let ammoCheck = checkMoveSprite(ammoSprite, 'ammo')
@@ -647,13 +687,22 @@ function moveAmmo(ammoSprite) {
 		// CHECK HIT SPRITES
 		let checkSprites = spritesClass.sprites.filter(obj => Math.floor(obj.y / CELL_SIZE) == ammoCheck.checkY && Math.floor(obj.x / CELL_SIZE) == ammoCheck.checkX)
 		checkSprites.forEach((findSprite) => {
-			if (findSprite.type == 'creature' && findSprite.material == 'enemy') {
-
+			if ((findSprite.type == 'creature' && findSprite.material == 'enemy' && findSprite.active)) {
 				spritesClass.enemyHit(findSprite)
-				
-				turnOffAmmo(ammoSprite)
-				
 				// DELETE AMMO
+				turnOffAmmo(ammoSprite)
+				let ammoIndex = spritesClass.sprites.indexOf(ammoSprite);
+				if (ammoIndex !== -1) spritesClass.sprites.splice(ammoIndex, 1)
+			}
+
+			if ((findSprite.type == 'block') || (findSprite.type == 'object' && findSprite.material == 'fix')) {
+				if ((findSprite.mode == 'door' || findSprite.mode == 'key1' || findSprite.mode == 'key2') && findSprite.open_positionValue < -50) {
+					// DOOR OPENED
+					return;
+				}
+
+				// DELETE AMMO
+				turnOffAmmo(ammoSprite)
 				let ammoIndex = spritesClass.sprites.indexOf(ammoSprite);
 				if (ammoIndex !== -1) spritesClass.sprites.splice(ammoIndex, 1)
 			}
@@ -678,7 +727,7 @@ function moveAmmo(ammoSprite) {
 			else if (haveCrash == 5) wallData = mapDataClass.map[ammoMapY + 1][ammoMapX + 1];
 			else if (haveCrash == 7) wallData = mapDataClass.map[ammoMapY + 1][ammoMapX - 1];
 
-			if (wallData.type == 'creature') {
+			if (typeof wallData != 'undefined' && wallData?.type == 'creature') {
 				if (wallData.energy > 0) wallData.energy--
 				
 				console.log('Energy: ' + wallData.energy)
@@ -773,7 +822,7 @@ function spritesCheck() {
 
 					if (interval) sprite.z = graphicsClass.amplitudeA(interval);
 
-					if (player.weapon == 3) sprite.x += graphicsClass.amplitudeA(interval);
+					// if (player.weapon == 3) sprite.x += graphicsClass.amplitudeA(interval);
 				}
 			}
 			
@@ -956,6 +1005,9 @@ async function gameMenu() {
 		player.key2 = false
 		player.map = false
 		player.poison = false
+
+		$('#silver-key').removeClass('silver-key-on')
+		$('#gold-key').removeClass('gold-key-on')
 
 		// MAP ÖSSZESÍTŐ INFO
 		

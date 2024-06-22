@@ -347,7 +347,7 @@ canvas {
   background-image: url("../img/menu/hud/bg-weapon2_off.png");
 }
 
-weapon2-on {
+.weapon2-on {
   background-image: url("../img/menu/hud/bg-weapon2_on.png") !important;
 }
 

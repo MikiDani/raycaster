@@ -9,7 +9,7 @@
                                                            "effects": ["effect"]
                                                         },
     { "name": "mode",               "inputType": "select", "walls": ["normal", "animated", "door", "secret", "key1", "key2"],
-                                                           "objects": ["normal", "coin1", "coin2", "coin3", "key1", "key2", "message", "mushroom", "energy", "map"],
+                                                           "objects": ["normal", "coin1", "coin2", "coin3", "key1", "key2", "message", "mushroom", "energy", "map", "weapon2", "weapon3", "weapon4"],
                                                            "blocks": ["normal", "door", "secret", "key1", "key2"],
                                                            "creatures": ["normal"],
                                                            "effects": ["direction"] },
