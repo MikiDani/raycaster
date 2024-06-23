@@ -23,7 +23,7 @@ const player = {
 	goldScore: 0,
 	silverScore: 0,
 	copperScore: 0,
-	weapon: 1,
+	weapon: 4,
 	adoptedWeapons: {
 		weapon1: true,
 		weapon2: true,
@@ -87,8 +87,7 @@ function checkMoveSprite(spriteObj, type = null, inputStrafeCheck = null) {
 	let WALL_DISTANCE
 	if (type == 'player') WALL_DISTANCE = inputClass.PLAYER_WALL_DISTANCE
 	if (type == 'creature') WALL_DISTANCE = inputClass.CREATURE_WALL_DISTANCE
-	if (type == 'ammo') WALL_DISTANCE = inputClass.AMMO_WALL_DISTANCE
-	
+		
 	var moveX = true
 	var moveY = true
 	
@@ -215,9 +214,9 @@ function checkMoveSprite(spriteObj, type = null, inputStrafeCheck = null) {
 		}
 	});
 
-	// if (type == 'ammo') {
-	// 	deleteBarrierArray.push(1, 3, 5, 7)
-	// }
+	if (type == 'creature' || type == 'ammo') {
+		deleteBarrierArray.push(1, 3, 5, 7)
+	}
 
 	deleteBarrierArray.forEach((barrier) => {
 		deleteBarier(spriteBarrier, barrier)
@@ -406,19 +405,31 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 					// PICKUP WEAPONS
 					if (sprite.active == true && sprite.mode.includes("weapon")) {
 						
-						console.log('WEAPON2 nél');
+						console.log('WEAPON');
 						
-						let colorizeOption = {}
 						if (sprite.type == 'object' && sprite.mode=='weapon2') {
+							let colorizeOption = {}
 							console.log('PICK UP WEAPON2!')
 							bringPlayer.adoptedWeapons.weapon2 = true
 							bringPlayer.weapon = 2
 							sprite.active = false
 							$('#weapon2').addClass('weapon2-on')
 							colorizeOption = { color: "255, 255, 255", alpha: 0.5, time: 200 }
-							graphicsClass.screenColorizeOptions(colorizeOption);
+							graphicsClass.screenColorizeOptions(colorizeOption)
+							return;
 						}
-						return;
+
+						if (sprite.type == 'object' && sprite.mode=='weapon3') {
+							let colorizeOption = {}
+							console.log('PICK UP WEAPON3!')
+							bringPlayer.adoptedWeapons.weapon3 = true
+							bringPlayer.weapon = 3
+							sprite.active = false
+							$('#weapon3').addClass('weapon3-on')
+							colorizeOption = { color: "255, 255, 255", alpha: 0.5, time: 200 }
+							graphicsClass.screenColorizeOptions(colorizeOption)
+							return;
+						}
 					}
 
 					// PICKUP SCROLLS
@@ -451,6 +462,37 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 	}
 
 	return pCheck;
+}
+
+function moveAmmoAction(ammo) {
+
+	var haveCrash = false
+
+	var moveX = true
+	var moveY = true
+
+	let testX = ammo.x + Math.cos(ammo.angle) * ammo.speed;
+	let testY = ammo.y + Math.sin(ammo.angle) * ammo.speed;
+
+	let testActY = Math.floor(testY / CELL_SIZE)
+	let testActX = Math.floor(testX / CELL_SIZE)
+
+	if(mapDataClass.map[testActY][testActX]) {
+		haveCrash = true
+	} else {
+		// MOVE
+		ammo.x = testX
+		ammo.y = testY
+	}
+
+	return {
+		WALL_DISTANCE: inputClass.AMMO_WALL_DISTANCE,
+		moveX: moveX,
+		moveY: moveY,
+		checkX: testActX,
+		checkY: testActY,
+		haveCrash: haveCrash,
+	}
 }
 
 function moveAction(sprite, check) {
@@ -538,7 +580,7 @@ function moveCreature(creature) {
 
 		// HIT PLAYER
 		if ((playerActX == cCheck.checkX) && (playerActY == cCheck.checkY) && !creature.anim_die_actFrame) {
-			console.log('PLAYER TALÁLAT!!!')
+			// console.log('PLAYER TALÁLAT!!!')
 
 			creature.move = false
 
@@ -646,18 +688,26 @@ function moveCreature(creature) {
 			if (creature.moveType == 'attack') {
 				let distanceX = player.x - creature.x;
 				let distanceY = player.y - creature.y;
+				let distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+
+				if (distance < CELL_SIZE) {
+					// console.log('LETILTOTTAM !!!');	console.log(distance);				
+					cCheck.moveX = false
+					cCheck.moveY = false
+				}
+
 				creature.angle = Math.atan2(distanceY, distanceX);
 
 				if (!cCheck.moveX && !((creature.inY >=32 && creature.inY <=32) && cCheck.moveY)) {
 					cCheck.moveY = false
-				} 
+				}
 				if (!cCheck.moveY && !((creature.inX >=32 && creature.inX <=32) && cCheck.moveX)) {
 					cCheck.moveX = false
 				}
 
 				if (!cCheck.moveY && !cCheck.moveX) {
 					creature.moveType = 'patrol'
-					creature.speed = 3
+					creature.speed = creature.speed - 2
 				}
 			}
 			
@@ -682,7 +732,7 @@ function moveAmmo(ammoSprite) {
 			}, 10)
 		}
 		
-		let ammoCheck = checkMoveSprite(ammoSprite, 'ammo')
+		let ammoCheck = moveAmmoAction(ammoSprite)
 		
 		// CHECK HIT SPRITES
 		let checkSprites = spritesClass.sprites.filter(obj => Math.floor(obj.y / CELL_SIZE) == ammoCheck.checkY && Math.floor(obj.x / CELL_SIZE) == ammoCheck.checkX)
@@ -709,23 +759,13 @@ function moveAmmo(ammoSprite) {
 		});
 
 		// MOVE AMMO
-		var haveCrash = moveAction(ammoSprite, ammoCheck)
 	
 		// CHECK HIT WALL ENEMY
-		if (haveCrash) {				
-			var ammoMapX = Math.floor(ammoSprite.x/CELL_SIZE)
-			var ammoMapY = Math.floor(ammoSprite.y/CELL_SIZE)
-			
-			var wallData = 0			
+		if (ammoCheck.haveCrash) {
+			var ammoMapX = ammoCheck.checkX
+			var ammoMapY = ammoCheck.checkY
 
-			if (haveCrash == 2) wallData = mapDataClass.map[ammoMapY - 1][ammoMapX];
-			else if (haveCrash == 6) wallData = mapDataClass.map[ammoMapY + 1][ammoMapX];
-			else if (haveCrash == 8) wallData = mapDataClass.map[ammoMapY][ammoMapX - 1];
-			else if (haveCrash == 4) wallData = mapDataClass.map[ammoMapY][ammoMapX + 1];
-			else if (haveCrash == 1) wallData = mapDataClass.map[ammoMapY - 1][ammoMapX - 1];
-			else if (haveCrash == 3) wallData = mapDataClass.map[ammoMapY - 1][ammoMapX + 1];
-			else if (haveCrash == 5) wallData = mapDataClass.map[ammoMapY + 1][ammoMapX + 1];
-			else if (haveCrash == 7) wallData = mapDataClass.map[ammoMapY + 1][ammoMapX - 1];
+			var wallData = mapDataClass.map[ammoMapY][ammoMapX]
 
 			if (typeof wallData != 'undefined' && wallData?.type == 'creature') {
 				if (wallData.energy > 0) wallData.energy--
@@ -1009,11 +1049,6 @@ async function gameMenu() {
 		$('#silver-key').removeClass('silver-key-on')
 		$('#gold-key').removeClass('gold-key-on')
 
-		// MAP ÖSSZESÍTŐ INFO
-		
-		// let content = `<div class="text-center"><h3 class='text-center'>Youfind the EXIT!</h3></div>`
-		// graphicsClass.scrollInfoMaker(content, null, true)
-
 		mapDataClass.mapLevel++	
 		if (mapDataClass.maps.length-1 < mapDataClass.mapLevel) mapDataClass.mapLevel = 0
 		menu.menuactive = false
@@ -1061,17 +1096,29 @@ async function nextLevel() {
 	gamePlay.game = null
 	graphicsClass.clrScr()
 	
-	// ide akarom hogy csak akkor menjen tovább a program ha a var nextLevelOk = true
+	let actualLevel = mapDataClass.maps[mapDataClass.mapLevel]
 
-	let content = `<div class="text-center"><h3 class='text-center'>Statisztika</h3></div>`
+	console.log(mapDataClass.map);
+
+	// CHECK ENEMYS
+	var enemyNumber = 0
+	var dieEnemys = 0
+	let checkEnemy = spritesClass.sprites.filter(obj => obj.type == 'creature')
+	checkEnemy.forEach((findEnemy) => {
+		enemyNumber ++		
+		if (findEnemy.anim_die_function) dieEnemys++
+	});
+	
+	//Statisztika
+	let content = `<div class="text-center"><h2 class='text-center text-uppercase mb-3'>${actualLevel}</h2><h3 class='text-center'>Enemys: ${enemyNumber} / ${dieEnemys}</h3></div>`
 	graphicsClass.scrollInfoMaker(content, null, true)
 
-	mapDataClass.nextLevelOk = false;
+	mapDataClass.nextLevelOk = false
 	document.getElementById('scroll-button').addEventListener('click', () => {
-		mapDataClass.nextLevelOk = true;
+		mapDataClass.nextLevelOk = true
 	});
 
-	await waitForNextLevel();
+	await waitForNextLevel()
 
 	inputClass.graphicsClass.makeMenu()
 	inputClass.gameMenu()

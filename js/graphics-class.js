@@ -18,7 +18,6 @@ export default class GaphicsClass {
 		this.mapDataClass = mapDataClass
 		this.poisonModValue = poisonModValue
 
-		this.checkDistance = []
 		this.blockMask = []
 		//----------------------------------------------
 		this.SCREEN_WIDTH = window.innerWidth
@@ -432,48 +431,30 @@ export default class GaphicsClass {
 
 	async scrollInfoMaker(htmlElements, time, useButton) {
 		var GAME_HEIGHT = this.GAME_HEIGHT
-		let imgTopUrl = "./img/menu/info-scroll-top-pix.png";
-		let imgBottomUrl = "./img/menu/info-scroll-bottom-pix.png";
-		let imgBgUrl = "./img/menu/info-scroll-bg-pix.png";
-	
-		function loadImage(url) {
-			return new Promise((success, error) => {
-				let img = new Image();
-				img.onload = () => success();
-				img.onerror = error;
-				img.src = url;
-			});
-		}
 
 		var hideScrollInfoBoxAction = function() { $("#scroll-info-box-content-text").html(''); $("#scroll-info-box").hide(); }
 
-		try {
-			await Promise.all([
-				new Promise(resolve => {
-					if (useButton) htmlElements += `<div class="text-center"><button type="button" id="scroll-button" class="btn">Ok</button></div>`
-					$("#scroll-info-box-content-text").html(htmlElements);
-					if (useButton) {						
-						$("#scroll-info-box-content-text").find('#scroll-button').on('click', hideScrollInfoBoxAction);
-						function handleEnterKeyPress(event) { if (event.key === "Enter") { hideScrollInfoBoxAction(); document.removeEventListener('keydown', handleEnterKeyPress) } }
-						document.addEventListener('keydown', handleEnterKeyPress);
-					}
-					resolve();
-				}),
-				loadImage(imgTopUrl),
-				loadImage(imgBottomUrl),
-				loadImage(imgBgUrl)
-			]);
-
-			let marginTop = Math.floor((GAME_HEIGHT - $("#scroll-info-box").height()) / 2)
-
-			$("#scroll-info-box").css('top', marginTop + 'px')
-			$("#scroll-info-box").show();
-
-		} catch (error) { console.error(error); }
+		if (useButton) htmlElements += `<div class="text-center"><button type="button" id="scroll-button" class="btn">Ok</button></div>`
+		$("#scroll-info-box-content-text").html(htmlElements);
+		if (useButton) {						
+			$("#scroll-info-box-content-text").find('#scroll-button').on('click', hideScrollInfoBoxAction);
+			const handleEnterKeyPress = (event) => {
+				if (event.key === "Enter") {
+					this.mapDataClass.nextLevelOk = true;
+					hideScrollInfoBoxAction();
+					document.removeEventListener('keydown', handleEnterKeyPress);
+				}
+			};
+			document.addEventListener('keydown', handleEnterKeyPress);
+		}
 		
+		let marginTop = Math.floor((GAME_HEIGHT - $("#scroll-info-box").height()) / 2)
+
+		$("#scroll-info-box").css('top', marginTop + 'px')
+		$("#scroll-info-box").show();
+
 		// Hide Info
 		if (!useButton) setTimeout(() => hideScrollInfoBoxAction(), time);
-		
 	}
 
 	amplitudeA(value) {
@@ -883,7 +864,7 @@ export default class GaphicsClass {
 				}
 
 				// DEVELOP HELP DIRECTION BOXS
-				if (true) {
+				if (false) {
 					let colors = ['#ff000077', '#00800077', '#0000ff77', '#ffa50077', '#80800077', '#80008077', '#80338077', '#97979777'];
 					var actColor = 0
 					this.check.directions.forEach(box => {						
@@ -1154,8 +1135,6 @@ export default class GaphicsClass {
 
 					if (blockDistance.wallY != undefined && blockDistance.wallX != undefined) {
 						
-						this.checkDistance.push(blockDistance)	// SEGED
-
 						let rayDistance = ray.distance
 						
 						let distance = (this.player.poison)
@@ -1232,7 +1211,10 @@ export default class GaphicsClass {
 					let wi = isOnTheScreen - Math.floor(brick_number / 2)
 					for(let w=0; w<brick_number; w++) {
 
-						if (typeof this.rays[wi] != 'undefined' && this.rays[wi].distance > sprite.distance && ((sprite.type=='ammo' && sprite.distance >= 10) || sprite.distance >= 30)) { // >= 30
+						if (typeof this.rays[wi] != 'undefined' &&
+							this.rays[wi].distance > sprite.distance &&
+							((sprite.type=='creature' && sprite.distance >= 10) || (sprite.type=='ammo' && sprite.distance >= 10) || sprite.distance >= 30)
+							) { // >= 30
 							
 							for (let h=0; h < brick_number; h++) {
 								let colorX = Math.floor(((w * this.GRID_SIZE) / color_num))

@@ -21,7 +21,8 @@ export default class InputClass {
 		this.gamePlay = gamePlay
 		this.check = check
 		this.mouseMoveSwitsh = false
-		this.messageTime = 1500
+		this.firstSecret = true
+		this.messageTime = 3000
 
 		document.addEventListener('keydown', function(event) {
 			if (event.shiftKey && event.key == 'F5') return;
@@ -206,7 +207,6 @@ export default class InputClass {
 
 				if (mapData) {
 					// type
-					console.log(mapData.mode);
 					// OPEN DOOR	
 
 					if (mapData.mode == 'door') {
@@ -215,9 +215,12 @@ export default class InputClass {
 					}
 
 					if (mapData.mode == 'secret') {
-						let content = `<h3 class='text-center'>Your found a secret!</h3><p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Cupiditate, nostrum.</p>`
-						this.graphicsClass.scrollInfoMaker(content, this.messageTime)
 						mapData.anim_switch = true
+						if (this.firstSecret) {
+							this.firstSecret = false
+							let content = `<h3 class='text-center'>Your found a secret wall!</h3>`
+							this.graphicsClass.scrollInfoMaker(content, this.messageTime)
+						}
 					}
 
 					if (mapData.mode == 'key1') {
@@ -292,8 +295,8 @@ export default class InputClass {
 					this.menuAction(elementId)
 				}
 
-				if (event.key == 'w' || event.key == 'W' || event.key === 'ArrowUp' || event.key === 'Up') this.moveMenuStar(-1);
-				if (event.key == 's' || event.key == 'S' || event.key === 'ArrowDown' || event.key === 'Down') this.moveMenuStar(1);
+				if (event.key == 'w' || event.key == 'W' || event.key == 'ArrowUp' || event.key == 'Up') this.moveMenuStar(-1);
+				if (event.key == 's' || event.key == 'S' || event.key == 'ArrowDown' || event.key == 'Down') this.moveMenuStar(1);
 				
 			} else {
 			// GAME
@@ -326,10 +329,8 @@ export default class InputClass {
 				// ATTACK / SHOT
 				if (event.shiftKey) {					
 					if (this.shotingAction == null) {
-						
 						// GRAPHICS
 						this.player.shoting = true
-												
 						this.shotingAction = setTimeout(()=> {
 							clearTimeout(this.shotingAction)
 							this.shotingAction = null

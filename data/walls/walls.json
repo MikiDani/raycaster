@@ -185,5 +185,22 @@
         "anim_startFrame": 1,
         "anim_actFrame": 1,
         "anim_speed": 80
+    },
+    {
+        "id": 160,
+        "textures": {
+            "cellar": ["wall2-secret", "wall2-secret-a1", "wall2-secret-a2"]
+        },
+        "type": "wall",
+        "mode": "secret",
+        "height": "normal",
+        "active": true,
+        "anim_switch": false,
+        "anim_repeat": false,
+        "anim_repeatCount": 0,
+        "anim_repeatEnd": 18,
+        "anim_startFrame": 1,
+        "anim_actFrame": 1,
+        "anim_speed": 80
     }
 ]

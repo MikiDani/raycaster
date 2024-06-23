@@ -177,11 +177,17 @@ class Editor {
 	buttonOptions() {
 		var clone = this
 
+		$(document).on('click', ".textures-pic-container_blocks > img[class^='list-pic'], .textures-pic-container_walls > img[class^='list-pic'], .textures-pic-container_creatures > img[class^='list-pic'], .textures-pic-container_objects > img[class^='list-pic']", function() {
+			$('.tools-container').animate({
+				scrollTop: $("#textures-selected").offset().top + $('.tools-container').offset().top + $('.tools-container').scrollTop() + 2
+			}, 800);
+		});
+
 		$("#shadow-input").on('input', {leveldata: this.levelData}, function (event) {
 			var leveldata = event.data.leveldata			
-			console.log('regi: ' + leveldata.shadow);
+			// console.log('regi: ' + leveldata.shadow);
 			leveldata.shadow = $(this).val()
-			console.log('új: ' + leveldata.shadow);
+			// console.log('új: ' + leveldata.shadow);
 			$("#shadow-input-value").html($(this).val())
 		});
 
@@ -262,11 +268,13 @@ class Editor {
 				function insertBlockFrame(clone, y, x, angle) {
 					function deleteMap(clone, y,x) {
 						clone.map[y][x] = 0;
-					} 
+					}
+
 					function deleteSprite(clone, y,x) {
 						let findSpriteIndex = clone.levelData.sprites.findIndex(sprite => y == Math.floor(sprite.y) && x == Math.floor(sprite.x))
 						if (findSpriteIndex !== -1) clone.levelData.sprites.splice(findSpriteIndex, 1)
 					}
+
 					function drawTexture(clone, y, x, obj) {
 						let loadingTexture = clone.walls.find(wall => wall.id == obj.id)						
 						let mapBrick = $(".map-container").find(`[id^='map_'][map-y='${y}'][map-x='${x}']`);
@@ -305,6 +313,7 @@ class Editor {
 					// insert wall
 					clone.map[y][x] = insertedData.data;
 				}
+
 				if (insertedData && (insertedData.insertType == 'object' || insertedData.insertType == 'block' || insertedData.insertType == 'creature' || insertedData.insertType == 'effect')) {
 					if (insertedData.insertType == 'block') insertBlockFrame(clone, Math.floor(insertedData.data.y), Math.floor(insertedData.data.x), clone.selectedElementData.angle)
 					delete insertedData.insertType
@@ -372,8 +381,7 @@ class Editor {
 							let findSpriteIndex = clone.levelData.sprites.findIndex(sprite => y == Math.floor(sprite.y) && x == Math.floor(sprite.x))
 							if (findSpriteIndex !== -1) clone.levelData.sprites.splice(findSpriteIndex, 1)
 
-							console.log('ezt írja bele:');
-							console.log(dataInMap);
+							console.log('ezt írja bele:'); console.log(dataInMap);
 
 							for(const [dir, filename] of Object.entries(clone.selectedElementData.textures)) {
 								$(`#map_${counter}`).css('background-image', `url(./img/${clone.objectName}/${dir}/${filename[0]}.png)`);
@@ -397,8 +405,7 @@ class Editor {
 			event.data.levelData['map'] = clone.map
 			if (clone.map.length != 0) {
 
-				console.log('Ezzt Küldi:')
-				console.log(event.data.levelData);
+				console.log('Ezzt Küldi:'); console.log(event.data.levelData);
 				
 				let filename = $("input[name='filename']").val()
 
@@ -434,7 +441,6 @@ class Editor {
 		$("#load-button").on('click', async function () {
 
 			await clone.clearMap(clone)
-
 			clone.levelData = [];
 						
 			let filename = $("input[name='filename']").val()
@@ -499,7 +505,6 @@ class Editor {
 	async clickMapnameLoad(clone, filename) {
 
 		await clone.clearMap(clone)
-
 		clone.levelData = [];
 
 		if (filename.length > 0) {
@@ -517,11 +522,10 @@ class Editor {
 		} else clone.drawMessage('No have filename!', 'danger')
 	}
 
-
 	async loadMap(mapfileName) {
 		async function fetchMapData(mapfileName) {
 			try {
-				const mapDataWait = await fetch(`./data/maps/${mapfileName}.json`);
+				const mapDataWait = await fetch(`./data/maps/${mapfileName}.JSON`);
 				
 				if (!mapDataWait.ok) {
 					throw new Error(`HTTP error! status: ${mapDataWait.status}`);
@@ -535,8 +539,7 @@ class Editor {
 		}
 
 		var clone = this
-
-		var mapData = null;
+		var mapData = null
 
 		fetchMapData(mapfileName)
 		.then(mapDataLoaded => {
@@ -581,8 +584,6 @@ class Editor {
 				}
 			});
 		});
-
-
 
 		// LOADING SUCCESS
 		this.levelData.player.y = mapData.player.y
@@ -706,6 +707,8 @@ class Editor {
 		function elementCreator(objectData, fileKey, fileValue) {
 			let returnElement;
 			if (objectData.inputType == 'null') returnElement = ``;
+			
+			let warningColor = (fileKey == 'angle' || fileKey == 'material') ? 'text-warning' : '';
 
 			if (objectData.inputType == 'hidden') {
 				returnElement = `
@@ -754,7 +757,7 @@ class Editor {
 				let checkBg = (fileKey == 'type') ? 'bg-disabled' : '';
 
 				returnElement = `
-				<div class="data-title col-6 p-0 m-0"><span class="align-middle">${fileKey}:</span></div>
+				<div class="data-title col-6 p-0 m-0"><span class="align-middle ${warningColor}">${fileKey}:</span></div>
 				<div class="data-data col-6 p-0 m-0">
 					<select id="select_${fileKey}" name="${fileKey}" input-type="${objectData.inputType}" class="form-control form-control-sm align-middle ${checkBg}" ${checkDisabled}>`;
 					for (const optionValue of objectData[elementName]) {
@@ -812,9 +815,9 @@ class Editor {
 		// Action function
 		async function loadAction(name) {
 			let connectFile = await fetch(`./data/${name}/${name}.JSON`)
-			let fileData = await connectFile.json()
+			let fileData = await connectFile.json()		
 
-			function checkPicType(fileName) {
+			function checkPicType(fileName) {				
 				if (fileName.includes('wall') || fileName.includes('door')) return '-wall';
 				if (fileName.includes('sky')) return '-sky';
 				if (fileName.includes('ceiling')) return '-ceiling';
@@ -822,6 +825,8 @@ class Editor {
 				if (fileName.includes('block')) return '-block';
 				if (fileName.includes('object')) return '-object';
 				if (fileName.includes('creature')) return '-creature';
+
+				return '-' + fileName;
 			}
 
 			let elements = `
