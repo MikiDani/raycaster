@@ -837,7 +837,7 @@ export default class GaphicsClass {
 
 						// CREATURES
 						let checkCreature = this.spritesClass.checkSpriteData(actY + y, actX + x, 'type', 'creature')
-						let checkCreatureValue = (checkCreature && checkCreature.active) ? true : false;
+						let checkCreatureValue = (checkCreature && !checkCreature.anim_die_function) ? true : false;
 						
 						if (checkCreatureValue && (x != mapSizeX-1 && x != -mapSizeX) && (y != mapSizeY-1 && y != -mapSizeY)) {							
 							let creature = {

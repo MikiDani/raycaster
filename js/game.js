@@ -408,25 +408,31 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 						console.log('WEAPON');
 						
 						if (sprite.type == 'object' && sprite.mode=='weapon2') {
-							let colorizeOption = {}
-							console.log('PICK UP WEAPON2!')
 							bringPlayer.adoptedWeapons.weapon2 = true
 							bringPlayer.weapon = 2
 							sprite.active = false
 							$('#weapon2').addClass('weapon2-on')
-							colorizeOption = { color: "255, 255, 255", alpha: 0.5, time: 200 }
+							let colorizeOption = {}; colorizeOption = { color: "255, 255, 255", alpha: 0.5, time: 200 }
 							graphicsClass.screenColorizeOptions(colorizeOption)
 							return;
 						}
 
 						if (sprite.type == 'object' && sprite.mode=='weapon3') {
-							let colorizeOption = {}
-							console.log('PICK UP WEAPON3!')
 							bringPlayer.adoptedWeapons.weapon3 = true
 							bringPlayer.weapon = 3
 							sprite.active = false
 							$('#weapon3').addClass('weapon3-on')
-							colorizeOption = { color: "255, 255, 255", alpha: 0.5, time: 200 }
+							let colorizeOption = {}; colorizeOption = { color: "255, 255, 255", alpha: 0.5, time: 200 }
+							graphicsClass.screenColorizeOptions(colorizeOption)
+							return;
+						}
+
+						if (sprite.type == 'object' && sprite.mode=='weapon4') {
+							bringPlayer.adoptedWeapons.weapon4 = true
+							bringPlayer.weapon = 4
+							sprite.active = false
+							$('#weapon4').addClass('weapon4-on')
+							let colorizeOption = {}; colorizeOption = { color: "255, 255, 255", alpha: 0.5, time: 200 }
 							graphicsClass.screenColorizeOptions(colorizeOption)
 							return;
 						}
@@ -1097,8 +1103,6 @@ async function nextLevel() {
 	graphicsClass.clrScr()
 	
 	let actualLevel = mapDataClass.maps[mapDataClass.mapLevel]
-
-	console.log(mapDataClass.map);
 
 	// CHECK ENEMYS
 	var enemyNumber = 0

@@ -8,7 +8,7 @@ export default class MapDataClass {
     constructor({texturesClass: texturesClass}) {
         this.texturesClass = texturesClass
         this.maps = ['level1', 'level2', 'level3', 'level4', 'level5']
-        this.mapLevel = 4
+        this.mapLevel = 0
         //--------------------------------
         this.map = []
         this.walls = []; this.walls[0] = null;
