@@ -151,6 +151,64 @@ canvas {
 // HUD
 
 // left
+
+#speed-container {
+	background-image: url("../img/menu/hud/speed-text.png");
+	background-repeat: no-repeat;
+	background-position: left;
+	width: 40px;
+	height: 64px;
+}
+
+#val4 {
+	position: absolute;
+	background-image: url("../img/menu/hud/speed-g-4-f.png");
+	background-size: cover;
+	width: 9px;
+	height: 17px;
+	right: 0px;
+	top: 0px;
+}
+.val4-on {
+	background-image: url("../img/menu/hud/speed-g-4.png") !important;
+}
+#val3 {
+	position: absolute;
+	background-image: url("../img/menu/hud/speed-g-3-f.png");
+	background-size: cover;
+	width: 9px;
+	height: 16px;
+	right: 0px;
+	top: 17px;
+}
+.val3-on {
+	background-image: url("../img/menu/hud/speed-g-3.png") !important;
+}
+#val2 {
+	position: absolute;
+	background-image: url("../img/menu/hud/speed-g-2-f.png");
+	background-size: cover;
+	width: 9px;
+	height: 15px;
+	right: 0px;
+	top: 33px;
+}
+.val2-on {
+	background-image: url("../img/menu/hud/speed-g-2.png") !important;
+}
+#val1 {
+	position: absolute;
+	background-image: url("../img/menu/hud/speed-g-1-f.png");
+	background-size: cover;
+	width: 9px;
+	height: 16px;
+	right: 0px;
+	top: 48px;
+}
+.val1-on {
+	background-image: url("../img/menu/hud/speed-g-1.png") !important;
+}
+
 #healt-percentage {
 	display: absolute;
 	width: 180px;
@@ -366,6 +424,9 @@ canvas {
 	right: 0px;
 	background-image: url("../img/menu/hud/bg-weapon3_off.png");
 }
+.weapon3-on {
+	background-image: url("../img/menu/hud/bg-weapon3_on.png") !important;
+}
 
 #weapon4 {
 	position: absolute;
@@ -376,3 +437,7 @@ canvas {
 	right: 46px;
 	background-image: url("../img/menu/hud/bg-weapon4_off.png");
 }
+.weapon4-on {
+	background-image: url("../img/menu/hud/bg-weapon4_on.png") !important;
+}
+

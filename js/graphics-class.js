@@ -171,6 +171,7 @@ export default class GaphicsClass {
 		health.setAttribute('id', 'health-container')
 		health.style.position = 'relative'
 		health.style.display = 'block'
+		health.style.marginLeft = '30px'
 		health.style.float = 'left'
 		health.style.width = '250px'
 		health.style.height = '64px'
@@ -180,7 +181,29 @@ export default class GaphicsClass {
 		let healtPercentage = document.createElement("div")
 		healtPercentage.setAttribute('id', 'healt-percentage')
 		healtPercentage.innerHTML='100%'
-		health.append(healtPercentage);
+		health.append(healtPercentage)
+
+		let speedContainer = document.createElement("div")
+		speedContainer.setAttribute('id', 'speed-container')
+		speedContainer.style.position = 'absolute'
+		speedContainer.style.left = '-40px'
+		speedContainer.style.width = '40px'
+		speedContainer.style.height = '64px'
+		speedContainer.style.top = '0'
+		health.append(speedContainer)
+
+		let val4 = document.createElement("div")
+		val4.setAttribute('id', 'val4')
+		speedContainer.append(val4)
+		let val3 = document.createElement("div")
+		val3.setAttribute('id', 'val3')
+		speedContainer.append(val3)
+		let val2 = document.createElement("div")
+		val2.setAttribute('id', 'val2')
+		speedContainer.append(val2)
+		let val1 = document.createElement("div")
+		val1.setAttribute('id', 'val1')
+		speedContainer.append(val1)
 		
 		let coinGold = document.createElement("div")
 		coinGold.setAttribute('id', 'coin-gold')

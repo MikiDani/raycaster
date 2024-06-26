@@ -5,7 +5,6 @@ export default class InputClass {
 		this.graphicsClass = graphicsClass
 		this.movePlayer = movePlayer
 		//--------------------------------------------------------------------
-		this.MOVE_SPEED = 7	// 7 = start +4 = 11 (7-11)
 		this.MOVE_ANGLE = 3
 		this.MOVE_ANGLE_SLOW = 1
 		this.PLAYER_WALL_DISTANCE = Math.floor((graphicsClass.CELL_SIZE / 100) * 25)
@@ -440,7 +439,7 @@ export default class InputClass {
 	}
 
 	handleKeyPress = () => {
-		let moveSpeedHalf = (this.MOVE_SPEED / 2)
+		let moveSpeedHalf = (this.player.speedModes.speedLevels[this.player.speedModes.actSpeedLevel] / 2)
 		if (this.keyPressed['q'] || this.keyPressed['Q'] || this.keyPressed['Delete']) {
 			let playerClone = {...this.player}
 			playerClone.x = playerClone.x + (Math.cos(playerClone.angle - this.graphicsClass.toRadians(90)) * moveSpeedHalf)
@@ -461,9 +460,16 @@ export default class InputClass {
 		if (this.keyPressed['d'] || this.keyPressed['D']) { this.player.move = true; this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE)	}
 		if (this.keyPressed['r'] || this.keyPressed['R']) { this.player.move = true; this.player.angle += -this.graphicsClass.toRadians(this.MOVE_ANGLE_SLOW); }
 		if (this.keyPressed['t'] || this.keyPressed['T']) { this.player.move = true; this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE_SLOW); }
-		if (this.keyPressed['w'] || this.keyPressed['W']) { this.player.move = true; this.player.speed = this.MOVE_SPEED }
-		if (this.keyPressed['s'] || this.keyPressed['S']) { this.player.move = true; this.player.speed = -this.MOVE_SPEED }
-		if (this.keyPressed['o'] || this.keyPressed['O']) { this.MOVE_SPEED = this.MOVE_SPEED + 1 }
+		if (this.keyPressed['w'] || this.keyPressed['W']) { this.player.move = true; this.player.speed = this.player.speedModes.speedLevels[this.player.speedModes.actSpeedLevel] }
+		if (this.keyPressed['s'] || this.keyPressed['S']) { this.player.move = true; this.player.speed = -this.player.speedModes.speedLevels[this.player.speedModes.actSpeedLevel] }
+
+		if (this.keyPressed['o'] || this.keyPressed['O']) {
+			if (this.player.speedModes.speedLevels.length - 1 > this.player.speedModes.actSpeedLevel) {
+				this.player.speedModes.actSpeedLevel++;
+				$(`#val${this.player.speedModes.actSpeedLevel}`).addClass(`val${this.player.speedModes.actSpeedLevel}-on`)
+			}
+		}
+
 		if (this.keyPressed['p'] || this.keyPressed['P']) {
 			if (this.player.poison == false) {
 				this.player.poison = true;
@@ -472,8 +478,9 @@ export default class InputClass {
 				this.graphicsClass.FOV = this.graphicsClass.toRadians(60)
 			}
 		}
-		if (this.keyPressed['ArrowUp']) { this.player.move = true; this.player.speed = this.MOVE_SPEED }
-		if (this.keyPressed['ArrowDown']) { this.player.move = true; this.player.speed = -this.MOVE_SPEED }
+
+		if (this.keyPressed['ArrowUp']) { this.player.move = true; this.player.speed = this.player.speedModes.speedLevels[this.player.speedModes.actSpeedLevel] }
+		if (this.keyPressed['ArrowDown']) { this.player.move = true; this.player.speed = -this.player.speedModes.speedLevels[this.player.speedModes.actSpeedLevel] }
 		if (this.keyPressed['ArrowLeft']) { this.player.move = true; this.player.angle += -this.graphicsClass.toRadians(this.MOVE_ANGLE); }
 		if (this.keyPressed['ArrowRight']) { this.player.move = true; this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE); }
 
@@ -528,5 +535,10 @@ export default class InputClass {
 		$('#graphicsratio-seletc').off('change')
 
 		$('#infopanel-select').off('change')
+	}
+
+	playerSpeedUp() {
+		this.player.speedModes.actSpeedLevel
+		this.player.speedModes.speedLevels[this.player.speedModes.actSpeedLevel]
 	}
 }

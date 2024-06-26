@@ -9,7 +9,7 @@ import MapDataClass from './mapdata-class.js'
 import SpritesClass from './sprites-class.js'
 
 const CLOCKSIGNAL = 40
-const CELL_SIZE = 64
+const CELL_SIZE = 64		// 64 !!
 
 const player = {
 	x: CELL_SIZE * 1.5,
@@ -20,15 +20,19 @@ const player = {
 	move: true,
 	angle: 0,
 	speed: 0,
+	speedModes: {
+		actSpeedLevel: 0,
+		speedLevels: [7, 8, 9, 10, 11],
+	},
 	goldScore: 0,
 	silverScore: 0,
 	copperScore: 0,
 	weapon: 4,
 	adoptedWeapons: {
 		weapon1: true,
-		weapon2: true,
-		weapon3: true,
-		weapon4: true,
+		weapon2: true, // !!
+		weapon3: true, // !!
+		weapon4: true, // !!
 	},
 	weaponsDamage: [0, 1, 2, 3, 4],
 	shoting: false,
@@ -383,7 +387,7 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 					if (sprite.active == true && sprite.mode.includes("key")) {
 						
 						let colorizeOption = {}
-						if (!player.key1 && sprite.type == 'object' && sprite.mode=='key1') {
+						if (sprite.type == 'object' && sprite.mode=='key1') {
 							console.log('PICK UP cellar KEY SILVER')
 							bringPlayer.key1 = true
 							sprite.active = false
@@ -391,7 +395,7 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 							colorizeOption = { color: "255, 255, 255", alpha: 0.5, time: 200 }
 							graphicsClass.screenColorizeOptions(colorizeOption);
 						}
-						if (!player.key2 && sprite.type == 'object' && sprite.mode=='key2') {
+						if (sprite.type == 'object' && sprite.mode=='key2') {
 							console.log('PICK UP cellar GOLD KEY')
 							bringPlayer.key2 = true
 							sprite.active = false
@@ -418,8 +422,8 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 						}
 
 						if (sprite.type == 'object' && sprite.mode=='weapon3') {
+							if (!bringPlayer.adoptedWeapons.weapon3) bringPlayer.weapon = 3
 							bringPlayer.adoptedWeapons.weapon3 = true
-							bringPlayer.weapon = 3
 							sprite.active = false
 							$('#weapon3').addClass('weapon3-on')
 							let colorizeOption = {}; colorizeOption = { color: "255, 255, 255", alpha: 0.5, time: 200 }

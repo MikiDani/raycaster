@@ -185,17 +185,6 @@
 	{
 		"id": 1080,
 		"textures": {
-			"weapons": ["weapon1-picup"]
-		},
-		"active": true,
-		"type": "object",
-		"mode": "weapon1",
-		"material": "ghost",
-		"z": 0
-	},
-	{
-		"id": 1090,
-		"textures": {
 			"weapons": ["weapon2-picup"]
 		},
 		"active": true,
@@ -205,7 +194,7 @@
 		"z": 0
 	},
 	{
-		"id": 1100,
+		"id": 1090,
 		"textures": {
 			"weapons": ["weapon3-picup"]
 		},
@@ -216,7 +205,7 @@
 		"z": 0
 	},
 	{
-		"id": 1110,
+		"id": 1100,
 		"textures": {
 			"weapons": ["weapon4-picup"]
 		},
