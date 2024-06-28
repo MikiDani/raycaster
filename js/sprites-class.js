@@ -19,14 +19,14 @@ export default class SpritesClass {
     }
 
     async loadObjectDataTypes() {
-        const loadData = await fetch("./data/objectdatatypes.JSON");
+        const loadData = await fetch("./data/objectdatatypes.JSON")
         this.objectDataTypes = await loadData.json()
     }
 
     createSprite(spriteData, dirConstruction, thisArray) {
         let spriteArray = [];
         
-        spriteArray.dirConstruction = dirConstruction;
+        spriteArray.dirConstruction = dirConstruction
                 
         for (let key in spriteData) {
             const isset = this.objectDataTypes.some(item => item.name == key);

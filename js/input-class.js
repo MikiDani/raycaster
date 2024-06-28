@@ -4,13 +4,13 @@ export default class InputClass {
 		this.spritesClass = spritesClass
 		this.graphicsClass = graphicsClass
 		this.movePlayer = movePlayer
-		//--------------------------------------------------------------------
+		//-----------------------------------------------------------------------------
 		this.MOVE_ANGLE = 3
 		this.MOVE_ANGLE_SLOW = 1
 		this.PLAYER_WALL_DISTANCE = Math.floor((graphicsClass.CELL_SIZE / 100) * 25)
 		this.CREATURE_WALL_DISTANCE = Math.floor((graphicsClass.CELL_SIZE / 100) * 45)
 		this.AMMO_WALL_DISTANCE = Math.floor((graphicsClass.CELL_SIZE / 100) * 20)
-		//--------------------------------------------------------------------
+		//-----------------------------------------------------------------------------
 		this.menu = menu
 		this.gameMenu = gameMenu
 		this.player = player
@@ -311,7 +311,7 @@ export default class InputClass {
 				if (event.key == 'i') this.menu.infoSwitch = !this.menu.infoSwitch;
 				if (event.key == 'g') this.menu.shadowsSwitch = !this.menu.shadowsSwitch;
 				if (event.key == 'h') this.menu.spriteShadowsSwitch = !this.menu.spriteShadowsSwitch;
-				if (event.key == 'm') {
+				if (event.key == 'm' || event.key == 'M') {
 					if(this.player.map) {
 						this.menu.mapSwitch = !this.menu.mapSwitch;
 					} else {
@@ -440,7 +440,7 @@ export default class InputClass {
 
 	handleKeyPress = () => {
 		let moveSpeedHalf = (this.player.speedModes.speedLevels[this.player.speedModes.actSpeedLevel] / 2)
-		if (this.keyPressed['q'] || this.keyPressed['Q'] || this.keyPressed['Delete']) {
+		if (this.keyPressed['í'] || this.keyPressed['Í'] || this.keyPressed['|'] || this.keyPressed['\\'] || this.keyPressed['Delete']) {
 			let playerClone = {...this.player}
 			playerClone.x = playerClone.x + (Math.cos(playerClone.angle - this.graphicsClass.toRadians(90)) * moveSpeedHalf)
 			playerClone.y = playerClone.y + (Math.sin(playerClone.angle - this.graphicsClass.toRadians(90)) * moveSpeedHalf)
@@ -448,7 +448,7 @@ export default class InputClass {
 			if (checkMove.moveX) this.player.x = this.player.x + (Math.cos(this.player.angle - this.graphicsClass.toRadians(90)) * moveSpeedHalf)
 			if (checkMove.moveY) this.player.y = this.player.y + (Math.sin(this.player.angle - this.graphicsClass.toRadians(90)) * moveSpeedHalf)
 		}
-		if (this.keyPressed['e'] || this.keyPressed['E'] || this.keyPressed['PageDown']) {
+		if (this.keyPressed['c'] || this.keyPressed['C'] || this.keyPressed['PageDown']) {
 			let playerClone = {...this.player}
 			playerClone.x = playerClone.x + (Math.cos(playerClone.angle + this.graphicsClass.toRadians(90)) * moveSpeedHalf)
 			playerClone.y = playerClone.y + (Math.sin(playerClone.angle + this.graphicsClass.toRadians(90)) * moveSpeedHalf)
@@ -458,8 +458,8 @@ export default class InputClass {
 		}
 		if (this.keyPressed['a'] || this.keyPressed['A']) { this.player.move = true; this.player.angle += -this.graphicsClass.toRadians(this.MOVE_ANGLE) }
 		if (this.keyPressed['d'] || this.keyPressed['D']) { this.player.move = true; this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE)	}
-		if (this.keyPressed['r'] || this.keyPressed['R']) { this.player.move = true; this.player.angle += -this.graphicsClass.toRadians(this.MOVE_ANGLE_SLOW); }
-		if (this.keyPressed['t'] || this.keyPressed['T']) { this.player.move = true; this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE_SLOW); }
+		if (this.keyPressed['q'] || this.keyPressed['Q']) { this.player.move = true; this.player.angle += -this.graphicsClass.toRadians(this.MOVE_ANGLE_SLOW); }
+		if (this.keyPressed['e'] || this.keyPressed['E']) { this.player.move = true; this.player.angle += this.graphicsClass.toRadians(this.MOVE_ANGLE_SLOW); }
 		if (this.keyPressed['w'] || this.keyPressed['W']) { this.player.move = true; this.player.speed = this.player.speedModes.speedLevels[this.player.speedModes.actSpeedLevel] }
 		if (this.keyPressed['s'] || this.keyPressed['S']) { this.player.move = true; this.player.speed = -this.player.speedModes.speedLevels[this.player.speedModes.actSpeedLevel] }
 

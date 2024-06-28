@@ -186,8 +186,8 @@ export default class GaphicsClass {
 		let speedContainer = document.createElement("div")
 		speedContainer.setAttribute('id', 'speed-container')
 		speedContainer.style.position = 'absolute'
-		speedContainer.style.left = '-40px'
-		speedContainer.style.width = '40px'
+		speedContainer.style.left = '-30px'
+		speedContainer.style.width = '30px'
 		speedContainer.style.height = '64px'
 		speedContainer.style.top = '0'
 		health.append(speedContainer)
