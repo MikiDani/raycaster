@@ -1,5 +1,6 @@
 export default class InputClass {
-	constructor ({mapDataClass: mapDataClass, spritesClass: spritesClass, graphicsClass: graphicsClass, movePlayer: movePlayer, menu: menu, gameMenu: gameMenu, player: player, keyPressed: keyPressed, gamePlay: gamePlay, check: check}) {
+	constructor ({soundClass: soundClass, mapDataClass: mapDataClass, spritesClass: spritesClass, graphicsClass: graphicsClass, movePlayer: movePlayer, menu: menu, gameMenu: gameMenu, player: player, keyPressed: keyPressed, gamePlay: gamePlay, check: check}) {
+		this.soundClass = soundClass
 		this.mapDataClass = mapDataClass
 		this.spritesClass = spritesClass
 		this.graphicsClass = graphicsClass
@@ -69,8 +70,6 @@ export default class InputClass {
 		}
 	}
 
-	
-	
 	menuGameJumpAction() {
 		this.menu.menuactive = !this.menu.menuactive;
 		if (this.menu.menuactive) {
@@ -209,12 +208,13 @@ export default class InputClass {
 					// OPEN DOOR	
 
 					if (mapData.mode == 'door') {
-						console.log('DOOR ANIM SWITCH');
+						console.log('DOOR ANIM SWITCH')
 						mapData.anim_switch = true
 					}
 
 					if (mapData.mode == 'secret') {
-						mapData.anim_switch = true
+						mapData.anim_switch = true			
+						if (mapData.sound) this.soundClass.playSoundEvent(mapData.sound, 1)
 						if (this.firstSecret) {
 							this.firstSecret = false
 							let content = `<h3 class='text-center'>Your found a secret wall!</h3>`
@@ -223,16 +223,22 @@ export default class InputClass {
 					}
 
 					if (mapData.mode == 'key1') {
-						if (this.player.key1) mapData.anim_switch = true;
-						else {
+						if (this.player.key1) {
+							if (mapData.sound) this.soundClass.playSoundEvent(mapData.sound, 1)
+							mapData.anim_switch = true
+						} else {
+							if (mapData.sound) this.soundClass.playSoundEvent('wrong1', 1)
 							let content = `<div class="text-center"><h3 class='text-center'>You need the silver key to open this wall!</h3><div class="info-key1-container mx-auto"></div></div>`
 							this.graphicsClass.scrollInfoMaker(content, this.messageTime)
 						}
 					}
 
 					if (mapData.mode == 'key2') {
-						if (this.player.key2) mapData.anim_switch = true;
-						else {
+						if (this.player.key2) {
+							if (mapData.sound) this.soundClass.playSoundEvent(mapData.sound, 1)
+							mapData.anim_switch = true
+						} else {
+							if (mapData.sound) this.soundClass.playSoundEvent('wrong1', 1)
 							let content = `<div class="text-center"><h3 class='text-center'>You need the gold key to open this wall!</h3><div class="info-key2-container mx-auto"></div></div>`
 							this.graphicsClass.scrollInfoMaker(content, this.messageTime)
 						}
@@ -248,18 +254,29 @@ export default class InputClass {
 
 				if (checkingBlock) {
 					if (checkingBlock.mode == 'key1' && (!this.player.key1)) {
+						this.soundClass.playSoundEvent('wrong1', 1)
 						let content = `<div class="text-center"><h3 class='text-center'>You need the silver key to open this door!</h3><div class="info-key1-container mx-auto"></div></div>`
-							this.graphicsClass.scrollInfoMaker(content, this.messageTime)
+						this.graphicsClass.scrollInfoMaker(content, this.messageTime)
 						return;
+					} else {
+						if (checkingBlock.sound) this.soundClass.playSoundEvent(checkingBlock.sound, 1)
 					}
 
 					if (checkingBlock.mode == 'key2' && (!this.player.key2)) { 
+						this.soundClass.playSoundEvent('wrong1', 1)
 						let content = `<div class="text-center"><h3 class='text-center'>You need the gold key to open this door!</h3><div class="info-key2-container mx-auto"></div></div>`
 						this.graphicsClass.scrollInfoMaker(content, this.messageTime)
 						return;
+					} else {
+						if (checkingBlock.sound) this.soundClass.playSoundEvent(checkingBlock.sound, 1)
 					}
 
 					console.log('START DOOR OPENING');
+					
+					if (checkingBlock.sound) {
+						this.soundClass.playSoundEvent(checkingBlock.sound, 1)
+					}
+
 					checkingBlock.open_switch = true
 				}
 			}

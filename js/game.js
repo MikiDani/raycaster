@@ -2,6 +2,7 @@
 // 						DANI RAYENGINE
 // -------------------------------------------------------
 
+import SoundClass from './sound-class.js'
 import GaphicsClass from './graphics-class.js'
 import InputsClass from './input-class.js'
 import TexturesClass from './textures-class.js'
@@ -356,6 +357,8 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 						sprite.active = false
 						bringPlayer.map = true
 
+						if (sprite.sound) soundClass.playSoundEvent(sprite.sound, 1)
+
 						let colorizeOption = { color: "255, 240, 180", alpha: 0.5, time: 200 }
 						graphicsClass.screenColorizeOptions(colorizeOption)
 
@@ -372,6 +375,8 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 							sprite.active = false
 							bringPlayer.energy += sprite.value
 							if (bringPlayer.energy>100) bringPlayer.energy = 100
+
+							if (sprite.sound) soundClass.playSoundEvent(sprite.sound, 1)
 
 							$("#healt-percentage").text(bringPlayer.energy + '%');
 							$("#healt-percentage").css('color', 'green');
@@ -391,6 +396,7 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 							console.log('PICK UP cellar KEY SILVER')
 							bringPlayer.key1 = true
 							sprite.active = false
+							if (sprite.sound) soundClass.playSoundEvent(sprite.sound, 1)
 							$('#silver-key').addClass('silver-key-on')
 							colorizeOption = { color: "255, 255, 255", alpha: 0.5, time: 200 }
 							graphicsClass.screenColorizeOptions(colorizeOption);
@@ -399,6 +405,7 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 							console.log('PICK UP cellar GOLD KEY')
 							bringPlayer.key2 = true
 							sprite.active = false
+							if (sprite.sound) soundClass.playSoundEvent(sprite.sound, 1)
 							$('#gold-key').addClass('gold-key-on')
 							colorizeOption = { color: "255, 180, 50", alpha: 0.5, time: 200 }
 							graphicsClass.screenColorizeOptions(colorizeOption);
@@ -445,6 +452,7 @@ function movePlayer(bringPlayer, inputStrafeCheck) {
 					// PICKUP SCROLLS
 					if (sprite.active == true && sprite.mode == 'message') {
 						sprite.active = false
+						if (sprite.sound) soundClass.playSoundEvent(sprite.sound, 1)
 						let content = `<div class="text-center"><h3 class='text-center'>${sprite.message}</h3></div>`
 						let useButton = (sprite.time == 0) ? true : false;
 						graphicsClass.scrollInfoMaker(content, sprite.time, useButton)
@@ -1043,6 +1051,30 @@ async function loadindData() {
 }
 
 async function gameMenu() {
+
+	// LOAD SOUND	
+	if (!soundClass.soundsLoaded) {
+
+		document.getElementById('canvas-container').style.display='none'
+		document.getElementById('menu-bg').style.display='none'
+		document.getElementById('loading').style.display='block'
+		
+		await soundClass.loadSounds()
+
+		let element = `<button id="sound-button" data-sound="door1" data-volume="0.5" style="display:none;"></button>`;
+        $("body").append(element);
+
+		$('#sound-button').on('click', () => {
+			let fileName = $("#sound-button").attr('data-sound')
+			let volume = $("#sound-button").attr('data-volume')
+
+			console.log(fileName);
+			console.log(volume);
+						
+			soundClass.playSound(fileName, volume)
+		});
+	}
+
 	if (gamePlay.nextLevel) {
 		clearInterval(gamePlay.game)
 		gamePlay = {
@@ -1098,8 +1130,6 @@ async function gameMenu() {
 	}
 	return;
 }
-
-var szamol = 0;
 
 async function nextLevel() {
 	clearInterval(gamePlay.game)
@@ -1164,21 +1194,18 @@ async function gameLoop() {
 	if (menu.mapSwitch) graphicsClass.renderMinimap()
 	if (menu.infoSwitch) graphicsClass.infoPanel()
 	if (menu.clearGameSwitch) clearInterval(gamePlay.game)
-
-	// szamol++;
-	// if (szamol == 1) clearInterval(gamePlay.game)
-
 	if (player.poison) graphicsClass.poison()
 }
 
 //-------------------
 //	  GAME START	|
 //-------------------
+const soundClass 	= new SoundClass ()
 const texturesClass = new TexturesClass ()
-const mapDataClass 	= new MapDataClass  ({texturesClass: texturesClass})
-const spritesClass 	= new SpritesClass  ({CELL_SIZE: CELL_SIZE, player: player, texturesClass: texturesClass, mapDataClass: mapDataClass})
-const graphicsClass = new GaphicsClass  ({mapDataClass: mapDataClass, spritesClass: spritesClass, texturesClass: texturesClass, CELL_SIZE: CELL_SIZE, player: player, menu: menu, gamePlay: gamePlay, check: check})
-const inputClass 	= new InputsClass   ({mapDataClass: mapDataClass, spritesClass: spritesClass, graphicsClass: graphicsClass, movePlayer: movePlayer, menu: menu, gameMenu: gameMenu, player: player, keyPressed: keyPressed, gamePlay: gamePlay, check: check})
+const mapDataClass 	= new MapDataClass  ({soundClass: soundClass, texturesClass: texturesClass})
+const spritesClass 	= new SpritesClass  ({CELL_SIZE: CELL_SIZE, player: player, soundClass: soundClass, texturesClass: texturesClass, mapDataClass: mapDataClass})
+const graphicsClass = new GaphicsClass  ({soundClass: soundClass, mapDataClass: mapDataClass, spritesClass: spritesClass, texturesClass: texturesClass, CELL_SIZE: CELL_SIZE, player: player, menu: menu, gamePlay: gamePlay, check: check})
+const inputClass 	= new InputsClass   ({soundClass: soundClass, mapDataClass: mapDataClass, spritesClass: spritesClass, graphicsClass: graphicsClass, movePlayer: movePlayer, menu: menu, gameMenu: gameMenu, player: player, keyPressed: keyPressed, gamePlay: gamePlay, check: check})
 
 window.onload = async () => {
 	gameMenu()

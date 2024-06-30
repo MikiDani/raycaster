@@ -57,5 +57,6 @@
 
     { "name": "open_switch",        "inputType": "boolean" },
     { "name": "open_function",      "inputType": "null" },
-    { "name": "open_positionValue", "inputType": "number" }
+    { "name": "open_positionValue", "inputType": "number" },
+    { "name": "sound",              "inputType": "hidden" }
 ]

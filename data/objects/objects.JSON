@@ -88,7 +88,8 @@
 		"type": "object",
 		"mode": "key1",
 		"material": "ghost",
-		"z": 0
+		"z": 0,
+		"sound": "get-key"
 	},
 	{
 		"id": 1040,
@@ -99,7 +100,8 @@
 		"type": "object",
 		"mode": "key2",
 		"material": "ghost",
-		"z": 0
+		"z": 0,
+		"sound": "get-key"
 	},
 	{
 		"id": 1045,
@@ -112,7 +114,8 @@
 		"time": 3000,
 		"message": "Message. For time.",
 		"material": "ghost",
-		"z": 0
+		"z": 0,
+		"sound": "magic1"
 	},
 	{
 		"id": 1050,
@@ -153,7 +156,8 @@
 		"anim_startFrame": 1,
 		"anim_actFrame": 1,
 		"anim_speed": 300,
-		"z": 0
+		"z": 0,
+		"sound": "health"
 	},
 	{
 		"id": 1065,
@@ -169,7 +173,8 @@
 		"anim_startFrame": 1,
 		"anim_actFrame": 1,
 		"anim_speed": 300,
-		"z": 0
+		"z": 0,
+		"sound": "health"
 	},
 	{
 		"id": 1070,
@@ -180,7 +185,8 @@
 		"type": "object",
 		"mode": "map",
 		"material": "ghost",
-		"z": 0
+		"z": 0,
+		"sound": "magic2"
 	},
 	{
 		"id": 1080,

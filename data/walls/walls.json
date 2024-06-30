@@ -57,7 +57,8 @@
         "anim_repeatEnd": 9,
         "anim_startFrame": 1,
         "anim_actFrame": 1,
-        "anim_speed": 180
+        "anim_speed": 180,
+        "sound": "door1"
     },
     {
         "id": 25,
@@ -74,7 +75,8 @@
         "anim_repeatEnd": 9,
         "anim_startFrame": 1,
         "anim_actFrame": 1,
-        "anim_speed": 180
+        "anim_speed": 180,
+        "sound": "door-key1"
     },
     {
         "id": 30,
@@ -91,7 +93,8 @@
         "anim_repeatEnd": 9,
         "anim_startFrame": 1,
         "anim_actFrame": 1,
-        "anim_speed": 180
+        "anim_speed": 180,
+        "sound": "door-key2"
     },
     {
         "id": 35,
@@ -117,7 +120,8 @@
         "anim_repeatEnd": 18,
         "anim_startFrame": 1,
         "anim_actFrame": 1,
-        "anim_speed": 80
+        "anim_speed": 80,
+        "sound": "secret1"
     },
     {
         "id": 45,
@@ -201,6 +205,7 @@
         "anim_repeatEnd": 18,
         "anim_startFrame": 1,
         "anim_actFrame": 1,
-        "anim_speed": 80
+        "anim_speed": 80,
+        "sound": "secret1"
     }
 ]

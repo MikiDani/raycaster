@@ -4,7 +4,8 @@ export default class SpritesClass {
     nearSprites;
     weponsSprites;
     objectDataTypes;
-    constructor({CELL_SIZE: CELL_SIZE, player: player, texturesClass: texturesClass, mapDataClass: mapDataClass}) {
+    constructor({CELL_SIZE: CELL_SIZE, player: player, soundClass: soundClass, texturesClass: texturesClass, mapDataClass: mapDataClass}) {
+        this.soundClass = soundClass
         this.texturesClass = texturesClass
         this.mapDataClass = mapDataClass
         this.player = player
@@ -74,17 +75,15 @@ export default class SpritesClass {
     }
 
     startShot() {
-        if (this.player.weapon == '3' || this.player.weapon == '4') {
-            var findAmmo = this.weponsSprites.find(objektum => objektum.name == `ammo_weapon${this.player.weapon}`);
-    
-            if (findAmmo) {
-                let ammo = { ...findAmmo };
-                ammo.active = true
-                ammo.x = this.player.x + Math.cos(this.player.angle);
-                ammo.y = this.player.y + Math.sin(this.player.angle);
-                ammo.angle = this.player.angle
-                this.sprites.push(ammo)
-            }
+        var findAmmo = this.weponsSprites.find(objektum => objektum.name == `ammo_weapon${this.player.weapon}`);
+
+        if (findAmmo) {
+            let ammo = { ...findAmmo };
+            ammo.active = true
+            ammo.x = this.player.x + Math.cos(this.player.angle);
+            ammo.y = this.player.y + Math.sin(this.player.angle);
+            ammo.angle = this.player.angle
+            this.sprites.push(ammo)
         }
     }
 

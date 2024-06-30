@@ -5,7 +5,8 @@ export default class MapDataClass {
     sky;
     floor;
     wayCordinates;
-    constructor({texturesClass: texturesClass}) {
+    constructor({soundClass: soundClass, texturesClass: texturesClass}) {
+        this.soundClass = soundClass
         this.texturesClass = texturesClass
         this.maps = ['level1', 'level2', 'level3', 'level4', 'level5']
         this.mapLevel = 0
@@ -38,6 +39,7 @@ export default class MapDataClass {
             wallArray.height = wallData.height
             wallArray.damage = wallData.damage
             wallArray.energy = wallData.energy
+            wallArray.sound = wallData.sound
             if (wallData.mode == 'animated'
             || wallData.mode == 'door' || wallData.mode == 'secret'
             || wallData.mode == 'key1' || wallData.mode == 'key2'

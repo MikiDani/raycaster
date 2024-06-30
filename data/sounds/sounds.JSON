@@ -1,0 +1,25 @@
+{
+  "sounds": [
+    "weapon1-1",
+    "weapon1-2",
+    "weapon2-1",
+    "weapon2-2",
+    "weapon3-1",
+    "weapon3-2",
+    "weapon4-1",
+    "weapon4-2",
+    "health",
+    "door1",
+    "door2",
+    "door3",
+    "door-key1",
+    "door-key2",
+    "get-key",
+    "secret1",
+    "magic1",
+    "magic2",
+    "swish1",
+    "swish2",
+    "wrong1"
+  ]
+}

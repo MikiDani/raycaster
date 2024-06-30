@@ -41,7 +41,8 @@
         "anim_actFrame": 1,
         "anim_speed": 180,
 		"open_switch": false,
-		"open_positionValue": 0
+		"open_positionValue": 0,
+        "sound": "door1"
     },
 	{
         "id": 515,
@@ -63,7 +64,8 @@
         "anim_actFrame": 1,
         "anim_speed": 180,
 		"open_switch": false,
-		"open_positionValue": 0
+		"open_positionValue": 0,
+        "sound": "door-key1"
     },
     {
 		"id": 520,
@@ -96,6 +98,7 @@
         "anim_actFrame": 1,
         "anim_speed": 180,
 		"open_switch": false,
-		"open_positionValue": 0
+		"open_positionValue": 0,
+        "sound": "door3"
     }
 ]

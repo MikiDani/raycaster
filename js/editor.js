@@ -327,8 +327,6 @@ class Editor {
 					// insert sprite
 					clone.levelData.sprites.push(insertedData.data);
 				}
-
-				// console.log('ezt írja bele:')
 				// console.log(insertedData.data)
 			} else {
 				clone.drawMessage('No have selected anything!', 'warning')
@@ -361,7 +359,7 @@ class Editor {
 			}
 		});
 				
-		// DELETE ALL MAP
+		// DELETE ALL MAP BRICK
 		$("#delete-all-button").on('click', async function () {
 			await clone.clearMap(clone)
 		});

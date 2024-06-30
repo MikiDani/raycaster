@@ -11,8 +11,9 @@ export default class GaphicsClass {
 	blockMask;
 	imgBgPapirus;
 
-	constructor ({mapDataClass: mapDataClass, spritesClass: spritesClass, texturesClass: texturesClass, CELL_SIZE: CELL_SIZE, player: player, menu: menu, gamePlay: gamePlay, check: check, poisonModValue: poisonModValue})
+	constructor ({soundClass: soundClass, mapDataClass: mapDataClass, spritesClass: spritesClass, texturesClass: texturesClass, CELL_SIZE: CELL_SIZE, player: player, menu: menu, gamePlay: gamePlay, check: check, poisonModValue: poisonModValue})
 	{
+		this.soundClass = soundClass
 		this.texturesClass = texturesClass
 		this.spritesClass = spritesClass
 		this.mapDataClass = mapDataClass
@@ -1291,6 +1292,12 @@ export default class GaphicsClass {
 
 		if (this.player.shoting && this.player.shoting_anim == null) {
 			
+			// BEFORE WEAPONS SOUNDS
+			if (this.player.weapon == '1' || this.player.weapon == '2') {
+				let random = Math.floor(Math.random() * 2) + 1
+				this.soundClass.playSoundEvent(`weapon${this.player.weapon}-${random}`, 1)
+			}
+
 			this.player.shoting_anim = setInterval(() => {
 
 				console.log(this.player.shoting_anim_actFrame);
@@ -1302,8 +1309,12 @@ export default class GaphicsClass {
 					this.player.shoting_anim = null
 					this.player.shoting_anim_actFrame = 0;
 
-					// W3 W4
-					this.spritesClass.startShot()
+					// AFTER WEAPONS SOUNDS
+					if (this.player.weapon == '3' || this.player.weapon == '4') {
+						let random = Math.floor(Math.random() * 2) + 1
+						this.soundClass.playSoundEvent(`weapon${this.player.weapon}-${random}`, 1)
+						this.spritesClass.startShot()
+					}
 
 					this.checkEnemyHit()
 				}
